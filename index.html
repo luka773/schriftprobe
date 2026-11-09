@@ -269,6 +269,7 @@ footer summary { cursor: pointer; }
           <button class="btn quiet" id="reroll" title="Andere zufällige Abweichungen und Varianten">Neu mischen</button>
           <span style="flex:1"></span>
           <button class="btn" id="save-png">Als Bild</button>
+          <button class="btn" id="save-trans" title="Nur die Schrift auf durchsichtigem Hintergrund, zum Einfügen in Notiz-Apps">Nur Schrift</button>
           <button class="btn primary" id="save-pdf">Als PDF</button>
         </div>
         <p class="hint" id="save-hint" hidden>Speichern ist in dieser Ansicht nicht verfügbar. Halte eine Seite gedrückt und wähle „Zu Fotos hinzufügen“.</p>
@@ -321,7 +322,7 @@ for (const k in PAPERS) PAPERS[k] = Object.assign({ w: 210, h: 297, bg: "#ffffff
 const STANDALONE = true;
 const INKS = [
   { id: "blau", name: "Königsblau", c: "#1f3cbd" },
-  { id: "schwarz", name: "Schwarz", c: "#1b1c24" },
+  { id: "schwarz", name: "Schwarz", c: "#1d1917" },
   { id: "blei", name: "Bleistift", c: "#55565e" },
   { id: "rot", name: "Rot", c: "#b8322a" },
   { id: "gruen", name: "Grün", c: "#1d7347" },
@@ -740,7 +741,8 @@ $("restore-file").onchange = async e => {
 /* ============================================================
    STEP 2: writing on paper
    ============================================================ */
-const PX = 6; // pixels per mm (A4 = 1260 × 1782)
+const PX = 8; // preview pixels per mm
+const PX_EXPORT = 12; // image export pixels per mm (A4 = 2520 × 3564)
 const defaults = { paper: "liniert", ink: "blau", size: 1, weight: 0.45, spacing: 0.16, natural: 0.5, lineStep: 1, margin: true, useDemo: true, seed: 7 };
 const set = Object.assign({}, defaults, store.get(K.set) || {});
 const txt = $("txt");
@@ -781,13 +783,59 @@ function syncControls() {
   document.querySelectorAll(".ink").forEach(b => b.setAttribute("aria-checked", String(b.dataset.id === set.ink)));
 }
 
-function drawPaper(ctx, id, spec) {
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
+/* ---------- painters: one drawing routine for preview, PNG and vector PDF ---------- */
+function canvasPainter(ctx, px) {
+  ctx.setTransform(px, 0, 0, px, 0, 0); ctx.lineCap = "round"; ctx.lineJoin = "round";
+  return {
+    rect(x, y, w, h, col) { ctx.fillStyle = col; ctx.fillRect(x, y, w, h); },
+    line(x0, y0, x1, y1, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); },
+    dot(x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); },
+    glyph(op, ink, wmm) {
+      ctx.save(); ctx.translate(op.x, op.y); ctx.rotate(op.rot); ctx.scale(op.k, op.k); ctx.translate(-op.minX, 0);
+      ctx.strokeStyle = ctx.fillStyle = ink; const base = wmm / op.k;
+      for (const s of op.v) strokePath(ctx, s, base);
+      ctx.restore();
+    },
+    text(op, ink) { ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = ink; ctx.font = "400 " + op.size + "px " + cssVar("--f-body"); ctx.textBaseline = "alphabetic"; ctx.fillText(op.ch, op.x, op.y); ctx.restore(); },
+  };
+}
+function pdfStroke(doc, P, wmm) {
+  const W = p => Math.round(wmm * (0.55 + 0.9 * Math.min(1, Math.max(0, p[2]))) * 50) / 50;
+  if (P.length === 1) { doc.circle(P[0][0], P[0][1], W(P[0]) / 2, "F"); return; }
+  let sx = P[0][0], sy = P[0][1], cur = -1, open = false;
+  for (let i = 1; i < P.length; i++) {
+    const p = P[i], last = i === P.length - 1;
+    const ex = last ? p[0] : (p[0] + P[i + 1][0]) / 2, ey = last ? p[1] : (p[1] + P[i + 1][1]) / 2;
+    const w = W(p);
+    if (w !== cur) { if (open) doc.stroke(); doc.setLineWidth(w); doc.moveTo(sx, sy); cur = w; open = true; }
+    doc.curveTo(sx + 2 / 3 * (p[0] - sx), sy + 2 / 3 * (p[1] - sy), ex + 2 / 3 * (p[0] - ex), ey + 2 / 3 * (p[1] - ey), ex, ey);
+    sx = ex; sy = ey;
+  }
+  if (open) doc.stroke();
+}
+function pdfPainter(doc) {
+  doc.setLineCap("round"); doc.setLineJoin("round");
+  return {
+    rect(x, y, w, h, col) { doc.setFillColor(col); doc.rect(x, y, w, h, "F"); },
+    line(x0, y0, x1, y1, col, w) { doc.setDrawColor(col); doc.setLineWidth(w); doc.line(x0, y0, x1, y1); },
+    dot(x, y, r, col) { doc.setFillColor(col); doc.circle(x, y, r, "F"); },
+    glyph(op, ink, wmm) {
+      doc.setDrawColor(ink); doc.setFillColor(ink);
+      const c = Math.cos(op.rot), s = Math.sin(op.rot);
+      for (const st of op.v) {
+        const P = st.map(p => { const gx = (p[0] - op.minX) * op.k, gy = p[1] * op.k; return [op.x + c * gx - s * gy, op.y + s * gx + c * gy, p[2]]; });
+        pdfStroke(doc, P, wmm);
+      }
+    },
+    text(op, ink) { doc.setTextColor("#9a9aa2"); doc.setFont("helvetica", "normal"); doc.setFontSize(op.size / 0.3528); doc.text(op.ch, op.x, op.y); },
+  };
+}
+
+function paintPaper(P, id, spec) {
   const W = spec.w, H = spec.h;
-  ctx.fillStyle = spec.bg; ctx.fillRect(0, 0, W * PX, H * PX);
-  ctx.setTransform(PX, 0, 0, PX, 0, 0);
-  const hl = (y, x0, x1, col, w) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); };
-  const vl = (x, y0, y1, col, w) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke(); };
+  P.rect(0, 0, W, H, spec.bg);
+  const hl = (y, x0, x1, col, w) => P.line(x0, y, x1, y, col, w);
+  const vl = (x, y0, y1, col, w) => P.line(x, y0, x, y1, col, w);
   if (id === "liniert") {
     for (let y = 20; y <= 289; y += 8) hl(y, 0, 210, "#a9b8d6", 0.2);
     if (set.margin) vl(25, 0, 297, "#e08c8c", 0.25);
@@ -796,13 +844,12 @@ function drawPaper(ctx, id, spec) {
     for (let x = 5; x <= 205; x += 5) vl(x, 10, 290, "#b9c4d9", 0.15);
     if (set.margin) vl(25, 10, 290, "#e08c8c", 0.25);
   } else if (id === "punktiert") {
-    ctx.fillStyle = "#97a3bd";
-    for (let y = 10; y <= 290; y += 5) for (let x = 5; x <= 205; x += 5) { ctx.beginPath(); ctx.arc(x, y, 0.28, 0, Math.PI * 2); ctx.fill(); }
+    for (let y = 10; y <= 290; y += 5) for (let x = 5; x <= 205; x += 5) P.dot(x, y, 0.28, "#97a3bd");
     if (set.margin) vl(25, 10, 290, "#e08c8c", 0.25);
   } else if (id === "vierlinien") {
     const u = spec.u;
     for (let y = spec.first; y <= 297 - 12 - u; y += spec.pitch) {
-      ctx.fillStyle = "#eef2fb"; ctx.fillRect(8, y - u, 194, u);
+      P.rect(8, y - u, 194, u, "#eef2fb");
       hl(y - 2 * u, 8, 202, "#c3cbe0", 0.18); hl(y - u, 8, 202, "#c3cbe0", 0.18);
       hl(y, 8, 202, "#7f8fba", 0.3); hl(y + u, 8, 202, "#c3cbe0", 0.18);
     }
@@ -832,67 +879,47 @@ function pickGlyph(c, rng) {
   return { ch: c, src: "font" };
 }
 
-let pageUrls = [], pageCanvases = [], pageBlobs = [], pageSpec = null, renderTimer = null, writeVisible = false, needsRender = true;
-function writeDirty() { needsRender = true; if (!writeVisible) return; clearTimeout(renderTimer); renderTimer = setTimeout(renderPages, 180); }
-
-function renderPages() {
-  needsRender = false;
+/* layout: text -> pages of drawing operations (in mm) */
+const measureCtx = document.createElement("canvas").getContext("2d");
+function layout() {
   const spec = PAPERS[set.paper] || PAPERS.liniert;
   const u = spec.u * set.size, nat = set.natural, gap = set.spacing;
   const ink = (INKS.find(i => i.id === set.ink) || INKS[0]).c;
   const left = spec.left[set.margin ? 1 : 0], right = spec.right;
   const step = spec.pitch * set.lineStep, yMax = spec.maxBase != null ? spec.maxBase : spec.h - 12 - u;
-  const widthMm = set.weight;
-  const fontPx = u * 2.6;
-  const missing = new Set(), demoUsed = new Set();
-  const canvases = [];
-  let ctx = null, lineY = 0, x = 0, x0 = 0, slope = 0, lineNo = 0, idx = 0;
+  const wmm = set.weight, fontSize = u * 2.6;
+  measureCtx.font = "400 100px " + cssVar("--f-body");
+  const missing = new Set(), demoUsed = new Set(), pages = [];
+  let ops = null, lineY = 0, x = 0, x0 = 0, slope = 0, lineNo = 0, idx = 0;
 
-  function newPage() {
-    const cv = document.createElement("canvas"); cv.width = Math.round(spec.w * PX); cv.height = Math.round(spec.h * PX);
-    ctx = cv.getContext("2d"); drawPaper(ctx, set.paper, spec); canvases.push(cv);
-    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.strokeStyle = ctx.fillStyle = ink; ctx.lineCap = "round"; ctx.lineJoin = "round";
-    lineY = spec.first; startLine();
-  }
+  function newPage() { ops = []; pages.push(ops); lineY = spec.first; startLine(); }
   function startLine() { const r = rngAt(set.seed, 1e6 + lineNo); slope = (r() - 0.5) * 0.012 * nat; x = left + (r() - 0.5) * 1.6 * nat; x0 = x; }
   function newLine() { lineNo++; lineY += step; if (lineY > yMax) newPage(); else startLine(); }
-
   function item(c) {
     const r = rngAt(set.seed, idx++);
     const g = pickGlyph(c, r);
     const sc = 1 + (r() - 0.5) * 0.08 * nat, rot = (r() - 0.5) * 0.07 * nat, dy = (r() - 0.5) * 0.12 * nat, jg = (r() - 0.5) * 0.1 * nat;
     if (g.src === "font") {
-      ctx.font = "400 " + (fontPx * PX) + "px " + cssVar("--f-body");
-      const w = ctx.measureText(c).width / PX;
+      const w = measureCtx.measureText(c).width / 100 * fontSize;
       missing.add(c);
       return { g, w, adv: w + gap * u, sc: 1, rot: 0, dy: 0 };
     }
     if (g.src === "demo") { demoUsed.add(c); missing.add(c); }
     const b = bbox(g.v), w = Math.max(0.08, b.maxX - b.minX) * sc * u;
-    return { g, w: w + widthMm, adv: w + widthMm + Math.max(0.02, gap + jg) * u, sc, rot, dy, b };
+    return { g, w: w + wmm, adv: w + wmm + Math.max(0.02, gap + jg) * u, sc, rot, dy, b };
   }
-  function drawItem(it) {
+  function place(it) {
     const y = lineY + (x - x0) * slope + it.dy * u;
-    if (it.g.src === "font") {
-      ctx.save(); ctx.globalAlpha = 0.5; ctx.font = "400 " + (fontPx * PX) + "px " + cssVar("--f-body");
-      ctx.textBaseline = "alphabetic"; ctx.fillText(it.g.ch, x * PX, y * PX); ctx.restore();
-    } else {
-      ctx.save(); ctx.translate(x * PX, y * PX); ctx.rotate(it.rot);
-      const k = u * PX * it.sc; ctx.scale(k, k); ctx.translate(-it.b.minX, 0);
-      const base = widthMm / (u * it.sc);
-      for (const s of it.g.v) strokePath(ctx, s, base);
-      ctx.restore();
-    }
+    if (it.g.src === "font") ops.push({ t: "f", ch: it.g.ch, x, y, size: fontSize });
+    else ops.push({ t: "g", v: it.g.v, x, y, rot: it.rot, k: u * it.sc, minX: it.b.minX });
     x += it.adv;
   }
 
   newPage();
   const text = txt.value.replace(/\r\n?/g, "\n").replace(/\t/g, "    ").replace(/ /g, " ").replace(/…/g, "...");
-  const paras = text.split("\n");
-  paras.forEach((p, pi) => {
+  text.split("\n").forEach((p, pi) => {
     if (pi > 0) newLine();
-    const tokens = p.split(/( +)/).filter(t => t.length);
-    for (const tok of tokens) {
+    for (const tok of p.split(/( +)/).filter(t => t.length)) {
       if (tok[0] === " ") {
         const r = rngAt(set.seed, idx++);
         x += tok.length * (0.72 + gap * 0.6) * u * (1 + (r() - 0.5) * 0.3 * nat);
@@ -901,26 +928,49 @@ function renderPages() {
       const items = Array.from(tok).map(item);
       const ww = items.reduce((s, it) => s + it.adv, 0);
       if (x + ww > right && x > x0 + 0.5) newLine();
-      if (ww > right - x0) { for (const it of items) { if (x + it.w > right && x > x0 + 0.5) newLine(); drawItem(it); } }
-      else for (const it of items) drawItem(it);
+      if (ww > right - x0) { for (const it of items) { if (x + it.w > right && x > x0 + 0.5) newLine(); place(it); } }
+      else for (const it of items) place(it);
     }
   });
+  return { spec, pages, ink, wmm, missing, demoUsed };
+}
+function paintPage(P, L, i, withPaper) {
+  if (withPaper) paintPaper(P, set.paper, L.spec);
+  for (const op of L.pages[i]) { if (op.t === "g") P.glyph(op, L.ink, L.wmm); else P.text(op, L.ink); }
+}
+function pageCanvas(L, i, px, withPaper) {
+  const cv = document.createElement("canvas");
+  cv.width = Math.round(L.spec.w * px); cv.height = Math.round(L.spec.h * px);
+  paintPage(canvasPainter(cv.getContext("2d"), px), L, i, withPaper);
+  return cv;
+}
+function dataUrlToBlob(url) {
+  const [head, b64] = url.split(","), bin = atob(b64), buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return new Blob([buf], { type: head.slice(5, head.indexOf(";")) });
+}
 
-  // show
-  pageCanvases = canvases; pageBlobs = []; pageSpec = spec;
+let pageUrls = [], renderTimer = null, writeVisible = false, needsRender = true, pageCount = 0;
+function writeDirty() { needsRender = true; if (!writeVisible) return; clearTimeout(renderTimer); renderTimer = setTimeout(renderPages, 180); }
+
+function renderPages() {
+  needsRender = false;
+  const L = layout(), spec = L.spec;
   const sheets = $("sheets");
   sheets.querySelectorAll(".sheet").forEach(s => s.remove());
   pageUrls.forEach(u2 => URL.revokeObjectURL(u2)); pageUrls = [];
-  canvases.forEach((cv, i) => {
+  pageCount = L.pages.length;
+  L.pages.forEach((_, i) => {
+    const cv = pageCanvas(L, i, PX, true);
     const d = document.createElement("div"); d.className = "sheet"; d.style.aspectRatio = spec.w + " / " + spec.h; d.style.background = spec.bg;
     const img = document.createElement("img"); img.alt = "Seite " + (i + 1) + " in deiner Handschrift";
     const pno = document.createElement("span"); pno.className = "pno"; pno.textContent = "Seite " + (i + 1);
     d.appendChild(img); d.appendChild(pno); sheets.appendChild(d);
-    cv.toBlob(b => { if (!b) { img.src = cv.toDataURL(); return; } if (pageCanvases === canvases) pageBlobs[i] = b; const url = URL.createObjectURL(b); pageUrls.push(url); img.src = url; }, "image/png");
+    cv.toBlob(b => { if (!b) { img.src = cv.toDataURL(); return; } const url = URL.createObjectURL(b); pageUrls.push(url); img.src = url; cv.width = 0; }, "image/png");
   });
-  $("sheet-info").textContent = canvases.length + (canvases.length === 1 ? " Seite" : " Seiten") + " · " + (spec.w === 210 ? "A4" : "US Letter");
+  $("sheet-info").textContent = L.pages.length + (L.pages.length === 1 ? " Seite" : " Seiten") + " · " + (spec.w === 210 ? "A4" : "US Letter");
   $("sheet-paper").textContent = spec.name + " · " + (INKS.find(i => i.id === set.ink) || INKS[0]).name;
-  renderMissing(missing, demoUsed);
+  renderMissing(L.missing, L.demoUsed);
 }
 
 function renderMissing(missing, demoUsed) {
@@ -942,26 +992,28 @@ function renderMissing(missing, demoUsed) {
   box.appendChild(chars);
 }
 
-async function exportPng() {
-  if (!pageCanvases.length) return;
-  const files = [];
-  for (let i = 0; i < pageCanvases.length; i++) {
-    const blob = pageBlobs[i] || await new Promise(r => pageCanvases[i].toBlob(r, "image/png"));
-    files.push({ name: pageCanvases.length > 1 ? "mangoumwandler-seite-" + (i + 1) + ".png" : "mangoumwandler.png", blob });
+function exportPng(transparent) {
+  const L = layout(), files = [];
+  const base = transparent ? "mangoumwandler-schrift" : "mangoumwandler";
+  for (let i = 0; i < L.pages.length; i++) {
+    const cv = pageCanvas(L, i, PX_EXPORT, !transparent);
+    files.push({ name: L.pages.length > 1 ? base + "-seite-" + (i + 1) + ".png" : base + ".png", blob: dataUrlToBlob(cv.toDataURL("image/png")) });
+    cv.width = 0;
   }
-  if (await deliver(files)) toast(files.length > 1 ? "Seiten gespeichert." : "Bild gespeichert.");
+  deliver(files).then(ok => { if (ok) toast(files.length > 1 ? "Seiten gespeichert." : "Bild gespeichert."); });
 }
-async function exportPdf() {
-  if (!pageCanvases.length) return;
+function exportPdf() {
   const J = window.jspdf && window.jspdf.jsPDF;
   if (!J) { toast("PDF ist gerade nicht verfügbar. Speichere die Seiten als Bild."); return; }
-  const sp = pageSpec || PAPERS.liniert;
-  const doc = new J({ unit: "mm", format: [sp.w, sp.h], orientation: "portrait" });
-  pageCanvases.forEach((cv, i) => { if (i) doc.addPage([sp.w, sp.h], "portrait"); doc.addImage(cv.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, sp.w, sp.h); });
+  const L = layout(), sp = L.spec;
+  const doc = new J({ unit: "mm", format: [sp.w, sp.h], orientation: "portrait", compress: true });
+  const P = pdfPainter(doc);
+  L.pages.forEach((_, i) => { if (i) doc.addPage([sp.w, sp.h], "portrait"); paintPage(P, L, i, true); });
   const blob = doc.output("blob");
-  if (await deliver([{ name: "mangoumwandler.pdf", blob }])) toast("PDF gespeichert.");
+  deliver([{ name: "mangoumwandler.pdf", blob }]).then(ok => { if (ok) toast("PDF gespeichert."); });
 }
-$("save-png").onclick = exportPng;
+$("save-png").onclick = () => exportPng(false);
+$("save-trans").onclick = () => exportPng(true);
 $("save-pdf").onclick = exportPdf;
 
 /* ---------- tabs ---------- */
