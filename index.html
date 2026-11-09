@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Schriftprobe">
+<title>Schriftprobe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+body { margin: 0; } [hidden] { display: none !important; } img { max-width: 100%; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+/* Layout: a workbench with two stations, the writing pad (step 1) and the sheet press (step 2), under one sticky bar. */
+:root {
+  --bg: #f3f4f9;
+  --surface: #ffffff;
+  --sunken: #e8ebf4;
+  --fg: #1a2140;
+  --muted: #5b6484;
+  --line: #d6dbea;
+  --accent: #2741d6;
+  --accent-soft: rgba(39, 65, 214, 0.09);
+  --on-accent: #ffffff;
+  --signal: #c8432b;
+  --pad-paper: #fdfdff;
+  --pad-guide: #9aa4c6;
+  --pad-ghost: rgba(26, 33, 64, 0.09);
+  --pad-ink: #1b2fa8;
+  --shadow: 0 1px 2px rgba(20, 28, 70, .06), 0 8px 24px rgba(20, 28, 70, .07);
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10131d; --surface: #181c2a; --sunken: #0c0f18; --fg: #e5e8f5; --muted: #98a1c0; --line: #2b3149;
+    --accent: #8d9cff; --accent-soft: rgba(141, 156, 255, 0.13); --on-accent: #0e1230; --signal: #ff7c64;
+    --pad-paper: #1d2233; --pad-guide: #5d6789; --pad-ghost: rgba(229, 232, 245, 0.10); --pad-ink: #b9c3ff;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10131d; --surface: #181c2a; --sunken: #0c0f18; --fg: #e5e8f5; --muted: #98a1c0; --line: #2b3149;
+  --accent: #8d9cff; --accent-soft: rgba(141, 156, 255, 0.13); --on-accent: #0e1230; --signal: #ff7c64;
+  --pad-paper: #1d2233; --pad-guide: #5d6789; --pad-ghost: rgba(229, 232, 245, 0.10); --pad-ink: #b9c3ff;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--fg); }
+body { font: 16px/1.5 var(--f-body); -webkit-text-size-adjust: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1320px; margin: 0 auto; }
+
+/* Top bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar .wrap { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding-block: 10px; }
+.brand { font: 800 22px/1 var(--f-display); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 8px; margin: 0; }
+.brand small { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.steps { display: flex; gap: 4px; background: var(--sunken); padding: 4px; border-radius: 12px; }
+.steps button { border: 0; background: transparent; padding: 8px 14px; border-radius: 9px; font-weight: 700; color: var(--muted); display: flex; gap: 8px; align-items: center; min-height: 40px; }
+.steps button .n { font: 500 12px/1 var(--f-mono); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid currentColor; }
+.steps button[aria-selected="true"] { background: var(--surface); color: var(--fg); box-shadow: var(--shadow); }
+.steps button[aria-selected="true"] .n { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.progress { margin-left: auto; display: flex; align-items: center; gap: 10px; font: 500 13px/1 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.progress .track { width: 120px; height: 6px; border-radius: 3px; background: var(--sunken); overflow: hidden; }
+.progress .fill { height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+
+main { padding-block: 20px 40px; }
+.view[hidden] { display: none !important; }
+
+/* Step 1 */
+.draw { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+.station { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.cur { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.cur .big { font: 800 56px/1 var(--f-display); min-width: 64px; text-align: center; color: var(--accent); }
+.cur .meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cur .meta strong { font: 600 18px/1.2 var(--f-display); }
+.cur .meta span { color: var(--muted); font-size: 14px; }
+.nav { margin-left: auto; display: flex; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 14px; min-height: 44px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.quiet { border-color: transparent; background: var(--sunken); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn svg { width: 18px; height: 18px; flex: none; }
+
+.padbox { position: relative; display: flex; justify-content: center; background: var(--sunken); border-radius: 12px; padding: 10px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+#pad { display: block; background: var(--pad-paper); border-radius: 8px; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; cursor: crosshair; max-width: 100%; }
+
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tools .spacer { flex: 1; }
+.variants { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.variants .lbl { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; min-height: 36px; font-weight: 700; font-size: 14px; }
+.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); padding: 6px 4px; min-height: 36px; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
+.hint { color: var(--muted); font-size: 14px; margin: 0; max-width: 70ch; }
+
+.drawer { display: flex; flex-direction: column; gap: 18px; }
+.group h3 { font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; display: flex; justify-content: space-between; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+.tile { position: relative; aspect-ratio: 1; max-width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 0; display: grid; place-items: center; font: 600 18px/1 var(--f-display); color: var(--muted); overflow: hidden; }
+.tile canvas { width: 100%; height: 100%; display: block; }
+.tile.done { background: var(--accent-soft); border-color: transparent; }
+.tile.cur { outline: 2px solid var(--accent); outline-offset: 1px; }
+.tile .vc { position: absolute; right: 3px; top: 2px; font: 500 9px/1 var(--f-mono); color: var(--accent); }
+.addchar { display: flex; gap: 6px; margin-top: 8px; }
+.addchar input { width: 64px; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--surface); text-align: center; font-size: 18px; min-height: 40px; }
+
+.store { border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.status { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--muted); }
+.status .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); margin-top: 6px; flex: none; }
+.status[data-s="synced"] .dot { background: #2f9e62; }
+.status[data-s="connecting"] .dot { background: #d2a12a; }
+.status[data-s="local"] .dot { background: var(--signal); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Step 2 */
+.write { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; align-items: start; }
+.panel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); max-height: calc(100vh - 100px); overflow: auto; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field > label, .field > .lab { font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.field output { font-variant-numeric: tabular-nums; color: var(--fg); letter-spacing: 0; text-transform: none; }
+textarea { width: 100%; min-height: 170px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--surface); line-height: 1.5; }
+.papers { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.paper { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 6px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted); min-width: 0; }
+.paper .sw { width: 100%; aspect-ratio: 210/150; max-width: 100%; border-radius: 4px; background-color: #fff; border: 1px solid #e3e6ef; }
+.paper[aria-checked="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+.sw.liniert { background-image: linear-gradient(to right, transparent 22%, #e59a9a 22%, #e59a9a 24%, transparent 24%), repeating-linear-gradient(to bottom, transparent 0 7px, #a9b8d6 7px 8px); }
+.sw.kariert { background-image: linear-gradient(#b5c1d8 1px, transparent 1px), linear-gradient(to right, #b5c1d8 1px, transparent 1px); background-size: 5px 5px; }
+.sw.punktiert { background-image: radial-gradient(#8f9bb5 0.8px, transparent 1.1px); background-size: 5px 5px; }
+.sw.vierlinien { background-image: repeating-linear-gradient(to bottom, transparent 0 3px, #c1c9dc 3px 4px, transparent 4px 6px, #dfe6f6 6px 9px, #8b9ac0 9px 10px, transparent 10px 12px, #c1c9dc 12px 13px, transparent 13px 16px); }
+.inks { display: flex; gap: 8px; flex-wrap: wrap; }
+.ink { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line); padding: 0; }
+.ink[aria-checked="true"] { box-shadow: 0 0 0 2px var(--accent); }
+input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
+select { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--surface); min-height: 40px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.missing { border-radius: 10px; padding: 10px 12px; background: var(--accent-soft); font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+.missing .chars { display: flex; flex-wrap: wrap; gap: 4px; }
+.missing .chars button { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; min-width: 32px; min-height: 32px; font: 600 15px/1 var(--f-display); }
+.missing.ok { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
+
+.sheets { display: flex; flex-direction: column; gap: 22px; align-items: center; min-width: 0; }
+.sheetmeta { align-self: stretch; display: flex; justify-content: space-between; color: var(--muted); font: 500 12px/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
+.sheet { width: 100%; max-width: 760px; aspect-ratio: 210/297; background: #fff; box-shadow: 0 1px 1px rgba(20,28,70,.08), 0 14px 40px rgba(20,28,70,.14); border-radius: 2px; position: relative; }
+.sheet img { width: 100%; height: 100%; display: block; -webkit-touch-callout: default; }
+.sheet .pno { position: absolute; bottom: -20px; right: 0; font: 500 11px/1 var(--f-mono); color: var(--muted); }
+
+footer { color: var(--muted); font-size: 13px; padding-block: 0 32px; }
+footer details { max-width: 80ch; }
+footer summary { cursor: pointer; }
+
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 700; z-index: 20; max-width: calc(100% - 32px); box-shadow: var(--shadow); }
+
+@media (max-width: 980px) {
+  .draw, .write { grid-template-columns: minmax(0, 1fr); }
+  .panel { position: static; max-height: none; }
+}
+@media (max-width: 560px) {
+  .progress .track { display: none; }
+  .brand small { display: none; }
+  .cur .big { font-size: 44px; }
+  .nav { margin-left: 0; width: 100%; }
+  .nav .btn { flex: 1; }
+  .papers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <h1 class="brand">Schriftprobe <small>deine Handschrift als Schrift</small></h1>
+    <nav class="steps" role="tablist" aria-label="Arbeitsschritte">
+      <button id="tab-draw" role="tab" aria-selected="true" aria-controls="view-draw"><span class="n">1</span>Zeichen zeichnen</button>
+      <button id="tab-write" role="tab" aria-selected="false" aria-controls="view-write"><span class="n">2</span>Text schreiben</button>
+    </nav>
+    <div class="progress" title="Gezeichnete Zeichen"><span id="prog-txt">0 / 0</span><div class="track"><div class="fill" id="prog-fill"></div></div></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- STEP 1 -->
+  <section id="view-draw" class="view" role="tabpanel" aria-labelledby="tab-draw">
+    <div class="draw">
+      <div class="station">
+        <div class="cur">
+          <div class="big" id="cur-big">a</div>
+          <div class="meta"><strong id="cur-name">Kleinbuchstabe a</strong><span id="cur-pos">1 von 26 · noch nicht gezeichnet</span></div>
+          <div class="nav">
+            <button class="btn" id="prev" aria-label="Vorheriges Zeichen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Zurück</button>
+            <button class="btn primary" id="next">Weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+        <div class="padbox" id="padbox"><canvas id="pad" aria-label="Zeichenfläche"></canvas></div>
+        <div class="tools">
+          <button class="btn quiet" id="undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>Rückgängig</button>
+          <button class="btn quiet" id="clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Leeren</button>
+          <div class="variants" id="variants"></div>
+          <span class="spacer"></span>
+          <label class="toggle"><input type="checkbox" id="opt-ghost" checked>Vorlage</label>
+          <label class="toggle"><input type="checkbox" id="opt-pen">Nur Apple Pencil</label>
+        </div>
+        <p class="hint">Schreib das Zeichen so, wie du es sonst auch schreibst: kleine Buchstaben zwischen Grundlinie und Mittellinie, Großbuchstaben bis zur Oberlinie, g, j, p, q und y nach unten. Mit bis zu drei Varianten pro Zeichen wirkt der Text später lebendiger.</p>
+      </div>
+
+      <aside class="station drawer" aria-label="Zeichensatz">
+        <div id="groups" class="drawer"></div>
+        <div class="store">
+          <div class="status" id="status" data-s="local"><span class="dot"></span><span id="status-txt">Wird geladen …</span></div>
+          <div class="row">
+            <button class="btn quiet" id="backup">Sicherung speichern</button>
+            <button class="btn quiet" id="restore">Sicherung laden</button>
+            <input type="file" id="restore-file" accept=".json,application/json" hidden>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section id="view-write" class="view" role="tabpanel" aria-labelledby="tab-write" hidden>
+    <div class="write">
+      <div class="station panel">
+        <div class="field">
+          <label for="txt">Dein Text</label>
+          <textarea id="txt" spellcheck="false"></textarea>
+        </div>
+        <div id="missing" class="missing"></div>
+        <div class="field">
+          <span class="lab">Papier</span>
+          <div class="papers" role="radiogroup" aria-label="Papier" id="papers"></div>
+        </div>
+        <div class="field">
+          <span class="lab">Tinte</span>
+          <div class="inks" role="radiogroup" aria-label="Tinte" id="inks"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="size">Größe <output id="size-o"></output></label><input type="range" id="size" min="0.6" max="1.6" step="0.05"></div>
+          <div class="field"><label for="weight">Strich <output id="weight-o"></output></label><input type="range" id="weight" min="0.2" max="1.0" step="0.05"></div>
+          <div class="field"><label for="spacing">Abstand <output id="spacing-o"></output></label><input type="range" id="spacing" min="0" max="0.6" step="0.02"></div>
+          <div class="field"><label for="natural">Natürlich <output id="natural-o"></output></label><input type="range" id="natural" min="0" max="1" step="0.05"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label for="linestep">Zeilen</label>
+            <select id="linestep"><option value="1">jede Zeile</option><option value="2">jede zweite</option></select></div>
+          <div class="field"><span class="lab">Optionen</span>
+            <label class="toggle"><input type="checkbox" id="margin">Rand links</label></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="usedemo">Fehlende Zeichen aus der Beispielschrift ergänzen</label>
+        <div class="row">
+          <button class="btn quiet" id="reroll" title="Andere zufällige Abweichungen und Varianten">Neu mischen</button>
+          <span style="flex:1"></span>
+          <button class="btn" id="save-png">Als Bild</button>
+          <button class="btn primary" id="save-pdf">Als PDF</button>
+        </div>
+        <p class="hint" id="save-hint" hidden>Speichern ist in dieser Ansicht nicht verfügbar. Halte eine Seite gedrückt und wähle „Zu Fotos hinzufügen“.</p>
+      </div>
+      <div class="sheets" id="sheets">
+        <div class="sheetmeta"><span id="sheet-info">A4</span><span id="sheet-paper"></span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <details>
+    <summary>Über die Beispielschrift</summary>
+    <p>Solange du ein Zeichen noch nicht gezeichnet hast, kann die Vorschau es aus der Hershey Script ergänzen. The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the U. S. National Bureau of Standards. The format of the Font data in this distribution was originally created by James Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821. SVG-Fassung von Windell H. Oskay (Evil Mad Scientist), verteilt im Paket hersheytext (MIT).</p>
+  </details>
+</footer>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+(function () {
+"use strict";
+
+/* ---------- data ---------- */
+const DEMO_RAW = {"0":"1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.33 0.44,-0.89 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-1 2.11,-1.44 2.11,-1.77 2,-2.11 1.89,-2.22 1.66,-2.33 1.44,-2.33|1.44,-2.33 1.22,-2.22 1,-2 0.77,-1.66 0.67,-1.33 0.56,-0.89 0.56,-0.56 0.67,-0.22 0.89,0|1.11,0 1.33,-0.11 1.55,-0.33 1.77,-0.67 1.89,-1 2,-1.44 2,-1.77 1.89,-2.11 1.66,-2.33","1":"1.44,-1.89 0.89,0|1.66,-2.33 1,0|1.66,-2.33 1.33,-2 1,-1.77 0.77,-1.66|1.55,-2 1.11,-1.77 0.77,-1.66","2":"0.89,-1.89 1,-1.77 0.89,-1.66 0.77,-1.77 0.77,-1.89 0.89,-2.11 1,-2.22 1.33,-2.33 1.66,-2.33 2,-2.22 2.11,-2 2.11,-1.77 2,-1.55 1.77,-1.33 1.44,-1.11 1,-0.89 0.67,-0.67 0.44,-0.44 0.22,0|1.66,-2.33 1.89,-2.22 2,-2 2,-1.77 1.89,-1.55 1.66,-1.33 1,-0.89|0.33,-0.22 0.44,-0.33 0.67,-0.33 1.22,-0.11 1.55,-0.11 1.77,-0.22 1.89,-0.44|0.67,-0.33 1.22,0 1.55,0 1.77,-0.11 1.89,-0.44","3":"0.89,-1.89 1,-1.77 0.89,-1.66 0.77,-1.77 0.77,-1.89 0.89,-2.11 1,-2.22 1.33,-2.33 1.66,-2.33 2,-2.22 2.11,-2 2.11,-1.77 2,-1.55 1.66,-1.33 1.33,-1.22|1.66,-2.33 1.89,-2.22 2,-2 2,-1.77 1.89,-1.55 1.66,-1.33|1.11,-1.22 1.33,-1.22 1.66,-1.11 1.77,-1 1.89,-0.77 1.89,-0.44 1.77,-0.22 1.66,-0.11 1.33,0 0.89,0 0.56,-0.11 0.44,-0.22 0.33,-0.44 0.33,-0.56 0.44,-0.67 0.56,-0.56 0.44,-0.44|1.33,-1.22 1.55,-1.11 1.66,-1 1.77,-0.77 1.77,-0.44 1.66,-0.22 1.55,-0.11 1.33,0","4":"1.89,-2.22 1.22,0|2,-2.33 1.33,0|2,-2.33 0.33,-0.67 2.11,-0.67","5":"1.11,-2.33 0.56,-1.22|1.11,-2.33 2.22,-2.33|1.11,-2.22 1.66,-2.22 2.22,-2.33|0.56,-1.22 0.67,-1.33 1,-1.44 1.33,-1.44 1.66,-1.33 1.77,-1.22 1.89,-1 1.89,-0.67 1.77,-0.33 1.55,-0.11 1.22,0 0.89,0 0.56,-0.11 0.44,-0.22 0.33,-0.44 0.33,-0.56 0.44,-0.67 0.56,-0.56 0.44,-0.44|1.33,-1.44 1.55,-1.33 1.66,-1.22 1.77,-1 1.77,-0.67 1.66,-0.33 1.44,-0.11 1.22,0","6":"2,-2 1.89,-1.89 2,-1.77 2.11,-1.89 2.11,-2 2,-2.22 1.77,-2.33 1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.33 0.44,-0.89 0.44,-0.44 0.56,-0.22 0.67,-0.11 0.89,0 1.22,0 1.55,-0.11 1.77,-0.33 1.89,-0.56 1.89,-0.89 1.77,-1.11 1.66,-1.22 1.44,-1.33 1.11,-1.33 0.89,-1.22 0.67,-1 0.56,-0.77|1.44,-2.33 1.22,-2.22 1,-2 0.77,-1.66 0.67,-1.33 0.56,-0.89 0.56,-0.33 0.67,-0.11|1.22,0 1.44,-0.11 1.66,-0.33 1.77,-0.56 1.77,-1 1.66,-1.22","7":"0.77,-2.33 0.56,-1.66|2.22,-2.33 2.11,-2 1.89,-1.66 1.33,-1 1.11,-0.67 1,-0.44 0.89,0|1.89,-1.66 1.22,-1 1,-0.67 0.89,-0.44 0.77,0|0.67,-2 1,-2.33 1.22,-2.33 1.77,-2|0.77,-2.11 1,-2.22 1.22,-2.22 1.77,-2 2,-2 2.11,-2.11 2.22,-2.33","8":"1.33,-2.33 1,-2.22 0.89,-2.11 0.77,-1.89 0.77,-1.55 0.89,-1.33 1.11,-1.22 1.44,-1.22 1.89,-1.33 2,-1.44 2.11,-1.66 2.11,-2 2,-2.22 1.66,-2.33 1.33,-2.33|1.33,-2.33 1.11,-2.22 1,-2.11 0.89,-1.89 0.89,-1.55 1,-1.33 1.11,-1.22|1.44,-1.22 1.77,-1.33 1.89,-1.44 2,-1.66 2,-2 1.89,-2.22 1.66,-2.33|1.11,-1.22 0.67,-1.11 0.44,-0.89 0.33,-0.67 0.33,-0.33 0.44,-0.11 0.77,0 1.22,0 1.66,-0.11 1.77,-0.22 1.89,-0.44 1.89,-0.77 1.77,-1 1.66,-1.11 1.44,-1.22|1.11,-1.22 0.77,-1.11 0.56,-0.89 0.44,-0.67 0.44,-0.33 0.56,-0.11 0.77,0|1.22,0 1.55,-0.11 1.66,-0.22 1.77,-0.44 1.77,-0.89 1.66,-1.11","9":"2,-1.55 1.89,-1.33 1.66,-1.11 1.44,-1 1.11,-1 0.89,-1.11 0.77,-1.22 0.67,-1.44 0.67,-1.77 0.77,-2 1,-2.22 1.33,-2.33 1.66,-2.33 1.89,-2.22 2,-2.11 2.11,-1.89 2.11,-1.44 2,-1 1.89,-0.67 1.66,-0.33 1.44,-0.11 1.11,0 0.77,0 0.56,-0.11 0.44,-0.33 0.44,-0.44 0.56,-0.56 0.67,-0.44 0.56,-0.33|0.89,-1.11 0.77,-1.33 0.77,-1.77 0.89,-2 1.11,-2.22 1.33,-2.33|1.89,-2.22 2,-2 2,-1.44 1.89,-1 1.77,-0.67 1.55,-0.33 1.33,-0.11 1.11,0","!":"1.24,-2.33 1.13,-2.22 0.91,-0.89|1.24,-2.22 0.91,-0.89|1.24,-2.33 1.35,-2.22 0.91,-0.89|0.69,-0.22 0.58,-0.11 0.69,0 0.8,-0.11 0.69,-0.22","\"":"0.89,-2.33 0.67,-1.55|1,-2.33 0.67,-1.55|1.89,-2.33 1.66,-1.55|2,-2.33 1.66,-1.55","#":"1.33,-2.77 0.56,0.77|2,-2.77 1.22,0.77|0.56,-1.33 2.11,-1.33|0.44,-0.67 2,-0.67","$":"1.44,-2.77 0.56,0.44|2,-2.77 1.11,0.44|2.11,-1.89 2,-1.77 2.11,-1.66 2.22,-1.77 2.22,-1.89 2.11,-2.11 2,-2.22 1.66,-2.33 1.22,-2.33 0.89,-2.22 0.67,-2 0.67,-1.77 0.77,-1.55 0.89,-1.44 1.66,-1 1.89,-0.77|0.67,-1.77 0.89,-1.55 1.66,-1.11 1.77,-1 1.89,-0.77 1.89,-0.44 1.77,-0.22 1.66,-0.11 1.33,0 0.89,0 0.56,-0.11 0.44,-0.22 0.33,-0.44 0.33,-0.56 0.44,-0.67 0.56,-0.56 0.44,-0.44","%":"2.44,-2.33 0.44,0|1,-2.33 1.22,-2.11 1.22,-1.89 1.11,-1.66 0.89,-1.55 0.67,-1.55 0.44,-1.77 0.44,-2 0.56,-2.22 0.77,-2.33 1,-2.33 1.22,-2.22 1.55,-2.11 1.89,-2.11 2.22,-2.22 2.44,-2.33|2,-0.77 1.77,-0.67 1.66,-0.44 1.66,-0.22 1.89,0 2.11,0 2.33,-0.11 2.44,-0.33 2.44,-0.56 2.22,-0.77 2,-0.77","&":"2.66,-1.44 2.55,-1.33 2.66,-1.22 2.77,-1.33 2.77,-1.44 2.66,-1.55 2.55,-1.55 2.33,-1.44 2.11,-1.22 1.55,-0.33 1.33,-0.11 1.11,0 0.77,0 0.44,-0.11 0.33,-0.33 0.33,-0.56 0.44,-0.77 0.56,-0.89 0.77,-1 1.33,-1.22 1.55,-1.33 1.77,-1.55 1.89,-1.77 1.89,-2 1.77,-2.22 1.55,-2.33 1.33,-2.22 1.22,-2 1.22,-1.66 1.33,-1 1.44,-0.67 1.66,-0.33 1.89,-0.11 2.11,0 2.33,0 2.44,-0.22 2.44,-0.33|0.77,0 0.56,-0.11 0.44,-0.33 0.44,-0.56 0.56,-0.77 0.67,-0.89 1.33,-1.22|1.22,-1.66 1.33,-1.11 1.44,-0.77 1.66,-0.44 1.89,-0.22 2.11,-0.11 2.33,-0.11 2.44,-0.22","'":"1,-2.11 0.89,-2.22 1,-2.33 1.11,-2.22 1.11,-2.11 1,-1.89 0.77,-1.66","(":"1.77,-2.77 1.33,-2.44 1,-2.11 0.77,-1.77 0.56,-1.33 0.44,-0.77 0.44,-0.33 0.56,0.22 0.67,0.56 0.77,0.77|1.33,-2.44 1,-2 0.77,-1.55 0.67,-1.22 0.56,-0.67 0.56,-0.11 0.67,0.44 0.77,0.77",")":"1.11,-2.77 1.22,-2.55 1.33,-2.22 1.44,-1.66 1.44,-1.22 1.33,-0.67 1.11,-0.22 0.89,0.11 0.56,0.44 0.11,0.77|1.11,-2.77 1.22,-2.44 1.33,-1.89 1.33,-1.33 1.22,-0.77 1.11,-0.44 0.89,0 0.56,0.44","*":"1.22,-2.33 1.22,-1|0.67,-2 1.77,-1.33|1.77,-2 0.67,-1.33","+":"1.55,-2 1.55,0|0.56,-1 2.55,-1",",":"0.44,0 0.33,-0.11 0.44,-0.22 0.56,-0.11 0.56,0 0.44,0.22 0.22,0.44","-":"0.56,-1 2.55,-1",".":"0.67,-0.22 0.56,-0.11 0.67,0 0.77,-0.11 0.67,-0.22","/":"2.77,-2.77 -0.11,0.77",":":"0.77,-1.55 0.67,-1.44 0.77,-1.33 0.89,-1.44 0.77,-1.55|0.44,-0.22 0.33,-0.11 0.44,0 0.56,-0.11",";":"0.77,-1.55 0.67,-1.44 0.77,-1.33 0.89,-1.44 0.77,-1.55|0.44,0 0.33,-0.11 0.44,-0.22 0.56,-0.11 0.56,0 0.44,0.22 0.22,0.44","<":"2.33,-2 0.56,-1 2.33,0","=":"0.56,-1.33 2.55,-1.33|0.56,-0.67 2.55,-0.67",">":"0.56,-2 2.33,-1 0.56,0","?":"0.89,-1.89 1,-1.77 0.89,-1.66 0.77,-1.77 0.77,-1.89 0.89,-2.11 1,-2.22 1.33,-2.33 1.77,-2.33 2.11,-2.22 2.22,-2 2.22,-1.77 2.11,-1.55 2,-1.44 1.33,-1.22 1.11,-1.11 1.11,-0.89 1.22,-0.77 1.44,-0.77|1.77,-2.33 2,-2.22 2.11,-2 2.11,-1.77 2,-1.55 1.89,-1.44 1.66,-1.33|1,-0.22 0.89,-0.11 1,0 1.11,-0.11 1,-0.22","@":"2.11,-1.44 2,-1.66 1.77,-1.77 1.44,-1.77 1.22,-1.66 1.11,-1.55 1,-1.22 1,-0.89 1.11,-0.67 1.33,-0.56 1.66,-0.56 1.89,-0.67 2,-0.89|1.44,-1.77 1.22,-1.55 1.11,-1.22 1.11,-0.89 1.22,-0.67 1.33,-0.56|2.11,-1.77 2,-0.89 2,-0.67 2.22,-0.56 2.44,-0.56 2.66,-0.77 2.77,-1.11 2.77,-1.33 2.66,-1.66 2.55,-1.89 2.33,-2.11 2.11,-2.22 1.77,-2.33 1.44,-2.33 1.11,-2.22 0.89,-2.11 0.67,-1.89 0.56,-1.66 0.44,-1.33 0.44,-1 0.56,-0.67 0.67,-0.44 0.89,-0.22 1.11,-0.11 1.44,0 1.77,0 2.11,-0.11 2.33,-0.22 2.44,-0.33|2.22,-1.77 2.11,-0.89 2.11,-0.67 2.22,-0.56","A":"0.11,0 0.33,-0.11 0.67,-0.44 1,-0.89 1.44,-1.66 1.77,-2.33 1.77,0 1.66,-0.33 1.44,-0.67 1.22,-0.89 0.89,-1.11 0.67,-1.11 0.56,-1 0.56,-0.77 0.67,-0.56 0.89,-0.33 1.22,-0.11 1.55,0 2.11,0","B":"1.55,-2.11 1.66,-2 1.66,-1.66 1.55,-1.22 1.44,-0.89 1.33,-0.67 1.11,-0.33 0.89,-0.11 0.67,0 0.56,0 0.44,-0.11 0.44,-0.44 0.56,-1 0.67,-1.33 0.77,-1.55 1,-1.89 1.22,-2.11 1.44,-2.22 1.77,-2.33 2.11,-2.33 2.33,-2.22 2.44,-2 2.44,-1.77 2.33,-1.55 2.22,-1.44 2,-1.33 1.66,-1.22|1.55,-1.22 1.66,-1.22 2,-1.11 2.11,-1 2.22,-0.77 2.22,-0.44 2.11,-0.22 2,-0.11 1.77,0 1.44,0 1.22,-0.11 1.11,-0.33","C":"1.44,-1.66 1.44,-1.55 1.55,-1.44 1.77,-1.44 2,-1.55 2.11,-1.77 2.11,-2 2,-2.22 1.77,-2.33 1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.44 0.44,-1 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.77,-0.56","D":"1.55,-2.33 1.33,-2.22 1.22,-2 1.11,-1.55 1,-0.89 0.89,-0.56 0.77,-0.33 0.56,-0.11 0.33,0 0.11,0 0,-0.11 0,-0.33 0.11,-0.44 0.33,-0.44 0.56,-0.33 0.77,-0.11 1.11,0 1.44,0 1.77,-0.11 2,-0.33 2.22,-0.77 2.33,-1.33 2.33,-1.77 2.22,-2.11 2.11,-2.22 1.89,-2.33 1.55,-2.33 1.33,-2.11 1.33,-1.89 1.44,-1.55 1.66,-1.22 1.89,-1 2.22,-0.77 2.44,-0.67","E":"1.66,-1.89 1.66,-1.77 1.77,-1.66 2,-1.66 2.11,-1.77 2.11,-2 2,-2.22 1.66,-2.33 1.22,-2.33 0.89,-2.22 0.77,-2 0.77,-1.66 0.89,-1.44 1,-1.33 1.33,-1.22 1,-1.22 0.67,-1.11 0.56,-1 0.44,-0.77 0.44,-0.44 0.56,-0.22 0.67,-0.11 1,0 1.33,0 1.66,-0.11 1.89,-0.33 2,-0.56","F":"1.22,-1.66 1,-1.66 0.77,-1.77 0.67,-2 0.77,-2.22 1.11,-2.33 1.44,-2.33 1.89,-2.22 2.22,-2.22 2.44,-2.33|1.89,-2.22 1.66,-1.44 1.44,-0.77 1.22,-0.33 1,-0.11 0.77,0 0.56,0 0.33,-0.11 0.22,-0.33 0.22,-0.56 0.33,-0.67 0.56,-0.67 0.77,-0.56|1.11,-1.22 2.11,-1.22","G":"0.11,0 0.33,-0.11 0.77,-0.56 1.11,-1.11 1.22,-1.44 1.33,-1.89 1.33,-2.22 1.22,-2.33 1.11,-2.33 1,-2.22 0.89,-2 0.89,-1.66 1,-1.44 1.22,-1.33 1.66,-1.33 2,-1.44 2.11,-1.55 2.22,-1.77 2.22,-1.11 2.11,-0.56 2,-0.33 1.77,-0.11 1.44,0 1,0 0.67,-0.11 0.44,-0.33 0.33,-0.56 0.33,-0.77","H":"0.89,-1.55 0.67,-1.66 0.56,-1.89 0.56,-2 0.67,-2.22 0.89,-2.33 1,-2.33 1.22,-2.22 1.33,-2 1.33,-1.77 1.22,-1.33 1,-0.67 0.77,-0.22 0.56,0 0.33,0 0.22,-0.11 0.22,-0.33|0.89,-1 1.89,-1.33 2.11,-1.44 2.44,-1.66 2.66,-1.89 2.77,-2.11 2.77,-2.22 2.66,-2.33 2.55,-2.33 2.33,-2.11 2.11,-1.66 1.89,-1 1.77,-0.44 1.77,-0.11 1.89,0 2,0 2.22,-0.11 2.33,-0.22 2.55,-0.56","I":"1.66,-0.56 1.44,-0.77 1.22,-1.11 1.11,-1.33 1,-1.66 1,-2 1.11,-2.22 1.22,-2.33 1.44,-2.33 1.55,-2.22 1.66,-2 1.66,-1.66 1.55,-1.11 1.33,-0.56 1.22,-0.33 1,-0.11 0.77,0 0.56,0 0.33,-0.11 0.22,-0.33 0.22,-0.56 0.33,-0.67 0.56,-0.67 0.77,-0.56","J":"1.22,0.33 1,0 0.77,-0.56 0.67,-1.22 0.67,-1.89 0.77,-2.22 1,-2.33 1.22,-2.33 1.33,-2.22 1.44,-1.89 1.44,-1.55 1.33,-1 1,0 0.77,0.67 0.67,1 0.56,1.22 0.33,1.33 0.22,1.22 0.22,1 0.33,0.67 0.56,0.33 0.77,0.11 1.11,-0.11 1.55,-0.33","K":"0.89,-1.55 0.67,-1.66 0.56,-1.89 0.56,-2 0.67,-2.22 0.89,-2.33 1,-2.33 1.22,-2.22 1.33,-2 1.33,-1.77 1.22,-1.33 1,-0.67 0.77,-0.22 0.56,0 0.33,0 0.22,-0.11 0.22,-0.33|2.77,-2 2.77,-2.22 2.66,-2.33 2.55,-2.33 2.33,-2.22 2.11,-2 1.89,-1.66 1.66,-1.44 1.44,-1.33 1.22,-1.33|1.44,-1.33 1.55,-1.11 1.55,-0.33 1.66,-0.11 1.77,0 1.89,0 2.11,-0.11 2.22,-0.22 2.44,-0.56","L":"0.56,-1 0.77,-1 1.22,-1.11 1.55,-1.33 1.77,-1.55 1.89,-1.77 1.89,-2.11 1.77,-2.33 1.55,-2.33 1.44,-2.22 1.33,-2 1.22,-1.44 1.11,-0.89 1,-0.56 0.89,-0.33 0.67,-0.11 0.44,0 0.22,0 0.11,-0.11 0.11,-0.33 0.22,-0.44 0.44,-0.44 0.67,-0.33 1,-0.11 1.33,0 1.55,0 1.89,-0.11 2.11,-0.33","M":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.22 0.89,-0.77 0.67,0|0.89,-0.77 1.22,-1.66 1.44,-2.11 1.55,-2.22 1.77,-2.33 1.89,-2.33 2.11,-2.22 2.22,-2 2.22,-1.77 2.11,-1.22 2,-0.77 1.77,0|2,-0.77 2.33,-1.66 2.55,-2.11 2.66,-2.22 2.88,-2.33 2.99,-2.33 3.22,-2.22 3.33,-2 3.33,-1.77 3.22,-1.22 2.99,-0.44 2.99,-0.11 3.11,0 3.22,0 3.44,-0.11 3.55,-0.22 3.77,-0.56","N":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.22 0.89,-0.77 0.67,0|0.89,-0.77 1.22,-1.66 1.44,-2.11 1.55,-2.22 1.77,-2.33 2,-2.33 2.22,-2.22 2.33,-2 2.33,-1.77 2.22,-1.22 2,-0.44 2,-0.11 2.11,0 2.22,0 2.44,-0.11 2.55,-0.22 2.77,-0.56","O":"1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.44 0.44,-1 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-0.89 2.11,-1.33 2.11,-1.77 2,-2.11 1.89,-2.22 1.66,-2.33 1.44,-2.33 1.22,-2.11 1.22,-1.77 1.33,-1.44 1.55,-1.11 1.77,-0.89 2.11,-0.67 2.33,-0.56","P":"1.55,-2.11 1.66,-2 1.66,-1.66 1.55,-1.22 1.44,-0.89 1.33,-0.67 1.11,-0.33 0.89,-0.11 0.67,0 0.56,0 0.44,-0.11 0.44,-0.44 0.56,-1 0.67,-1.33 0.77,-1.55 1,-1.89 1.22,-2.11 1.44,-2.22 1.77,-2.33 2.33,-2.33 2.55,-2.22 2.66,-2.11 2.77,-1.89 2.77,-1.55 2.66,-1.33 2.55,-1.22 2.33,-1.11 2,-1.11 1.77,-1.22 1.66,-1.33","Q":"1.55,-1.66 1.44,-1.44 1.33,-1.33 1.11,-1.22 0.89,-1.22 0.77,-1.44 0.77,-1.66 0.89,-2 1.11,-2.22 1.44,-2.33 1.77,-2.33 2,-2.22 2.11,-2 2.11,-1.55 2,-1.22 1.77,-0.89 1.33,-0.44 1,-0.22 0.77,-0.11 0.44,0 0.22,0 0.11,-0.11 0.11,-0.33 0.22,-0.44 0.44,-0.44 0.67,-0.33 1,-0.11 1.33,0 1.66,0 2,-0.11 2.22,-0.33","R":"1.55,-2.11 1.66,-2 1.66,-1.66 1.55,-1.22 1.44,-0.89 1.33,-0.67 1.11,-0.33 0.89,-0.11 0.67,0 0.56,0 0.44,-0.11 0.44,-0.44 0.56,-1 0.67,-1.33 0.77,-1.55 1,-1.89 1.22,-2.11 1.44,-2.22 1.77,-2.33 2.22,-2.33 2.44,-2.22 2.55,-2.11 2.66,-1.89 2.66,-1.55 2.55,-1.33 2.44,-1.22 2.22,-1.11 1.89,-1.11 1.55,-1.22 1.66,-1.11 1.77,-0.89 1.77,-0.33 1.89,-0.11 2.11,0 2.33,-0.11 2.44,-0.22 2.66,-0.56","S":"0.11,0 0.33,-0.11 0.56,-0.33 0.89,-0.77 1.11,-1.11 1.33,-1.55 1.44,-1.89 1.44,-2.22 1.33,-2.33 1.22,-2.33 1.11,-2.22 1,-2 1,-1.77 1.11,-1.55 1.33,-1.33 1.66,-1.11 1.89,-0.89 2,-0.67 2,-0.44 1.89,-0.22 1.77,-0.11 1.44,0 1,0 0.67,-0.11 0.44,-0.33 0.33,-0.56 0.33,-0.77","T":"1.22,-1.66 1,-1.66 0.77,-1.77 0.67,-2 0.77,-2.22 1.11,-2.33 1.44,-2.33 1.89,-2.22 2.22,-2.22 2.44,-2.33|1.89,-2.22 1.66,-1.44 1.44,-0.77 1.22,-0.33 1,-0.11 0.77,0 0.56,0 0.33,-0.11 0.22,-0.33 0.22,-0.56 0.33,-0.67 0.56,-0.67 0.77,-0.56","U":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.33 0.89,-0.11 1.11,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.67 2.22,-1.55 2.44,-2.33|2.22,-1.55 2.11,-1.11 2,-0.44 2,-0.11 2.11,0 2.22,0 2.44,-0.11 2.55,-0.22 2.77,-0.56","V":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.22 0.89,0 1.11,0 1.33,-0.11 1.66,-0.44 1.89,-0.77 2.11,-1.22 2.22,-1.55 2.33,-2 2.33,-2.22 2.22,-2.33 2.11,-2.33 2,-2.22 1.89,-2 1.89,-1.77 2,-1.44 2.22,-1.22 2.44,-1.11","W":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.66 1,0|2.11,-2.33 1,0|2.11,-2.33 1.89,0|3.44,-2.33 3.22,-2.22 2.88,-1.89 2.55,-1.44 2.22,-0.77 1.89,0","X":"1,-1.66 0.77,-1.66 0.67,-1.77 0.67,-2 0.77,-2.22 1,-2.33 1.22,-2.33 1.44,-2.22 1.55,-2 1.55,-1.66 1.33,-0.67 1.33,-0.33 1.44,-0.11 1.66,0 1.89,0 2.11,-0.11 2.22,-0.33 2.22,-0.56 2.11,-0.67 1.89,-0.67|2.66,-2 2.66,-2.22 2.55,-2.33 2.33,-2.33 2.11,-2.22 1.89,-2 1.66,-1.66 1.22,-0.67 1,-0.33 0.77,-0.11 0.56,0 0.33,0 0.22,-0.11 0.22,-0.33","Y":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.33 0.89,-0.11 1,0 1.22,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-0.89 2.22,-1.55|2.44,-2.33 2.22,-1.55 1.89,-0.44 1.66,0.22 1.44,0.77 1.22,1.22 1,1.33 0.89,1.22 0.89,1 1,0.67 1.22,0.33 1.55,0 1.89,-0.22 2.44,-0.56","Z":"1.55,-1.66 1.44,-1.44 1.33,-1.33 1.11,-1.22 0.89,-1.22 0.77,-1.44 0.77,-1.66 0.89,-2 1.11,-2.22 1.44,-2.33 1.77,-2.33 2,-2.22 2.11,-2 2.11,-1.55 2,-1.22 1.77,-0.77 1.44,-0.44 1,-0.11 0.77,0 0.44,0 0.33,-0.11 0.33,-0.33 0.44,-0.44 0.77,-0.44 1,-0.33 1.11,-0.22 1.22,0 1.22,0.33 1.11,0.67 1,0.89 0.77,1.22 0.56,1.33 0.44,1.22 0.44,1 0.56,0.67 0.77,0.33 1.11,0 1.44,-0.22 2.11,-0.56","[":"0.56,-2.77 0.56,0.77|0.67,-2.77 0.67,0.77|0.56,-2.77 1.33,-2.77|0.56,0.77 1.33,0.77","]":"1.11,-2.77 1.11,0.77|1.22,-2.77 1.22,0.77|0.44,-2.77 1.22,-2.77|0.44,0.77 1.22,0.77","_":"0.11,0.22 1.89,0.22","a":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.33 1.22,-1 1.11,-0.44 1.11,-0.11 1.22,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.56","b":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.77 0.22,-0.11 0.33,0 0.44,0 0.67,-0.11 0.89,-0.33 1,-0.67 1,-1 1.11,-0.56 1.22,-0.44 1.44,-0.44 1.66,-0.56","c":"0.89,-0.77 0.89,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.77,0 1.11,-0.22 1.33,-0.56","d":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.33 1.66,-2.33|1.22,-1 1.11,-0.44 1.11,-0.11 1.22,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.56","e":"0.22,-0.22 0.44,-0.33 0.56,-0.44 0.67,-0.67 0.67,-0.89 0.56,-1 0.44,-1 0.22,-0.89 0.11,-0.67 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22 1.22,-0.56","f":"0.11,-0.56 0.56,-1.11 0.77,-1.44 0.89,-1.66 1,-2 1,-2.22 0.89,-2.33 0.67,-2.22 0.56,-2 0.33,-1.11 0,-0.11 -0.33,0.67 -0.44,1 -0.44,1.22 -0.33,1.33 -0.11,1.22 0,0.89 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.77,-0.22 1,-0.56","g":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22|1.22,-1 1,-0.22 0.56,1 0.44,1.22 0.22,1.33 0.11,1.22 0.11,1 0.22,0.67 0.56,0.33 0.89,0.11 1.11,0 1.44,-0.22 1.77,-0.56","h":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.89 0.11,0|0.11,0 0.22,-0.33 0.33,-0.56 0.56,-0.89 0.77,-1 1,-1 1.11,-0.89 1.11,-0.67 1,-0.33 1,-0.11 1.11,0 1.22,0 1.44,-0.11 1.55,-0.22 1.77,-0.56","i":"0.44,-1.55 0.44,-1.44 0.56,-1.44 0.56,-1.55 0.44,-1.55|0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.33,0 0.56,-0.11 0.67,-0.22 0.89,-0.56","j":"0.44,-1.55 0.44,-1.44 0.56,-1.44 0.56,-1.55 0.44,-1.55|0.11,-0.56 0.33,-1 -0.33,1 -0.44,1.22 -0.67,1.33 -0.77,1.22 -0.77,1 -0.67,0.67 -0.33,0.33 0,0.11 0.22,0 0.56,-0.22 0.89,-0.56","k":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.89 0.11,0|0.11,0 0.22,-0.33 0.33,-0.56 0.56,-0.89 0.77,-1 1,-1 1.11,-0.89 1.11,-0.67 0.89,-0.56 0.56,-0.56|0.56,-0.56 0.77,-0.44 0.89,-0.11 1,0 1.11,0 1.33,-0.11 1.44,-0.22 1.66,-0.56","l":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.77 0.22,-0.11 0.33,0 0.44,0 0.67,-0.11 0.77,-0.22 1,-0.56","m":"0.11,-0.56 0.33,-0.89 0.56,-1 0.67,-0.89 0.67,-0.77 0.56,-0.33 0.44,0|0.56,-0.33 0.67,-0.56 0.89,-0.89 1.11,-1 1.33,-1 1.44,-0.89 1.44,-0.77 1.33,-0.33 1.22,0|1.33,-0.33 1.44,-0.56 1.66,-0.89 1.89,-1 2.11,-1 2.22,-0.89 2.22,-0.67 2.11,-0.33 2.11,-0.11 2.22,0 2.33,0 2.55,-0.11 2.66,-0.22 2.88,-0.56","n":"0.11,-0.56 0.33,-0.89 0.56,-1 0.67,-0.89 0.67,-0.77 0.56,-0.33 0.44,0|0.56,-0.33 0.67,-0.56 0.89,-0.89 1.11,-1 1.33,-1 1.44,-0.89 1.44,-0.67 1.33,-0.33 1.33,-0.11 1.44,0 1.55,0 1.77,-0.11 1.89,-0.22 2.11,-0.56","o":"0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22 1.11,-0.44 1.11,-0.67 1,-0.89 0.77,-1 0.67,-0.89 0.67,-0.67 0.77,-0.44 1,-0.33 1.33,-0.33 1.55,-0.44 1.66,-0.56","p":"0.11,-0.56 0.33,-0.89 0.44,-1.11 0.33,-0.67 -0.33,1.33|0.33,-0.67 0.44,-0.89 0.67,-1 0.89,-1 1.11,-0.89 1.22,-0.67 1.22,-0.44 1.11,-0.22 1,-0.11 0.77,0|0.33,-0.11 0.56,0 0.89,0 1.22,-0.11 1.44,-0.22 1.77,-0.56","q":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11|1.22,-1 1.11,-0.67 0.89,-0.11 0.56,0.67 0.44,1 0.44,1.22 0.56,1.33 0.77,1.22 0.89,0.89 0.89,0.11 1.11,0 1.44,-0.22 1.77,-0.56","r":"0.11,-0.56 0.33,-0.89 0.44,-1.11 0.44,-0.89 0.77,-0.89 0.89,-0.77 0.89,-0.56 0.77,-0.22 0.77,-0.11 0.89,0 1,0 1.22,-0.11 1.33,-0.22 1.55,-0.56","s":"0.11,-0.56 0.33,-0.89 0.44,-1.11 0.44,-0.89 0.67,-0.56 0.77,-0.33 0.77,-0.11 0.56,0|0.11,-0.11 0.33,0 0.77,0 1,-0.11 1.11,-0.22 1.33,-0.56","t":"0.11,-0.56 0.33,-0.89 0.56,-1.33|0.89,-2.33 0.22,-0.33 0.22,-0.11 0.33,0 0.56,0 0.77,-0.11 0.89,-0.22 1.11,-0.56|0.22,-1.44 1,-1.44","u":"0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33 1.11,-0.67|1.22,-1 1,-0.33 1,-0.11 1.11,0 1.22,0 1.44,-0.11 1.55,-0.22 1.77,-0.56","v":"0.11,-0.56 0.33,-1 0.22,-0.44 0.22,-0.11 0.33,0 0.44,0 0.77,-0.11 1,-0.33 1.11,-0.67 1.11,-1|1.11,-1 1.22,-0.56 1.33,-0.44 1.55,-0.44 1.77,-0.56","w":"0.44,-1 0.22,-0.77 0.11,-0.44 0.11,-0.22 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33|1.11,-1 0.89,-0.33 0.89,-0.11 1,0 1.22,0 1.44,-0.11 1.66,-0.33 1.77,-0.67 1.77,-1|1.77,-1 1.89,-0.56 2,-0.44 2.22,-0.44 2.44,-0.56","x":"0.11,-0.56 0.33,-0.89 0.56,-1 0.77,-1 0.89,-0.89 0.89,-0.11 1,0 1.33,0 1.66,-0.22 1.89,-0.56|1.55,-0.89 1.44,-1 1.22,-1 1.11,-0.89 0.67,-0.11 0.56,0 0.33,0 0.22,-0.11","y":"0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33 1.11,-0.67|1.22,-1 0.56,1 0.44,1.22 0.22,1.33 0.11,1.22 0.11,1 0.22,0.67 0.56,0.33 0.89,0.11 1.11,0 1.44,-0.22 1.77,-0.56","z":"0.11,-0.56 0.33,-0.89 0.56,-1 0.77,-1 1,-0.77 1,-0.56 0.89,-0.33 0.67,-0.11 0.33,0 0.56,0.11 0.67,0.33 0.67,0.67 0.56,1 0.44,1.22 0.22,1.33 0.11,1.22 0.11,1 0.22,0.67 0.56,0.33 0.89,0.11 1.33,-0.22 1.66,-0.56","°":"0.87,-2.69 0.76,-2.66 0.7,-2.6 0.63,-2.5 0.6,-2.43 0.57,-2.3 0.57,-2.16 0.6,-2.06 0.63,-2.03 0.7,-2 0.76,-2 0.87,-2.03 0.93,-2.1 1,-2.2 1.03,-2.26 1.06,-2.39 1.06,-2.53 1.03,-2.63 1,-2.66 0.93,-2.69 0.87,-2.69 0.8,-2.63 0.8,-2.53 0.83,-2.43 0.9,-2.33 0.96,-2.26 1.06,-2.2 1.13,-2.16","Ä":"0.11,0 0.33,-0.11 0.67,-0.44 1,-0.89 1.44,-1.66 1.77,-2.33 1.77,0 1.66,-0.33 1.44,-0.67 1.22,-0.89 0.89,-1.11 0.67,-1.11 0.56,-1 0.56,-0.77 0.67,-0.56 0.89,-0.33 1.22,-0.11 1.55,0 2.11,0|1.33,-3.22 1.23,-3.11 1.33,-2.99 1.45,-3.11 1.33,-3.22|2.21,-3.22 2.1,-3.11 2.21,-2.99 2.32,-3.11 2.21,-3.22","Ö":"1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.44 0.44,-1 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-0.89 2.11,-1.33 2.11,-1.77 2,-2.11 1.89,-2.22 1.66,-2.33 1.44,-2.33 1.22,-2.11 1.22,-1.77 1.33,-1.44 1.55,-1.11 1.77,-0.89 2.11,-0.67 2.33,-0.56|1.4,-3.22 1.29,-3.11 1.4,-2.99 1.51,-3.11 1.4,-3.22|2.26,-3.22 2.15,-3.11 2.26,-2.99 2.37,-3.11 2.26,-3.22","Ü":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.33 0.89,-0.11 1.11,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.67 2.22,-1.55 2.44,-2.33|2.22,-1.55 2.11,-1.11 2,-0.44 2,-0.11 2.11,0 2.22,0 2.44,-0.11 2.55,-0.22 2.77,-0.56|1.53,-3.22 1.42,-3.11 1.53,-2.99 1.64,-3.11 1.53,-3.22|2.46,-3.22 2.35,-3.11 2.46,-2.99 2.57,-3.11 2.46,-3.22","ä":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.33 1.22,-1 1.11,-0.44 1.11,-0.11 1.22,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.56|0.58,-2 0.47,-1.89 0.58,-1.77 0.69,-1.89 0.58,-2|1.42,-2 1.31,-1.89 1.42,-1.77 1.53,-1.89 1.42,-2","ö":"0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22 1.11,-0.44 1.11,-0.67 1,-0.89 0.77,-1 0.67,-0.89 0.67,-0.67 0.77,-0.44 1,-0.33 1.33,-0.33 1.55,-0.44 1.66,-0.56|0.43,-2 0.31,-1.89 0.43,-1.77 0.54,-1.89 0.43,-2|1.35,-2 1.24,-1.89 1.35,-1.77 1.46,-1.89 1.35,-2","ü":"0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33 1.11,-0.67|1.22,-1 1,-0.33 1,-0.11 1.11,0 1.22,0 1.44,-0.11 1.55,-0.22 1.77,-0.56|0.5,-2 0.39,-1.89 0.5,-1.77 0.62,-1.89 0.5,-2|1.38,-2 1.27,-1.89 1.38,-1.77 1.49,-1.89 1.38,-2","“":"0.75,-2.99 0.65,-2.8 0.6,-2.6 0.6,-2.5 0.65,-2.39 0.7,-2.5 0.65,-2.6|1.25,-2.99 1.15,-2.8 1.1,-2.6 1.1,-2.5 1.15,-2.39 1.2,-2.5 1.15,-2.6","€":"2.33,-1.77 2.22,-2 2,-2.22 1.77,-2.33 1.33,-2.33 1.11,-2.22 0.89,-2 0.77,-1.77 0.67,-1.44 0.67,-0.89 0.77,-0.56 0.89,-0.33 1.11,-0.11 1.33,0 1.77,0 2,-0.11 2.22,-0.33 2.33,-0.56|0.5,-0.83 1.5,-0.83|0.5,-1.17 1.5,-1.17","ß":"0.82,-0.46 2.11,-0.22 2.22,-0.44 2.22,-0.77 2.11,-1 2,-1.11 1.66,-1.22 2,-1.33 2.22,-1.44 2.33,-1.55 2.44,-1.77 2.44,-2 2.33,-2.22 2.11,-2.33 1.77,-2.33"};
+const GROUPS = [
+  { key: "lower", name: "Kleinbuchstaben", one: "Kleinbuchstabe", chars: "abcdefghijklmnopqrstuvwxyz" },
+  { key: "upper", name: "Großbuchstaben", one: "Großbuchstabe", chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
+  { key: "umlaut", name: "Umlaute und ß", one: "Umlaut", chars: "äöüÄÖÜß" },
+  { key: "digit", name: "Ziffern", one: "Ziffer", chars: "0123456789" },
+  { key: "punct", name: "Satzzeichen", one: "Satzzeichen", chars: ".,;:!?-'\"„“()" },
+  { key: "sym", name: "Sonderzeichen", one: "Sonderzeichen", chars: "&@/€%+=*#§°$[]_<>" },
+];
+const BASE = GROUPS.flatMap(g => Array.from(g.chars));
+const BASE_SET = new Set(BASE);
+const UMLAUT = { "ä": "a", "ö": "o", "ü": "u", "Ä": "A", "Ö": "O", "Ü": "U" };
+const SUBST = { "„": "\"", "“": "\"", "”": "\"", "‚": ",", "‘": "'", "’": "'", "–": "-", "—": "-", "«": "\"", "»": "\"", "´": "'", "`": "'" };
+const PAPERS = {
+  liniert:    { name: "Liniert",     u: 2.5, first: 28, pitch: 8,  left: [14, 30], right: 197 },
+  kariert:    { name: "Kariert",     u: 3.0, first: 25, pitch: 10, left: [15, 30], right: 200 },
+  punktiert:  { name: "Punktiert",   u: 3.0, first: 25, pitch: 10, left: [15, 30], right: 200 },
+  blanko:     { name: "Blanko",      u: 2.7, first: 26, pitch: 9,  left: [18, 30], right: 192 },
+  vierlinien: { name: "Schreiblern", u: 3.2, first: 32, pitch: 16, left: [16, 30], right: 196 },
+};
+const INKS = [
+  { id: "blau", name: "Königsblau", c: "#1f3cbd" },
+  { id: "schwarz", name: "Schwarz", c: "#1b1c24" },
+  { id: "blei", name: "Bleistift", c: "#55565e" },
+  { id: "rot", name: "Rot", c: "#b8322a" },
+  { id: "gruen", name: "Grün", c: "#1d7347" },
+];
+const SAMPLE = "Liebe Oma,\n\nvielen Dank für das Paket! Die Kekse waren nach zwei Tagen weg, und der Schal hält wunderbar warm. Nächste Woche schreiben wir eine Mathearbeit (Brüche, 3/4 + 1/8 = 7/8), drück mir die Daumen.\n\nViele Grüße und bis bald\ndein Jonas";
+const K = { glyphs: "schriftprobe.glyphs.v1", set: "schriftprobe.settings.v1", text: "schriftprobe.text.v1", tab: "schriftprobe.tab.v1", pen: "schriftprobe.pen.v1" };
+
+const store = {
+  get(k) { try { const v = localStorage.getItem(k); return v == null ? null : JSON.parse(v); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+
+/* ---------- encoding ---------- */
+const r3 = n => Math.round(n * 1000) / 1000;
+const r2 = n => Math.round(n * 100) / 100;
+function encVariant(v) { return v.map(s => s.map(p => r3(p[0]) + "," + r3(p[1]) + "," + r2(p[2])).join(" ")).join("|"); }
+function decVariant(str) {
+  if (!str) return [];
+  return str.split("|").map(s => s.split(" ").filter(Boolean).map(t => { const a = t.split(",").map(Number); return [a[0], a[1], a.length > 2 ? a[2] : 0.5]; })).filter(s => s.length);
+}
+function encGlyph(g) { return g.v.map(encVariant).join("#"); }
+function decGlyph(d) { return String(d || "").split("#").map(decVariant).filter(v => v.length); }
+
+const DEMO = {};
+for (const [c, d] of Object.entries(DEMO_RAW)) { const v = decVariant(d); if (v.length) DEMO[c] = [v]; }
+
+/* ---------- state ---------- */
+let glyphs = {};
+(function loadLocal() {
+  const o = store.get(K.glyphs) || {};
+  for (const [c, x] of Object.entries(o)) { const v = decGlyph(x.d); if (v.length) glyphs[c] = { v, t: x.t || 0 }; }
+})();
+function saveLocal() {
+  const o = {};
+  for (const [c, g] of Object.entries(glyphs)) o[c] = { d: encGlyph(g), t: g.t };
+  store.set(K.glyphs, o);
+}
+let customChars = [];
+function allChars() {
+  const extra = Object.keys(glyphs).filter(c => !BASE_SET.has(c));
+  for (const c of customChars) if (!BASE_SET.has(c) && !extra.includes(c)) extra.push(c);
+  return BASE.concat(extra);
+}
+function groupOf(c) {
+  for (const g of GROUPS) if (g.chars.includes(c)) return g;
+  return { key: "custom", name: "Eigene Zeichen", one: "Eigenes Zeichen", chars: "" };
+}
+
+const $ = id => document.getElementById(id);
+let toastTimer;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2800); }
+
+/* ---------- geometry helpers ---------- */
+const bbCache = new WeakMap();
+function bbox(v) {
+  let b = bbCache.get(v); if (b) return b;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const s of v) for (const p of s) { if (p[0] < minX) minX = p[0]; if (p[0] > maxX) maxX = p[0]; if (p[1] < minY) minY = p[1]; if (p[1] > maxY) maxY = p[1]; }
+  if (!isFinite(minX)) { minX = maxX = minY = maxY = 0; }
+  b = { minX, maxX, minY, maxY }; bbCache.set(v, b); return b;
+}
+const dotCache = new WeakMap();
+function withDots(v) {
+  let r = dotCache.get(v); if (r) return r;
+  const b = bbox(v), w = b.maxX - b.minX, cx = (b.minX + b.maxX) / 2, dx = Math.max(0.14, w * 0.2), y = b.minY - 0.32;
+  const dot = x => [[x - 0.012, y, 0.6], [x + 0.012, y + 0.008, 0.6]];
+  r = v.concat([dot(cx - dx), dot(cx + dx)]); dotCache.set(v, r); return r;
+}
+function strokePath(ctx, pts, base) {
+  const wOf = p => base * (0.55 + 0.9 * Math.min(1, Math.max(0, p[2])));
+  if (pts.length === 1) { const p = pts[0]; ctx.beginPath(); ctx.arc(p[0], p[1], wOf(p) / 2, 0, Math.PI * 2); ctx.fill(); return; }
+  let sx = pts[0][0], sy = pts[0][1];
+  for (let i = 1; i < pts.length; i++) {
+    const p = pts[i], last = i === pts.length - 1;
+    const ex = last ? p[0] : (p[0] + pts[i + 1][0]) / 2, ey = last ? p[1] : (p[1] + pts[i + 1][1]) / 2;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(p[0], p[1], ex, ey);
+    ctx.lineWidth = wOf(p); ctx.stroke(); sx = ex; sy = ey;
+  }
+}
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rngAt = (seed, i) => mulberry32((seed ^ Math.imul(i + 1, 2654435761)) >>> 0);
+
+/* ============================================================
+   STEP 1: drawing pad
+   ============================================================ */
+const PAD = { W: 3.4, Y0: -2.55, Y1: 1.45, s: 100, dpr: 1, LW: 0.075 };
+const pad = $("pad"), pctx = pad.getContext("2d");
+let cur = "a", curVar = 0, active = null;
+let penOnly = !!store.get(K.pen), penSeen = false;
+$("opt-pen").checked = penOnly;
+
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+function resizePad() {
+  const box = $("padbox"); const cw = box.clientWidth - 20;
+  const maxH = Math.max(260, Math.min(window.innerHeight * 0.58, 620));
+  const s = Math.max(40, Math.min(cw / PAD.W, maxH / (PAD.Y1 - PAD.Y0)));
+  PAD.s = s; PAD.dpr = window.devicePixelRatio || 1;
+  const w = PAD.W * s, h = (PAD.Y1 - PAD.Y0) * s;
+  pad.style.width = w + "px"; pad.style.height = h + "px";
+  pad.width = Math.round(w * PAD.dpr); pad.height = Math.round(h * PAD.dpr);
+  drawPad();
+}
+function padUnits() { const k = PAD.s * PAD.dpr; pctx.setTransform(k, 0, 0, k, 0, -PAD.Y0 * k); }
+function curVariant() { const g = glyphs[cur]; return g && g.v[curVar] ? g.v[curVar] : []; }
+
+function drawPad() {
+  const k = PAD.s * PAD.dpr;
+  pctx.setTransform(1, 0, 0, 1, 0, 0);
+  pctx.clearRect(0, 0, pad.width, pad.height);
+  padUnits();
+  const guide = cssVar("--pad-guide"), accent = cssVar("--accent");
+  // x-height band
+  pctx.fillStyle = cssVar("--accent-soft"); pctx.fillRect(0, -1, PAD.W, 1);
+  const line = (y, dash, col, w) => { pctx.save(); pctx.strokeStyle = col; pctx.lineWidth = w / PAD.s; pctx.setLineDash(dash.map(d => d / PAD.s)); pctx.beginPath(); pctx.moveTo(0, y); pctx.lineTo(PAD.W, y); pctx.stroke(); pctx.restore(); };
+  line(-2, [6, 6], guide, 1); line(-1, [3, 5], guide, 1); line(0, [], accent, 1.6); line(1, [6, 6], guide, 1);
+  // labels
+  pctx.save(); pctx.setTransform(PAD.dpr, 0, 0, PAD.dpr, 0, 0);
+  pctx.fillStyle = guide; pctx.font = "500 10px " + cssVar("--f-mono"); pctx.textBaseline = "bottom";
+  const lab = (y, t) => pctx.fillText(t, 8, (y - PAD.Y0) * PAD.s - 4);
+  lab(-2, "OBERLINIE"); lab(-1, "MITTELLINIE"); lab(0, "GRUNDLINIE"); lab(1, "UNTERLINIE");
+  pctx.restore();
+  // ghost
+  if ($("opt-ghost").checked) {
+    pctx.save(); pctx.setTransform(PAD.dpr, 0, 0, PAD.dpr, 0, 0);
+    pctx.fillStyle = cssVar("--pad-ghost"); pctx.textAlign = "center"; pctx.textBaseline = "alphabetic";
+    pctx.font = "400 " + Math.round(PAD.s * 2.75) + "px " + cssVar("--f-body");
+    pctx.fillText(cur, PAD.W * PAD.s / 2, (0 - PAD.Y0) * PAD.s);
+    pctx.restore();
+  }
+  // other variants faintly
+  const g = glyphs[cur];
+  pctx.lineCap = "round"; pctx.lineJoin = "round";
+  if (g) {
+    pctx.globalAlpha = 0.16; pctx.strokeStyle = pctx.fillStyle = cssVar("--pad-ink");
+    g.v.forEach((v, i) => { if (i !== curVar) for (const s of v) strokePath(pctx, s, PAD.LW); });
+    pctx.globalAlpha = 1;
+  }
+  pctx.strokeStyle = pctx.fillStyle = cssVar("--pad-ink");
+  for (const s of curVariant()) strokePath(pctx, s, PAD.LW);
+  if (active) strokePath(pctx, active.pts, PAD.LW);
+}
+
+function ptOf(e) {
+  const r = pad.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width * PAD.W;
+  const y = (e.clientY - r.top) / r.height * (PAD.Y1 - PAD.Y0) + PAD.Y0;
+  const p = e.pointerType === "pen" ? (e.pressure > 0 ? e.pressure : 0.5) : 0.5;
+  return [x, y, p];
+}
+function liveSeg(a, b) {
+  padUnits(); pctx.lineCap = "round"; pctx.strokeStyle = cssVar("--pad-ink");
+  pctx.lineWidth = PAD.LW * (0.55 + 0.9 * b[2]);
+  pctx.beginPath(); pctx.moveTo(a[0], a[1]); pctx.lineTo(b[0], b[1]); pctx.stroke();
+}
+pad.addEventListener("pointerdown", e => {
+  if (e.pointerType === "pen" && !penSeen) {
+    penSeen = true;
+    if (!penOnly && store.get(K.pen) == null) { penOnly = true; $("opt-pen").checked = true; store.set(K.pen, true); toast("Apple Pencil erkannt. Finger zeichnen jetzt nicht mehr mit."); }
+  }
+  if (penOnly && e.pointerType !== "pen") return;
+  if (e.button > 0) return;
+  e.preventDefault();
+  try { pad.setPointerCapture(e.pointerId); } catch (err) {}
+  active = { id: e.pointerId, pts: [ptOf(e)] };
+  padUnits(); pctx.fillStyle = cssVar("--pad-ink"); strokePath(pctx, active.pts, PAD.LW);
+});
+pad.addEventListener("pointermove", e => {
+  if (!active || e.pointerId !== active.id) return;
+  e.preventDefault();
+  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+  for (const ev of (evs.length ? evs : [e])) {
+    const p = ptOf(ev), last = active.pts[active.pts.length - 1];
+    if (Math.hypot(p[0] - last[0], p[1] - last[1]) < 0.006) continue;
+    active.pts.push(p); liveSeg(last, p);
+  }
+});
+function endStroke(e) {
+  if (!active || e.pointerId !== active.id) return;
+  const pts = active.pts.map(p => [r3(p[0]), r3(p[1]), r2(p[2])]); active = null;
+  let g = glyphs[cur]; if (!g) g = glyphs[cur] = { v: [], t: 0 };
+  if (curVar > g.v.length) curVar = g.v.length;
+  if (!g.v[curVar]) g.v[curVar] = [];
+  g.v[curVar].push(pts); g.t = Date.now();
+  persist(cur); drawPad(); renderVariants();
+}
+pad.addEventListener("pointerup", endStroke);
+pad.addEventListener("pointercancel", endStroke);
+pad.addEventListener("touchstart", e => { if (e.target === pad) e.preventDefault(); }, { passive: false });
+pad.addEventListener("contextmenu", e => e.preventDefault());
+
+function persist(c) {
+  const g = glyphs[c];
+  if (g) { g.v = g.v.filter(v => v.length); if (!g.v.length) delete glyphs[c]; }
+  saveLocal(); queueWrite(c); updateTile(c); updateProgress(); updateHeader(); writeDirty();
+}
+
+function selectChar(c, v) {
+  cur = c; const g = glyphs[c]; curVar = v != null ? v : 0;
+  if (g && curVar > g.v.length) curVar = g.v.length;
+  document.querySelectorAll(".tile.cur").forEach(t => t.classList.remove("cur"));
+  const t = tileEls.get(c); if (t) { t.classList.add("cur"); }
+  updateHeader(); renderVariants(); drawPad();
+}
+function updateHeader() {
+  const g = groupOf(cur), list = g.key === "custom" ? allChars().filter(c => !BASE_SET.has(c)) : Array.from(g.chars);
+  $("cur-big").textContent = cur;
+  $("cur-name").textContent = g.one + " " + cur;
+  const n = glyphs[cur] ? glyphs[cur].v.length : 0;
+  $("cur-pos").textContent = (list.indexOf(cur) + 1) + " von " + list.length + " · " + (n ? n + (n === 1 ? " Variante" : " Varianten") : "noch nicht gezeichnet");
+}
+function renderVariants() {
+  const box = $("variants"); box.textContent = "";
+  const g = glyphs[cur], n = g ? g.v.length : 0;
+  const lab = document.createElement("span"); lab.className = "lbl"; lab.textContent = "Variante"; box.appendChild(lab);
+  const count = Math.max(n, curVar + 1);
+  for (let i = 0; i < count; i++) {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = String(i + 1);
+    b.setAttribute("aria-pressed", String(i === curVar)); b.setAttribute("aria-label", "Variante " + (i + 1));
+    b.onclick = () => { curVar = i; renderVariants(); drawPad(); };
+    box.appendChild(b);
+  }
+  if (count < 3 && n === count) {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = "+ neue";
+    b.onclick = () => { curVar = n; renderVariants(); drawPad(); };
+    box.appendChild(b);
+  }
+}
+$("undo").onclick = () => {
+  const g = glyphs[cur]; if (!g || !g.v[curVar] || !g.v[curVar].length) return;
+  g.v[curVar].pop(); g.t = Date.now(); persist(cur); drawPad(); renderVariants(); updateHeader();
+};
+$("clear").onclick = () => {
+  const g = glyphs[cur]; if (!g || !g.v[curVar]) return;
+  g.v[curVar] = []; g.t = Date.now(); persist(cur);
+  const n = glyphs[cur] ? glyphs[cur].v.length : 0; if (curVar > n) curVar = n;
+  drawPad(); renderVariants(); updateHeader();
+};
+function step(d) { const list = allChars(); let i = list.indexOf(cur); i = (i + d + list.length) % list.length; selectChar(list[i]); const t = tileEls.get(list[i]); if (t && window.innerWidth > 980) t.scrollIntoView({ block: "nearest" }); }
+$("next").onclick = () => step(1);
+$("prev").onclick = () => step(-1);
+$("opt-ghost").onchange = drawPad;
+$("opt-pen").onchange = e => { penOnly = e.target.checked; store.set(K.pen, penOnly); };
+document.addEventListener("keydown", e => {
+  if ($("view-draw").hidden) return;
+  const tag = (e.target.tagName || "").toLowerCase(); if (tag === "input" || tag === "textarea" || tag === "select") return;
+  if (e.key === "ArrowRight") { step(1); e.preventDefault(); }
+  else if (e.key === "ArrowLeft") { step(-1); e.preventDefault(); }
+  else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") { $("undo").click(); e.preventDefault(); }
+});
+
+/* ---------- character drawer ---------- */
+const tileEls = new Map();
+function drawTile(c) {
+  const t = tileEls.get(c); if (!t) return;
+  const g = glyphs[c];
+  t.classList.toggle("done", !!g);
+  t.textContent = "";
+  if (!g) { t.textContent = c; t.setAttribute("aria-label", c + ", noch offen"); return; }
+  t.setAttribute("aria-label", c + ", gezeichnet");
+  const cv = document.createElement("canvas"); const S = 44, dpr = window.devicePixelRatio || 1;
+  cv.width = S * dpr; cv.height = S * dpr; t.appendChild(cv);
+  const x = cv.getContext("2d"); const v = g.v[0], b = bbox(v);
+  const k = Math.min(S / 3.6, (S * 0.84) / Math.max(0.3, b.maxX - b.minX)) * dpr;
+  x.setTransform(k, 0, 0, k, (S * dpr - (b.maxX - b.minX) * k) / 2 - b.minX * k, S * dpr * 0.66);
+  x.strokeStyle = x.fillStyle = cssVar("--pad-ink"); x.lineCap = "round";
+  for (const s of v) strokePath(x, s, 0.13);
+  if (g.v.length > 1) { const vc = document.createElement("span"); vc.className = "vc"; vc.textContent = "×" + g.v.length; t.appendChild(vc); }
+}
+function updateTile(c) { if (!tileEls.has(c)) { buildGroups(); return; } drawTile(c); }
+function buildGroups() {
+  const box = $("groups"); box.textContent = ""; tileEls.clear();
+  const extra = allChars().filter(c => !BASE_SET.has(c));
+  const groups = GROUPS.map(g => ({ ...g, list: Array.from(g.chars) }));
+  groups.push({ key: "custom", name: "Eigene Zeichen", list: extra });
+  for (const g of groups) {
+    const sec = document.createElement("section"); sec.className = "group";
+    const done = g.list.filter(c => glyphs[c]).length;
+    const h = document.createElement("h3"); h.innerHTML = "<span></span><span></span>";
+    h.children[0].textContent = g.name; h.children[1].textContent = g.list.length ? done + "/" + g.list.length : "";
+    sec.appendChild(h);
+    const tiles = document.createElement("div"); tiles.className = "tiles";
+    for (const c of g.list) {
+      const b = document.createElement("button"); b.className = "tile"; b.type = "button";
+      b.onclick = () => { selectChar(c); if (window.innerWidth <= 980) $("padbox").scrollIntoView({ behavior: "smooth", block: "center" }); };
+      tiles.appendChild(b); tileEls.set(c, b); drawTile(c);
+    }
+    sec.appendChild(tiles);
+    if (g.key === "custom") {
+      const add = document.createElement("div"); add.className = "addchar";
+      add.innerHTML = '<input id="addchar" maxlength="2" aria-label="Zeichen hinzufügen" placeholder="é"><button class="btn quiet" type="button" id="addchar-btn">Zeichen hinzufügen</button>';
+      sec.appendChild(add);
+      if (!g.list.length) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "Für alles, was oben fehlt, etwa é, ñ, ♥ oder ✓."; sec.insertBefore(p, add); }
+    }
+    box.appendChild(sec);
+  }
+  const t = tileEls.get(cur); if (t) t.classList.add("cur");
+  $("addchar-btn").onclick = () => {
+    const c = Array.from($("addchar").value.trim())[0]; if (!c) return;
+    if (!BASE_SET.has(c) && !customChars.includes(c)) customChars.push(c);
+    buildGroups(); selectChar(c); updateProgress();
+  };
+}
+function updateProgress() {
+  const list = allChars(), done = list.filter(c => glyphs[c]).length;
+  $("prog-txt").textContent = done + " / " + list.length;
+  $("prog-fill").style.width = (list.length ? done / list.length * 100 : 0) + "%";
+  document.querySelectorAll(".group").forEach((sec, i) => {
+    const g = i < GROUPS.length ? Array.from(GROUPS[i].chars) : list.filter(c => !BASE_SET.has(c));
+    const sp = sec.querySelector("h3 span:last-child"); if (sp) sp.textContent = g.length ? g.filter(c => glyphs[c]).length + "/" + g.length : "";
+  });
+}
+
+/* ---------- cloud sync (per-person, private) ---------- */
+let dbCol = null;
+function setStatus(s) {
+  const el = $("status"); el.dataset.s = s;
+  $("status-txt").textContent = s === "synced" ? "Deine Zeichen sind in deinem Claude-Konto gespeichert und auf allen Geräten verfügbar."
+    : s === "connecting" ? "Verbinde mit deinem Konto …"
+    : "Deine Zeichen liegen nur in diesem Browser. Speichere ab und zu eine Sicherung.";
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const docId = c => "g" + Array.from(c).map(x => x.codePointAt(0).toString(16)).join("-");
+const pending = new Set(); let flushTimer = null, writing = false;
+function queueWrite(c) { if (!dbCol) return; pending.add(c); clearTimeout(flushTimer); flushTimer = setTimeout(flush, 800); }
+async function flush() {
+  if (writing || !dbCol) return; writing = true;
+  try {
+    while (pending.size && dbCol) {
+      const c = pending.values().next().value; pending.delete(c);
+      const g = glyphs[c], ref = dbCol.doc(docId(c));
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          if (g && g.v.length) await ref.set({ c, d: encGlyph(g), t: g.t }); else await ref.delete();
+          break;
+        } catch (e) {
+          const code = e && e.code;
+          if ((code === "unavailable" || code === "resource_exhausted") && attempt === 0) { await sleep(1500 + Math.random() * 1500); continue; }
+          if (code === "unavailable" || code === "resource_exhausted") { pending.add(c); await sleep(5000); break; }
+          dbCol = null; pending.clear(); setStatus("local"); break;
+        }
+      }
+    }
+  } finally { writing = false; }
+}
+async function initCloud() {
+  const C = window.claude;
+  if (!C || typeof C.use !== "function") { setStatus("local"); return; }
+  setStatus("connecting");
+  try {
+    const [db, user] = await Promise.all([C.use("db"), C.use("user")]);
+    const uid = user ? await user.id() : null;
+    if (!db || !uid) { setStatus("local"); return; }
+    const col = db.collection("data/users/" + uid);
+    const snap = await Promise.race([col.limit(1000).get(), sleep(10000).then(() => { throw { code: "timeout" }; })]);
+    const remote = {};
+    for (const d of snap.docs) { if (!d.exists) continue; const b = d.data() || {}; if (typeof b.c === "string") remote[b.c] = { d: String(b.d || ""), t: Number(b.t) || 0 }; }
+    let changed = false;
+    for (const [c, r] of Object.entries(remote)) {
+      const l = glyphs[c];
+      if (!l || r.t > l.t) { const v = decGlyph(r.d); if (v.length) { glyphs[c] = { v, t: r.t }; changed = true; } }
+    }
+    dbCol = col; setStatus("synced");
+    for (const [c, l] of Object.entries(glyphs)) { const r = remote[c]; if (!r || l.t > r.t) queueWrite(c); }
+    if (changed) { saveLocal(); buildGroups(); updateProgress(); selectChar(cur, curVar); writeDirty(); }
+  } catch (e) { dbCol = null; setStatus("local"); }
+}
+
+/* ---------- backup ---------- */
+let downloads = null;
+async function saveFile(filename, data) {
+  if (!downloads) { const blob = data instanceof Blob ? data : new Blob([data], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); return true; }
+  try { await downloads.save({ filename, data }); return true; }
+  catch (e) {
+    const code = e && e.code;
+    if (code === "declined") return false;
+    if (code === "rate_limited") { toast("Bitte erst den offenen Speichern-Dialog schließen."); return false; }
+    toast("Die Datei konnte nicht gespeichert werden."); return false;
+  }
+}
+$("backup").onclick = async () => {
+  const o = {}; for (const [c, g] of Object.entries(glyphs)) o[c] = { d: encGlyph(g), t: g.t };
+  const json = JSON.stringify({ app: "schriftprobe", version: 1, glyphs: o });
+  if (true) { if (await saveFile("schriftprobe-handschrift.json", json)) toast("Sicherung gespeichert."); return; }
+  try { await navigator.clipboard.writeText(json); toast("Sicherung in die Zwischenablage kopiert."); }
+  catch (e) { toast("Kopieren nicht möglich."); }
+};
+$("restore").onclick = () => $("restore-file").click();
+$("restore-file").onchange = async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    const o = JSON.parse(await f.text()); const src = o.glyphs || o; let n = 0;
+    for (const [c, x] of Object.entries(src)) { const v = decGlyph(x.d); if (v.length) { glyphs[c] = { v, t: Date.now() }; n++; queueWrite(c); } }
+    saveLocal(); buildGroups(); updateProgress(); selectChar(cur); writeDirty();
+    toast(n + " Zeichen geladen.");
+  } catch (err) { toast("Die Datei ist keine Schriftprobe-Sicherung."); }
+  e.target.value = "";
+};
+
+/* ============================================================
+   STEP 2: writing on paper
+   ============================================================ */
+const PX = 6; // pixels per mm (A4 = 1260 × 1782)
+const defaults = { paper: "liniert", ink: "blau", size: 1, weight: 0.45, spacing: 0.16, natural: 0.5, lineStep: 1, margin: true, useDemo: true, seed: 7 };
+const set = Object.assign({}, defaults, store.get(K.set) || {});
+const txt = $("txt");
+txt.value = store.get(K.text) ?? SAMPLE;
+
+function saveSettings() { store.set(K.set, set); }
+function buildControls() {
+  const pb = $("papers");
+  for (const [id, p] of Object.entries(PAPERS)) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "paper"; b.setAttribute("role", "radio"); b.dataset.id = id;
+    b.innerHTML = '<span class="sw ' + id + '"></span><span></span>'; b.children[1].textContent = p.name;
+    b.onclick = () => { set.paper = id; syncControls(); saveSettings(); writeDirty(); };
+    pb.appendChild(b);
+  }
+  const ib = $("inks");
+  for (const k of INKS) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "ink"; b.setAttribute("role", "radio");
+    b.dataset.id = k.id; b.title = k.name; b.setAttribute("aria-label", k.name); b.style.background = k.c;
+    b.onclick = () => { set.ink = k.id; syncControls(); saveSettings(); writeDirty(); };
+    ib.appendChild(b);
+  }
+  const fmt = { size: v => Math.round(v * 100) + " %", weight: v => v.toFixed(2) + " mm", spacing: v => v.toFixed(2), natural: v => Math.round(v * 100) + " %" };
+  for (const id of ["size", "weight", "spacing", "natural"]) {
+    const el = $(id); el.value = set[id];
+    const out = () => { $(id + "-o").textContent = fmt[id](+el.value); };
+    out(); el.oninput = () => { set[id] = +el.value; out(); saveSettings(); writeDirty(); };
+  }
+  $("linestep").value = String(set.lineStep);
+  $("linestep").onchange = e => { set.lineStep = +e.target.value; saveSettings(); writeDirty(); };
+  $("margin").checked = set.margin; $("margin").onchange = e => { set.margin = e.target.checked; saveSettings(); writeDirty(); };
+  $("usedemo").checked = set.useDemo; $("usedemo").onchange = e => { set.useDemo = e.target.checked; saveSettings(); writeDirty(); };
+  $("reroll").onclick = () => { set.seed = (Math.random() * 1e9) | 0; saveSettings(); writeDirty(); };
+  let tt; txt.addEventListener("input", () => { clearTimeout(tt); tt = setTimeout(() => store.set(K.text, txt.value), 400); writeDirty(); });
+  syncControls();
+}
+function syncControls() {
+  document.querySelectorAll(".paper").forEach(b => b.setAttribute("aria-checked", String(b.dataset.id === set.paper)));
+  document.querySelectorAll(".ink").forEach(b => b.setAttribute("aria-checked", String(b.dataset.id === set.ink)));
+}
+
+function drawPaper(ctx, id, spec) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 210 * PX, 297 * PX);
+  ctx.setTransform(PX, 0, 0, PX, 0, 0);
+  const hl = (y, x0, x1, col, w) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); };
+  const vl = (x, y0, y1, col, w) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke(); };
+  if (id === "liniert") {
+    for (let y = 20; y <= 289; y += 8) hl(y, 0, 210, "#a9b8d6", 0.2);
+    if (set.margin) vl(25, 0, 297, "#e08c8c", 0.25);
+  } else if (id === "kariert") {
+    for (let y = 10; y <= 290; y += 5) hl(y, 5, 205, "#b9c4d9", 0.15);
+    for (let x = 5; x <= 205; x += 5) vl(x, 10, 290, "#b9c4d9", 0.15);
+    if (set.margin) vl(25, 10, 290, "#e08c8c", 0.25);
+  } else if (id === "punktiert") {
+    ctx.fillStyle = "#97a3bd";
+    for (let y = 10; y <= 290; y += 5) for (let x = 5; x <= 205; x += 5) { ctx.beginPath(); ctx.arc(x, y, 0.28, 0, Math.PI * 2); ctx.fill(); }
+    if (set.margin) vl(25, 10, 290, "#e08c8c", 0.25);
+  } else if (id === "vierlinien") {
+    const u = spec.u;
+    for (let y = spec.first; y <= 297 - 12 - u; y += spec.pitch) {
+      ctx.fillStyle = "#eef2fb"; ctx.fillRect(8, y - u, 194, u);
+      hl(y - 2 * u, 8, 202, "#c3cbe0", 0.18); hl(y - u, 8, 202, "#c3cbe0", 0.18);
+      hl(y, 8, 202, "#7f8fba", 0.3); hl(y + u, 8, 202, "#c3cbe0", 0.18);
+    }
+    if (set.margin) vl(25, 8, 289, "#e08c8c", 0.25);
+  } else if (set.margin) {
+    vl(25, 0, 297, "#ead0d0", 0.2);
+  }
+}
+
+function pickGlyph(c, rng) {
+  const pickV = list => list[Math.floor(rng() * list.length) % list.length];
+  const g = glyphs[c]; if (g && g.v.length) return { v: pickV(g.v), src: "user" };
+  const ub = UMLAUT[c]; if (ub && glyphs[ub]) return { v: withDots(pickV(glyphs[ub].v)), src: "user" };
+  const sb = SUBST[c]; if (sb && glyphs[sb]) return { v: pickV(glyphs[sb].v), src: "user" };
+  if (set.useDemo) {
+    if (DEMO[c]) return { v: DEMO[c][0], src: "demo" };
+    if (ub && DEMO[ub]) return { v: withDots(DEMO[ub][0]), src: "demo" };
+    if (sb && DEMO[sb]) return { v: DEMO[sb][0], src: "demo" };
+  }
+  return { ch: c, src: "font" };
+}
+
+let pageUrls = [], pageCanvases = [], renderTimer = null, writeVisible = false, needsRender = true;
+function writeDirty() { needsRender = true; if (!writeVisible) return; clearTimeout(renderTimer); renderTimer = setTimeout(renderPages, 180); }
+
+function renderPages() {
+  needsRender = false;
+  const spec = PAPERS[set.paper] || PAPERS.liniert;
+  const u = spec.u * set.size, nat = set.natural, gap = set.spacing;
+  const ink = (INKS.find(i => i.id === set.ink) || INKS[0]).c;
+  const left = spec.left[set.margin ? 1 : 0], right = spec.right;
+  const step = spec.pitch * set.lineStep, yMax = 297 - 12 - u;
+  const widthMm = set.weight;
+  const fontPx = u * 2.6;
+  const missing = new Set(), demoUsed = new Set();
+  const canvases = [];
+  let ctx = null, lineY = 0, x = 0, x0 = 0, slope = 0, lineNo = 0, idx = 0;
+
+  function newPage() {
+    const cv = document.createElement("canvas"); cv.width = 210 * PX; cv.height = 297 * PX;
+    ctx = cv.getContext("2d"); drawPaper(ctx, set.paper, spec); canvases.push(cv);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.strokeStyle = ctx.fillStyle = ink; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    lineY = spec.first; startLine();
+  }
+  function startLine() { const r = rngAt(set.seed, 1e6 + lineNo); slope = (r() - 0.5) * 0.012 * nat; x = left + (r() - 0.5) * 1.6 * nat; x0 = x; }
+  function newLine() { lineNo++; lineY += step; if (lineY > yMax) newPage(); else startLine(); }
+
+  function item(c) {
+    const r = rngAt(set.seed, idx++);
+    const g = pickGlyph(c, r);
+    const sc = 1 + (r() - 0.5) * 0.08 * nat, rot = (r() - 0.5) * 0.07 * nat, dy = (r() - 0.5) * 0.12 * nat, jg = (r() - 0.5) * 0.1 * nat;
+    if (g.src === "font") {
+      ctx.font = "400 " + (fontPx * PX) + "px " + cssVar("--f-body");
+      const w = ctx.measureText(c).width / PX;
+      missing.add(c);
+      return { g, w, adv: w + gap * u, sc: 1, rot: 0, dy: 0 };
+    }
+    if (g.src === "demo") { demoUsed.add(c); missing.add(c); }
+    const b = bbox(g.v), w = Math.max(0.08, b.maxX - b.minX) * sc * u;
+    return { g, w, adv: w + Math.max(0.02, gap + jg) * u, sc, rot, dy, b };
+  }
+  function drawItem(it) {
+    const y = lineY + (x - x0) * slope + it.dy * u;
+    if (it.g.src === "font") {
+      ctx.save(); ctx.globalAlpha = 0.5; ctx.font = "400 " + (fontPx * PX) + "px " + cssVar("--f-body");
+      ctx.textBaseline = "alphabetic"; ctx.fillText(it.g.ch, x * PX, y * PX); ctx.restore();
+    } else {
+      ctx.save(); ctx.translate(x * PX, y * PX); ctx.rotate(it.rot);
+      const k = u * PX * it.sc; ctx.scale(k, k); ctx.translate(-it.b.minX, 0);
+      const base = widthMm / (u * it.sc);
+      for (const s of it.g.v) strokePath(ctx, s, base);
+      ctx.restore();
+    }
+    x += it.adv;
+  }
+
+  newPage();
+  const text = txt.value.replace(/\r\n?/g, "\n").replace(/\t/g, "    ").replace(/ /g, " ").replace(/…/g, "...");
+  const paras = text.split("\n");
+  paras.forEach((p, pi) => {
+    if (pi > 0) newLine();
+    const tokens = p.split(/( +)/).filter(t => t.length);
+    for (const tok of tokens) {
+      if (tok[0] === " ") {
+        const r = rngAt(set.seed, idx++);
+        x += tok.length * (0.72 + gap * 0.6) * u * (1 + (r() - 0.5) * 0.3 * nat);
+        continue;
+      }
+      const items = Array.from(tok).map(item);
+      const ww = items.reduce((s, it) => s + it.adv, 0);
+      if (x + ww > right && x > x0 + 0.5) newLine();
+      if (ww > right - x0) { for (const it of items) { if (x + it.w > right && x > x0 + 0.5) newLine(); drawItem(it); } }
+      else for (const it of items) drawItem(it);
+    }
+  });
+
+  // show
+  pageCanvases = canvases;
+  const sheets = $("sheets");
+  sheets.querySelectorAll(".sheet").forEach(s => s.remove());
+  pageUrls.forEach(u2 => URL.revokeObjectURL(u2)); pageUrls = [];
+  canvases.forEach((cv, i) => {
+    const d = document.createElement("div"); d.className = "sheet";
+    const img = document.createElement("img"); img.alt = "Seite " + (i + 1) + " in deiner Handschrift";
+    const pno = document.createElement("span"); pno.className = "pno"; pno.textContent = "Seite " + (i + 1);
+    d.appendChild(img); d.appendChild(pno); sheets.appendChild(d);
+    cv.toBlob(b => { if (!b) { img.src = cv.toDataURL(); return; } const url = URL.createObjectURL(b); pageUrls.push(url); img.src = url; }, "image/png");
+  });
+  $("sheet-info").textContent = canvases.length + (canvases.length === 1 ? " Seite" : " Seiten") + " · A4";
+  $("sheet-paper").textContent = spec.name + " · " + (INKS.find(i => i.id === set.ink) || INKS[0]).name;
+  renderMissing(missing, demoUsed);
+}
+
+function renderMissing(missing, demoUsed) {
+  const box = $("missing"); box.textContent = "";
+  const own = Object.keys(glyphs).length;
+  if (!missing.size) { box.className = "missing ok"; box.textContent = "Alle Zeichen in diesem Text stammen aus deiner Handschrift."; return; }
+  box.className = "missing";
+  const p = document.createElement("div");
+  p.textContent = own === 0
+    ? "Du hast noch keine Zeichen gezeichnet. Die Vorschau zeigt deshalb die Beispielschrift."
+    : (set.useDemo ? "Diese Zeichen fehlen dir noch und kommen aus der Beispielschrift:" : "Diese Zeichen fehlen dir noch und stehen grau in Druckschrift:");
+  box.appendChild(p);
+  const chars = document.createElement("div"); chars.className = "chars";
+  for (const c of [...missing].slice(0, 60)) {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = c; b.title = "„" + c + "“ jetzt zeichnen";
+    b.onclick = () => { if (!BASE_SET.has(c) && !customChars.includes(c)) { customChars.push(c); buildGroups(); updateProgress(); } showTab("draw"); selectChar(c); };
+    chars.appendChild(b);
+  }
+  box.appendChild(chars);
+}
+
+async function exportPng() {
+  if (!pageCanvases.length) return;
+  for (let i = 0; i < pageCanvases.length; i++) {
+    const blob = await new Promise(r => pageCanvases[i].toBlob(r, "image/png"));
+    const ok = await saveFile(pageCanvases.length > 1 ? "schriftprobe-seite-" + (i + 1) + ".png" : "schriftprobe.png", blob);
+    if (!ok) return;
+  }
+}
+async function exportPdf() {
+  if (!pageCanvases.length) return;
+  const J = window.jspdf && window.jspdf.jsPDF;
+  if (!J) { toast("PDF ist gerade nicht verfügbar. Speichere die Seiten als Bild."); return; }
+  const doc = new J({ unit: "mm", format: "a4", orientation: "portrait" });
+  pageCanvases.forEach((cv, i) => { if (i) doc.addPage(); doc.addImage(cv.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297); });
+  const buf = doc.output("arraybuffer");
+  if (await saveFile("schriftprobe.pdf", new Blob([buf], { type: "application/pdf" }))) toast("PDF gespeichert.");
+}
+$("save-png").onclick = exportPng;
+$("save-pdf").onclick = exportPdf;
+
+/* ---------- tabs ---------- */
+function showTab(t) {
+  const draw = t === "draw";
+  $("view-draw").hidden = !draw; $("view-write").hidden = draw;
+  $("tab-draw").setAttribute("aria-selected", String(draw)); $("tab-write").setAttribute("aria-selected", String(!draw));
+  writeVisible = !draw; store.set(K.tab, t);
+  if (draw) requestAnimationFrame(resizePad);
+  else if (needsRender) renderPages();
+  window.scrollTo(0, 0);
+}
+$("tab-draw").onclick = () => showTab("draw");
+$("tab-write").onclick = () => showTab("write");
+
+/* ---------- boot ---------- */
+buildControls();
+buildGroups();
+updateProgress();
+selectChar("a");
+showTab(store.get(K.tab) === "write" ? "write" : "draw");
+let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (!$("view-draw").hidden) resizePad(); }, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawPad(); writeDirty(); });
+if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { drawPad(); allChars().forEach(drawTile); });
+new MutationObserver(() => { drawPad(); allChars().forEach(drawTile); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+setStatus("local");
+initCloud();
+(async () => {
+  try { downloads = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch (e) { downloads = null; }
+  
+})();
+})();
+</script>
+
+</body>
+</html>
