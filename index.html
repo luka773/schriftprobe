@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Schriftprobe">
-<title>Schriftprobe</title>
+<meta name="apple-mobile-web-app-title" content="MangoUmwandler">
+<title>MangoUmwandler</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -134,13 +134,15 @@ main { padding-block: 20px 40px; }
 .field > label, .field > .lab { font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
 .field output { font-variant-numeric: tabular-nums; color: var(--fg); letter-spacing: 0; text-transform: none; }
 textarea { width: 100%; min-height: 170px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--surface); line-height: 1.5; }
-.papers { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.papers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .paper { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 6px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted); min-width: 0; }
 .paper .sw { width: 100%; aspect-ratio: 210/150; max-width: 100%; border-radius: 4px; background-color: #fff; border: 1px solid #e3e6ef; }
 .paper[aria-checked="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
 .sw.liniert { background-image: linear-gradient(to right, transparent 22%, #e59a9a 22%, #e59a9a 24%, transparent 24%), repeating-linear-gradient(to bottom, transparent 0 7px, #a9b8d6 7px 8px); }
 .sw.kariert { background-image: linear-gradient(#b5c1d8 1px, transparent 1px), linear-gradient(to right, #b5c1d8 1px, transparent 1px); background-size: 5px 5px; }
 .sw.punktiert { background-image: radial-gradient(#8f9bb5 0.8px, transparent 1.1px); background-size: 5px 5px; }
+.sw.cremelin { background-color: #f9f7ea; border-color: #e6e2d2; background-image: repeating-linear-gradient(to bottom, transparent 0 4px, #d9d5c8 4px 5px); }
+.sw.cremekar { background-color: #f9f7ea; border-color: #e6e2d2; background-image: linear-gradient(#dcd9cb 1px, transparent 1px), linear-gradient(to right, #dcd9cb 1px, transparent 1px); background-size: 4px 4px; }
 .sw.vierlinien { background-image: repeating-linear-gradient(to bottom, transparent 0 3px, #c1c9dc 3px 4px, transparent 4px 6px, #dfe6f6 6px 9px, #8b9ac0 9px 10px, transparent 10px 12px, #c1c9dc 12px 13px, transparent 13px 16px); }
 .inks { display: flex; gap: 8px; flex-wrap: wrap; }
 .ink { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line); padding: 0; }
@@ -176,6 +178,7 @@ footer summary { cursor: pointer; }
   .nav { margin-left: 0; width: 100%; }
   .nav .btn { flex: 1; }
   .papers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .paper { font-size: 11px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -184,7 +187,7 @@ footer summary { cursor: pointer; }
 
 <header class="bar">
   <div class="wrap">
-    <h1 class="brand">Schriftprobe <small>deine Handschrift als Schrift</small></h1>
+    <h1 class="brand">MangoUmwandler <small>deine Handschrift als Schrift</small></h1>
     <nav class="steps" role="tablist" aria-label="Arbeitsschritte">
       <button id="tab-draw" role="tab" aria-selected="true" aria-controls="view-draw"><span class="n">1</span>Zeichen zeichnen</button>
       <button id="tab-write" role="tab" aria-selected="false" aria-controls="view-write"><span class="n">2</span>Text schreiben</button>
@@ -311,7 +314,11 @@ const PAPERS = {
   punktiert:  { name: "Punktiert",   u: 3.0, first: 25, pitch: 10, left: [15, 30], right: 200 },
   blanko:     { name: "Blanko",      u: 2.7, first: 26, pitch: 9,  left: [18, 30], right: 192 },
   vierlinien: { name: "Schreiblern", u: 3.2, first: 32, pitch: 16, left: [16, 30], right: 196 },
+  cremelin:   { name: "Creme liniert", w: 215.9, h: 279.4, bg: "#f9f7ea", u: 1.95, first: 23.9, pitch: 6.2, left: [12, 30], right: 204, maxBase: 266 },
+  cremekar:   { name: "Creme kariert", w: 215.9, h: 279.4, bg: "#f9f7ea", u: 2.9, first: 27.9, pitch: 11.3, left: [16.6, 33.55], right: 205, maxBase: 266, marginX: 27.9 },
 };
+for (const k in PAPERS) PAPERS[k] = Object.assign({ w: 210, h: 297, bg: "#ffffff", marginX: 25 }, PAPERS[k]);
+const STANDALONE = true;
 const INKS = [
   { id: "blau", name: "Königsblau", c: "#1f3cbd" },
   { id: "schwarz", name: "Schwarz", c: "#1b1c24" },
@@ -686,7 +693,7 @@ async function initCloud() {
 /* ---------- backup ---------- */
 let downloads = null;
 async function saveFile(filename, data) {
-  if (!downloads) { const blob = data instanceof Blob ? data : new Blob([data], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); return true; }
+  if (!downloads) { $("save-hint").hidden = false; toast("Speichern ist hier nicht verfügbar."); return false; }
   try { await downloads.save({ filename, data }); return true; }
   catch (e) {
     const code = e && e.code;
@@ -695,10 +702,26 @@ async function saveFile(filename, data) {
     toast("Die Datei konnte nicht gespeichert werden."); return false;
   }
 }
+async function deliver(files) {
+  if (!STANDALONE) {
+    for (const f of files) { if (!(await saveFile(f.name, f.blob))) return false; }
+    return true;
+  }
+  try {
+    const fl = files.map(f => new File([f.blob], f.name, { type: f.blob.type || "application/octet-stream" }));
+    if (navigator.canShare && navigator.share && navigator.canShare({ files: fl })) { await navigator.share({ files: fl }); return true; }
+  } catch (e) { if (e && e.name === "AbortError") return false; }
+  for (const f of files) {
+    const url = URL.createObjectURL(f.blob), a = document.createElement("a");
+    a.href = url; a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 8000);
+  }
+  return true;
+}
 $("backup").onclick = async () => {
   const o = {}; for (const [c, g] of Object.entries(glyphs)) o[c] = { d: encGlyph(g), t: g.t };
-  const json = JSON.stringify({ app: "schriftprobe", version: 1, glyphs: o });
-  if (true) { if (await saveFile("schriftprobe-handschrift.json", json)) toast("Sicherung gespeichert."); return; }
+  const json = JSON.stringify({ app: "mangoumwandler", version: 1, glyphs: o });
+  if (downloads || STANDALONE) { if (await deliver([{ name: "mangoumwandler-handschrift.json", blob: new Blob([json], { type: "application/json" }) }])) toast("Sicherung gespeichert."); return; }
   try { await navigator.clipboard.writeText(json); toast("Sicherung in die Zwischenablage kopiert."); }
   catch (e) { toast("Kopieren nicht möglich."); }
 };
@@ -710,7 +733,7 @@ $("restore-file").onchange = async e => {
     for (const [c, x] of Object.entries(src)) { const v = decGlyph(x.d); if (v.length) { glyphs[c] = { v, t: Date.now() }; n++; queueWrite(c); } }
     saveLocal(); buildGroups(); updateProgress(); selectChar(cur); writeDirty();
     toast(n + " Zeichen geladen.");
-  } catch (err) { toast("Die Datei ist keine Schriftprobe-Sicherung."); }
+  } catch (err) { toast("Die Datei ist keine MangoUmwandler-Sicherung."); }
   e.target.value = "";
 };
 
@@ -760,7 +783,8 @@ function syncControls() {
 
 function drawPaper(ctx, id, spec) {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 210 * PX, 297 * PX);
+  const W = spec.w, H = spec.h;
+  ctx.fillStyle = spec.bg; ctx.fillRect(0, 0, W * PX, H * PX);
   ctx.setTransform(PX, 0, 0, PX, 0, 0);
   const hl = (y, x0, x1, col, w) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); };
   const vl = (x, y0, y1, col, w) => { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke(); };
@@ -783,8 +807,15 @@ function drawPaper(ctx, id, spec) {
       hl(y, 8, 202, "#7f8fba", 0.3); hl(y + u, 8, 202, "#c3cbe0", 0.18);
     }
     if (set.margin) vl(25, 8, 289, "#e08c8c", 0.25);
+  } else if (id === "cremelin") {
+    for (let y = 17.7; y <= H - 8; y += 6.2) hl(y, 0, W, "#ddd9cc", 0.2);
+    if (set.margin) vl(spec.marginX, 0, H, "#e3b4ad", 0.22);
+  } else if (id === "cremekar") {
+    for (let y = 5.3; y <= H; y += 5.65) hl(y, 0, W, "#dedbcd", 0.16);
+    for (let x = 5.3; x <= W; x += 5.65) vl(x, 0, H, "#dedbcd", 0.16);
+    if (set.margin) vl(spec.marginX, 0, H, "#e3b4ad", 0.22);
   } else if (set.margin) {
-    vl(25, 0, 297, "#ead0d0", 0.2);
+    vl(25, 0, H, "#ead0d0", 0.2);
   }
 }
 
@@ -801,7 +832,7 @@ function pickGlyph(c, rng) {
   return { ch: c, src: "font" };
 }
 
-let pageUrls = [], pageCanvases = [], renderTimer = null, writeVisible = false, needsRender = true;
+let pageUrls = [], pageCanvases = [], pageBlobs = [], pageSpec = null, renderTimer = null, writeVisible = false, needsRender = true;
 function writeDirty() { needsRender = true; if (!writeVisible) return; clearTimeout(renderTimer); renderTimer = setTimeout(renderPages, 180); }
 
 function renderPages() {
@@ -810,7 +841,7 @@ function renderPages() {
   const u = spec.u * set.size, nat = set.natural, gap = set.spacing;
   const ink = (INKS.find(i => i.id === set.ink) || INKS[0]).c;
   const left = spec.left[set.margin ? 1 : 0], right = spec.right;
-  const step = spec.pitch * set.lineStep, yMax = 297 - 12 - u;
+  const step = spec.pitch * set.lineStep, yMax = spec.maxBase != null ? spec.maxBase : spec.h - 12 - u;
   const widthMm = set.weight;
   const fontPx = u * 2.6;
   const missing = new Set(), demoUsed = new Set();
@@ -818,7 +849,7 @@ function renderPages() {
   let ctx = null, lineY = 0, x = 0, x0 = 0, slope = 0, lineNo = 0, idx = 0;
 
   function newPage() {
-    const cv = document.createElement("canvas"); cv.width = 210 * PX; cv.height = 297 * PX;
+    const cv = document.createElement("canvas"); cv.width = Math.round(spec.w * PX); cv.height = Math.round(spec.h * PX);
     ctx = cv.getContext("2d"); drawPaper(ctx, set.paper, spec); canvases.push(cv);
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.strokeStyle = ctx.fillStyle = ink; ctx.lineCap = "round"; ctx.lineJoin = "round";
     lineY = spec.first; startLine();
@@ -876,18 +907,18 @@ function renderPages() {
   });
 
   // show
-  pageCanvases = canvases;
+  pageCanvases = canvases; pageBlobs = []; pageSpec = spec;
   const sheets = $("sheets");
   sheets.querySelectorAll(".sheet").forEach(s => s.remove());
   pageUrls.forEach(u2 => URL.revokeObjectURL(u2)); pageUrls = [];
   canvases.forEach((cv, i) => {
-    const d = document.createElement("div"); d.className = "sheet";
+    const d = document.createElement("div"); d.className = "sheet"; d.style.aspectRatio = spec.w + " / " + spec.h; d.style.background = spec.bg;
     const img = document.createElement("img"); img.alt = "Seite " + (i + 1) + " in deiner Handschrift";
     const pno = document.createElement("span"); pno.className = "pno"; pno.textContent = "Seite " + (i + 1);
     d.appendChild(img); d.appendChild(pno); sheets.appendChild(d);
-    cv.toBlob(b => { if (!b) { img.src = cv.toDataURL(); return; } const url = URL.createObjectURL(b); pageUrls.push(url); img.src = url; }, "image/png");
+    cv.toBlob(b => { if (!b) { img.src = cv.toDataURL(); return; } if (pageCanvases === canvases) pageBlobs[i] = b; const url = URL.createObjectURL(b); pageUrls.push(url); img.src = url; }, "image/png");
   });
-  $("sheet-info").textContent = canvases.length + (canvases.length === 1 ? " Seite" : " Seiten") + " · A4";
+  $("sheet-info").textContent = canvases.length + (canvases.length === 1 ? " Seite" : " Seiten") + " · " + (spec.w === 210 ? "A4" : "US Letter");
   $("sheet-paper").textContent = spec.name + " · " + (INKS.find(i => i.id === set.ink) || INKS[0]).name;
   renderMissing(missing, demoUsed);
 }
@@ -913,20 +944,22 @@ function renderMissing(missing, demoUsed) {
 
 async function exportPng() {
   if (!pageCanvases.length) return;
+  const files = [];
   for (let i = 0; i < pageCanvases.length; i++) {
-    const blob = await new Promise(r => pageCanvases[i].toBlob(r, "image/png"));
-    const ok = await saveFile(pageCanvases.length > 1 ? "schriftprobe-seite-" + (i + 1) + ".png" : "schriftprobe.png", blob);
-    if (!ok) return;
+    const blob = pageBlobs[i] || await new Promise(r => pageCanvases[i].toBlob(r, "image/png"));
+    files.push({ name: pageCanvases.length > 1 ? "mangoumwandler-seite-" + (i + 1) + ".png" : "mangoumwandler.png", blob });
   }
+  if (await deliver(files)) toast(files.length > 1 ? "Seiten gespeichert." : "Bild gespeichert.");
 }
 async function exportPdf() {
   if (!pageCanvases.length) return;
   const J = window.jspdf && window.jspdf.jsPDF;
   if (!J) { toast("PDF ist gerade nicht verfügbar. Speichere die Seiten als Bild."); return; }
-  const doc = new J({ unit: "mm", format: "a4", orientation: "portrait" });
-  pageCanvases.forEach((cv, i) => { if (i) doc.addPage(); doc.addImage(cv.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, 210, 297); });
-  const buf = doc.output("arraybuffer");
-  if (await saveFile("schriftprobe.pdf", new Blob([buf], { type: "application/pdf" }))) toast("PDF gespeichert.");
+  const sp = pageSpec || PAPERS.liniert;
+  const doc = new J({ unit: "mm", format: [sp.w, sp.h], orientation: "portrait" });
+  pageCanvases.forEach((cv, i) => { if (i) doc.addPage([sp.w, sp.h], "portrait"); doc.addImage(cv.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, sp.w, sp.h); });
+  const blob = doc.output("blob");
+  if (await deliver([{ name: "mangoumwandler.pdf", blob }])) toast("PDF gespeichert.");
 }
 $("save-png").onclick = exportPng;
 $("save-pdf").onclick = exportPdf;
@@ -959,7 +992,7 @@ setStatus("local");
 initCloud();
 (async () => {
   try { downloads = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch (e) { downloads = null; }
-  
+  if (!downloads && !STANDALONE) $("save-hint").hidden = false;
 })();
 })();
 </script>
