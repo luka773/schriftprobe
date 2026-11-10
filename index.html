@@ -6,284 +6,364 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MangoUmwandler">
+<meta name="theme-color" content="#163d2a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 100&quot;%3E %3Cdefs%3E %3ClinearGradient id=&quot;m&quot; x1=&quot;0.15&quot; y1=&quot;0.05&quot; x2=&quot;0.9&quot; y2=&quot;0.95&quot;%3E %3Cstop offset=&quot;0&quot; stop-color=&quot;%23b9d24a&quot;/%3E %3Cstop offset=&quot;.3&quot; stop-color=&quot;%23ffd23f&quot;/%3E %3Cstop offset=&quot;.62&quot; stop-color=&quot;%23ff9a24&quot;/%3E %3Cstop offset=&quot;1&quot; stop-color=&quot;%23e6402c&quot;/%3E %3C/linearGradient%3E %3ClinearGradient id=&quot;l&quot; x1=&quot;0&quot; y1=&quot;1&quot; x2=&quot;1&quot; y2=&quot;0&quot;%3E %3Cstop offset=&quot;0&quot; stop-color=&quot;%232f9b4f&quot;/%3E%3Cstop offset=&quot;1&quot; stop-color=&quot;%2386d86f&quot;/%3E %3C/linearGradient%3E %3C/defs%3E %3Cg transform=&quot;rotate%2838 52 56%29&quot;%3E %3Cpath d=&quot;M52 20c17 0 27 16 27 36 0 21-11 37-27 38-12 1-21-7-21-17 0-8 7-12 7-21 0-10-8-13-8-21 0-9 9-15 22-15z&quot; fill=&quot;url%28%23m%29&quot;/%3E %3Cpath d=&quot;M44 34c1-5 5-8 10-8&quot; fill=&quot;none&quot; stroke=&quot;%23fffbd6&quot; stroke-width=&quot;3.6&quot; stroke-linecap=&quot;round&quot; opacity=&quot;.75&quot;/%3E %3C/g%3E %3Cpath d=&quot;M38 27c-2-3-3-6-2-10&quot; fill=&quot;none&quot; stroke=&quot;%236b4a1f&quot; stroke-width=&quot;3&quot; stroke-linecap=&quot;round&quot;/%3E %3Cpath d=&quot;M37 18c3-10 15-15 26-13-3 11-14 17-26 13z&quot; fill=&quot;url%28%23l%29&quot;/%3E %3Cpath d=&quot;M40 16c6-4 12-7 19-9&quot; fill=&quot;none&quot; stroke=&quot;%231f6b37&quot; stroke-width=&quot;1.3&quot; stroke-linecap=&quot;round&quot; opacity=&quot;.6&quot;/%3E %3C/svg%3E">
 <title>MangoUmwandler</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 body { margin: 0; } [hidden] { display: none !important; } img { max-width: 100%; }
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
-/* Layout: a workbench with two stations, the writing pad (step 1) and the sheet press (step 2), under one sticky bar. */
+/* Layout: a note-taking app shell. A fixed top bar, then each step fills the screen:
+   step 1 = writing pad + character drawer, step 2 = settings sidebar + desk with floating tool palette. */
 :root {
-  --bg: #f3f4f9;
+  --bg: #f2f3f5;
   --surface: #ffffff;
-  --sunken: #e8ebf4;
-  --fg: #1a2140;
-  --muted: #5b6484;
-  --line: #d6dbea;
-  --accent: #2741d6;
-  --accent-soft: rgba(39, 65, 214, 0.09);
-  --on-accent: #ffffff;
-  --signal: #c8432b;
-  --pad-paper: #fdfdff;
-  --pad-guide: #9aa4c6;
-  --pad-ghost: rgba(26, 33, 64, 0.09);
-  --pad-ink: #1b2fa8;
-  --shadow: 0 1px 2px rgba(20, 28, 70, .06), 0 8px 24px rgba(20, 28, 70, .07);
-  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --f-body: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sunken: #e9ebef;
+  --desk: #dfe2e7;
+  --fg: #17191e;
+  --muted: #5f6573;
+  --line: #dde0e6;
+  --mango: #ffa928;
+  --on-mango: #2b1700;
+  --accent: #e07800;
+  --accent-soft: rgba(255, 169, 40, 0.18);
+  --leaf: #23824d;
+  --leaf-soft: rgba(35, 130, 77, 0.12);
+  --signal: #d23f2c;
+  --pad-paper: #ffffff;
+  --pad-guide: #a3a9b6;
+  --pad-ghost: rgba(23, 25, 30, 0.08);
+  --pad-ink: #1d1917;
+  --shadow-s: 0 1px 2px rgba(16, 20, 30, .07);
+  --shadow: 0 1px 2px rgba(16, 20, 30, .06), 0 8px 28px rgba(16, 20, 30, .10);
+  --shadow-l: 0 2px 4px rgba(16, 20, 30, .08), 0 18px 50px rgba(16, 20, 30, .18);
+  --barh: 60px;
+  --f-display: "Unbounded", "Avenir Next", system-ui, sans-serif;
+  --f-body: "Manrope", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #10131d; --surface: #181c2a; --sunken: #0c0f18; --fg: #e5e8f5; --muted: #98a1c0; --line: #2b3149;
-    --accent: #8d9cff; --accent-soft: rgba(141, 156, 255, 0.13); --on-accent: #0e1230; --signal: #ff7c64;
-    --pad-paper: #1d2233; --pad-guide: #5d6789; --pad-ghost: rgba(229, 232, 245, 0.10); --pad-ink: #b9c3ff;
-    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --bg: #111317; --surface: #1a1d23; --sunken: #23272f; --desk: #0b0d10; --fg: #eceef3; --muted: #9ba2b0; --line: #2b3039;
+    --mango: #ffb547; --on-mango: #2b1700; --accent: #ffb547; --accent-soft: rgba(255, 181, 71, 0.16);
+    --leaf: #5fc98a; --leaf-soft: rgba(95, 201, 138, 0.14); --signal: #ff7a63;
+    --pad-paper: #1f232a; --pad-guide: #646c7c; --pad-ghost: rgba(236, 238, 243, 0.08); --pad-ink: #f1eee8;
+    --shadow-s: 0 1px 2px rgba(0,0,0,.4); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.45); --shadow-l: 0 2px 4px rgba(0,0,0,.5), 0 18px 50px rgba(0,0,0,.6);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #10131d; --surface: #181c2a; --sunken: #0c0f18; --fg: #e5e8f5; --muted: #98a1c0; --line: #2b3149;
-  --accent: #8d9cff; --accent-soft: rgba(141, 156, 255, 0.13); --on-accent: #0e1230; --signal: #ff7c64;
-  --pad-paper: #1d2233; --pad-guide: #5d6789; --pad-ghost: rgba(229, 232, 245, 0.10); --pad-ink: #b9c3ff;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  --bg: #111317; --surface: #1a1d23; --sunken: #23272f; --desk: #0b0d10; --fg: #eceef3; --muted: #9ba2b0; --line: #2b3039;
+  --mango: #ffb547; --on-mango: #2b1700; --accent: #ffb547; --accent-soft: rgba(255, 181, 71, 0.16);
+  --leaf: #5fc98a; --leaf-soft: rgba(95, 201, 138, 0.14); --signal: #ff7a63;
+  --pad-paper: #1f232a; --pad-guide: #646c7c; --pad-ghost: rgba(236, 238, 243, 0.08); --pad-ink: #f1eee8;
+  --shadow-s: 0 1px 2px rgba(0,0,0,.4); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.45); --shadow-l: 0 2px 4px rgba(0,0,0,.5), 0 18px 50px rgba(0,0,0,.6);
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-html, body { background: var(--bg); color: var(--fg); }
-body { font: 16px/1.5 var(--f-body); -webkit-text-size-adjust: 100%; }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+html, body { height: 100%; background: var(--bg); color: var(--fg); }
+body { margin: 0; font: 500 15px/1.5 var(--f-body); -webkit-text-size-adjust: 100%; overflow: hidden; }
 button, input, select, textarea { font: inherit; color: inherit; }
-button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+svg { flex: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1320px; margin: 0 auto; }
+/* ---------- app shell ---------- */
+.app { height: 100%; display: grid; grid-template-rows: var(--barh) minmax(0, 1fr); }
+.bar { display: flex; align-items: center; gap: 16px; background: var(--surface); border-bottom: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); min-width: 0; }
+.brand { display: flex; align-items: center; gap: 10px; margin: 0; font: 700 17px/1 var(--f-display); letter-spacing: -0.01em; white-space: nowrap; }
+.brand svg { width: 34px; height: 34px; }
+.brand b { color: var(--accent); font-weight: 700; }
+.steps { display: flex; gap: 2px; background: var(--sunken); padding: 4px; border-radius: 14px; margin: 0 auto; }
+.steps button { border: 0; background: transparent; padding: 0 16px; height: 38px; border-radius: 10px; font-weight: 700; font-size: 14px; color: var(--muted); display: flex; gap: 8px; align-items: center; white-space: nowrap; }
+.steps button .n { font: 500 11px/1 var(--f-mono); width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); color: var(--muted); }
+.steps button[aria-selected="true"] { background: var(--surface); color: var(--fg); box-shadow: var(--shadow-s); }
+.steps button[aria-selected="true"] .n { background: var(--mango); color: var(--on-mango); }
+.progress { display: flex; align-items: center; gap: 10px; font: 500 12px/1 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ring { width: 30px; height: 30px; }
+.ring circle { fill: none; stroke-width: 4; }
+.ring .bg { stroke: var(--sunken); }
+.ring .fg { stroke: var(--mango); stroke-linecap: round; transition: stroke-dashoffset .4s; }
+.views { min-height: 0; position: relative; }
+.view { height: 100%; min-height: 0; }
 
-/* Top bar */
-.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
-.bar .wrap { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding-block: 10px; }
-.brand { font: 800 22px/1 var(--f-display); letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 8px; margin: 0; }
-.brand small { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.steps { display: flex; gap: 4px; background: var(--sunken); padding: 4px; border-radius: 12px; }
-.steps button { border: 0; background: transparent; padding: 8px 14px; border-radius: 9px; font-weight: 700; color: var(--muted); display: flex; gap: 8px; align-items: center; min-height: 40px; }
-.steps button .n { font: 500 12px/1 var(--f-mono); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid currentColor; }
-.steps button[aria-selected="true"] { background: var(--surface); color: var(--fg); box-shadow: var(--shadow); }
-.steps button[aria-selected="true"] .n { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.progress { margin-left: auto; display: flex; align-items: center; gap: 10px; font: 500 13px/1 var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
-.progress .track { width: 120px; height: 6px; border-radius: 3px; background: var(--sunken); overflow: hidden; }
-.progress .fill { height: 100%; background: var(--accent); width: 0; transition: width .3s; }
-
-main { padding-block: 20px 40px; }
-.view[hidden] { display: none !important; }
-
-/* Step 1 */
-.draw { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
-.station { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 16px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.cur { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-.cur .big { font: 800 56px/1 var(--f-display); min-width: 64px; text-align: center; color: var(--accent); }
-.cur .meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.cur .meta strong { font: 600 18px/1.2 var(--f-display); }
-.cur .meta span { color: var(--muted); font-size: 14px; }
-.nav { margin-left: auto; display: flex; gap: 8px; }
-.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 14px; min-height: 44px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+/* ---------- shared controls ---------- */
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 0 14px; min-height: 44px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
 .btn:hover { border-color: var(--muted); }
-.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.btn.primary:hover { filter: brightness(1.08); }
-.btn.quiet { border-color: transparent; background: var(--sunken); }
+.btn svg { width: 18px; height: 18px; }
+.btn.primary { background: var(--mango); border-color: var(--mango); color: var(--on-mango); }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.quiet { background: var(--sunken); border-color: transparent; }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+.btn.danger { color: var(--signal); background: transparent; border-color: transparent; padding: 0; justify-content: flex-start; }
+.btn.danger-solid { background: var(--signal); border-color: var(--signal); color: #fff; }
 .btn:disabled { opacity: .45; cursor: default; }
-.btn svg { width: 18px; height: 18px; flex: none; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0 12px; min-height: 34px; font-weight: 700; font-size: 13px; }
+.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--mango); color: var(--fg); }
+.chip.danger { color: var(--signal); }
+.toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 600; min-height: 40px; cursor: pointer; }
+.toggle input { appearance: none; -webkit-appearance: none; width: 44px; height: 26px; border-radius: 13px; background: var(--sunken); border: 1px solid var(--line); position: relative; flex: none; cursor: pointer; transition: background .2s; margin: 0; }
+.toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow-s); transition: transform .2s; }
+.toggle input:checked { background: var(--leaf); border-color: var(--leaf); }
+.toggle input:checked::after { transform: translateX(18px); }
+.toggle.inline { justify-content: flex-start; color: var(--muted); }
+.hint { color: var(--muted); font-size: 13px; margin: 0; line-height: 1.5; }
+.sec-h { font: 500 10.5px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0; }
+.sec-h output { font: 600 12px/1 var(--f-mono); letter-spacing: 0; text-transform: none; color: var(--fg); font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--mango); height: 28px; margin: 0; }
+select { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; background: var(--surface); min-height: 44px; font-weight: 600; width: 100%; }
+.seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--sunken); border-radius: 12px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; border-radius: 9px; min-height: 36px; font-size: 12.5px; font-weight: 700; color: var(--muted); padding: 0 4px; }
+.seg button[aria-checked="true"] { background: var(--surface); color: var(--fg); box-shadow: var(--shadow-s); }
 
-.padbox { position: relative; display: flex; justify-content: center; background: var(--sunken); border-radius: 12px; padding: 10px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-#pad { display: block; background: var(--pad-paper); border-radius: 8px; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; cursor: crosshair; max-width: 100%; }
-
+/* ---------- step 1: draw ---------- */
+#view-draw { display: grid; grid-template-columns: minmax(0, 1fr) 360px; }
+.studio { overflow: auto; -webkit-overflow-scrolling: touch; padding-block: 20px 32px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: 20px; }
+.studio-in { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.cur { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.cur .big { width: 72px; height: 72px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-s); display: grid; place-items: center; font: 700 40px/1 var(--f-body); }
+.cur .meta { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.cur .meta strong { font: 700 18px/1.2 var(--f-display); letter-spacing: -0.01em; }
+.cur .meta span { color: var(--muted); font-size: 13.5px; font-weight: 600; }
+.nav { margin-left: auto; display: flex; gap: 8px; }
+.padbox { display: flex; justify-content: center; background: var(--desk); border-radius: 20px; padding: 14px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+#pad { display: block; background: var(--pad-paper); border-radius: 12px; box-shadow: var(--shadow); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; cursor: crosshair; max-width: 100%; }
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .tools .spacer { flex: 1; }
 .variants { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.variants .lbl { font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
-.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 12px; min-height: 36px; font-weight: 700; font-size: 14px; }
-.chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); padding: 6px 4px; min-height: 36px; cursor: pointer; }
-.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
-.hint { color: var(--muted); font-size: 14px; margin: 0; max-width: 70ch; }
+.variants .lbl { font: 500 10.5px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.variants .chip { min-width: 34px; }
 
-.drawer { display: flex; flex-direction: column; gap: 18px; }
-.group h3 { font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; display: flex; justify-content: space-between; }
-.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
-.tile { position: relative; aspect-ratio: 1; max-width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 0; display: grid; place-items: center; font: 600 18px/1 var(--f-display); color: var(--muted); overflow: hidden; }
+.drawer-side { background: var(--surface); border-left: 1px solid var(--line); overflow: auto; -webkit-overflow-scrolling: touch; padding-block: 18px 32px; padding-left: 18px; padding-right: max(18px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 22px; }
+.side-sec { display: flex; flex-direction: column; gap: 12px; }
+.side-sec + .side-sec { border-top: 1px solid var(--line); padding-top: 20px; }
+.gchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.gchip { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 38px; padding: 0 10px; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.gchip .cnt { font: 500 10px/1 var(--f-mono); color: var(--muted); }
+.gchip[aria-selected="true"] { background: var(--fg); border-color: var(--fg); color: var(--surface); }
+.gchip[aria-selected="true"] .cnt { color: inherit; opacity: .7; }
+.gchip.full .cnt { color: var(--leaf); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
+.tile { position: relative; aspect-ratio: 1; max-width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); padding: 0; display: grid; place-items: center; font: 600 20px/1 var(--f-body); color: var(--muted); overflow: hidden; }
 .tile canvas { width: 100%; height: 100%; display: block; }
 .tile.done { background: var(--accent-soft); border-color: transparent; }
-.tile.cur { outline: 2px solid var(--accent); outline-offset: 1px; }
-.tile .vc { position: absolute; right: 3px; top: 2px; font: 500 9px/1 var(--f-mono); color: var(--accent); }
-.addchar { display: flex; gap: 6px; margin-top: 8px; }
-.addchar input { width: 64px; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--surface); text-align: center; font-size: 18px; min-height: 40px; }
-
-.store { border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
-.status { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--muted); }
-.status .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); margin-top: 6px; flex: none; }
-.status[data-s="synced"] .dot { background: #2f9e62; }
-.status[data-s="connecting"] .dot { background: #d2a12a; }
+.tile.cur { outline: 2.5px solid var(--mango); outline-offset: 1px; }
+.tile .vc { position: absolute; right: 4px; top: 3px; font: 500 9px/1 var(--f-mono); color: var(--accent); }
+.addchar { display: flex; gap: 6px; }
+.addchar input { width: 64px; border: 1px solid var(--line); border-radius: 12px; padding: 0 8px; background: var(--surface); text-align: center; font-size: 18px; min-height: 44px; }
+.status { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.45; }
+.status .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); margin-top: 5px; flex: none; }
+.status[data-s="synced"] .dot { background: var(--leaf); }
+.status[data-s="connecting"] .dot { background: var(--mango); }
 .status[data-s="local"] .dot { background: var(--signal); }
-.btn.danger { color: var(--signal); border-color: transparent; background: transparent; padding-left: 0; padding-right: 0; justify-content: flex-start; }
-.btn.danger-solid { background: var(--signal); border-color: var(--signal); color: #fff; }
-.confirm { border: 1px solid var(--signal); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
-.confirm p { margin: 0; }
-[hidden] { display: none !important; }
-
-/* access gate */
-body.locked .bar, body.locked main, body.locked footer { display: none !important; }
-.gate { min-height: 100vh; display: grid; place-items: center; padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.gate form { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; }
-.gate h2 { font: 800 30px/1.05 var(--f-display); letter-spacing: -0.02em; margin: 0; }
-.gate p { margin: 0; color: var(--muted); }
-.gate label { font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.gate input { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 18px; background: var(--bg); min-height: 50px; }
-.gate .err { color: var(--signal); font-weight: 700; font-size: 14px; min-height: 1.5em; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.row > .btn { flex: 1; }
+.confirm { border: 1px solid var(--signal); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 13.5px; }
+.confirm p { margin: 0; }
 
-/* Step 2 */
-.write { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; align-items: start; }
-.panel { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); max-height: calc(100vh - 100px); overflow: auto; }
-.field { display: flex; flex-direction: column; gap: 8px; }
-.field > label, .field > .lab { font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
-.field output { font-variant-numeric: tabular-nums; color: var(--fg); letter-spacing: 0; text-transform: none; }
-textarea { width: 100%; min-height: 170px; resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--surface); line-height: 1.5; }
-.papers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.paper { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 6px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--muted); min-width: 0; }
-.paper .sw { width: 100%; aspect-ratio: 210/150; max-width: 100%; border-radius: 4px; background-color: #fff; border: 1px solid #e3e6ef; }
-.paper[aria-checked="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
-.sw.liniert { background-image: linear-gradient(to right, transparent 22%, #e59a9a 22%, #e59a9a 24%, transparent 24%), repeating-linear-gradient(to bottom, transparent 0 7px, #a9b8d6 7px 8px); }
+/* ---------- step 2: write ---------- */
+#view-write { display: grid; grid-template-columns: 340px minmax(0, 1fr); }
+.side { background: var(--surface); border-right: 1px solid var(--line); overflow: auto; -webkit-overflow-scrolling: touch; padding-block: 18px 40px; padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: 18px; display: flex; flex-direction: column; gap: 22px; }
+.side-head { display: none; align-items: center; justify-content: space-between; }
+.side-head h2 { font: 700 16px/1 var(--f-display); margin: 0; }
+.iconbtn { width: 44px; height: 44px; border-radius: 12px; border: 0; background: var(--sunken); display: grid; place-items: center; }
+.iconbtn svg { width: 20px; height: 20px; }
+textarea { width: 100%; min-height: 160px; resize: vertical; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: var(--bg); line-height: 1.55; font-weight: 500; }
+textarea:focus { background: var(--surface); }
+.missing { border-radius: 14px; padding: 12px; background: var(--accent-soft); font-size: 13px; font-weight: 600; display: flex; flex-direction: column; gap: 8px; }
+.missing .chars { display: flex; flex-wrap: wrap; gap: 4px; }
+.missing .chars button { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; min-width: 32px; min-height: 32px; font: 700 15px/1 var(--f-body); }
+.missing.ok { background: var(--leaf-soft); color: var(--leaf); }
+.papers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.paper { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 6px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--muted); min-width: 0; text-align: center; line-height: 1.2; }
+.paper .sw { width: 100%; aspect-ratio: 3 / 4; max-width: 100%; border-radius: 4px; background-color: #fff; border: 1px solid #e3e6ef; }
+.paper[aria-checked="true"] { border-color: var(--mango); color: var(--fg); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--mango); }
+.sw.liniert { background-image: linear-gradient(to right, transparent 22%, #e59a9a 22%, #e59a9a 25%, transparent 25%), repeating-linear-gradient(to bottom, transparent 0 6px, #a9b8d6 6px 7px); }
 .sw.kariert { background-image: linear-gradient(#b5c1d8 1px, transparent 1px), linear-gradient(to right, #b5c1d8 1px, transparent 1px); background-size: 5px 5px; }
 .sw.punktiert { background-image: radial-gradient(#8f9bb5 0.8px, transparent 1.1px); background-size: 5px 5px; }
 .sw.cremelin { background-color: #f9f7ea; border-color: #e6e2d2; background-image: repeating-linear-gradient(to bottom, transparent 0 4px, #d9d5c8 4px 5px); }
 .sw.cremekar { background-color: #f9f7ea; border-color: #e6e2d2; background-image: linear-gradient(#dcd9cb 1px, transparent 1px), linear-gradient(to right, #dcd9cb 1px, transparent 1px); background-size: 4px 4px; }
 .sw.vierlinien { background-image: repeating-linear-gradient(to bottom, transparent 0 3px, #c1c9dc 3px 4px, transparent 4px 6px, #dfe6f6 6px 9px, #8b9ac0 9px 10px, transparent 10px 12px, #c1c9dc 12px 13px, transparent 13px 16px); }
-.inks { display: flex; gap: 8px; flex-wrap: wrap; }
+.inks { display: flex; gap: 10px; flex-wrap: wrap; }
 .ink { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line); padding: 0; }
-.ink[aria-checked="true"] { box-shadow: 0 0 0 2px var(--accent); }
-input[type="range"] { width: 100%; accent-color: var(--accent); height: 28px; }
-select { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; background: var(--surface); min-height: 40px; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.missing { border-radius: 10px; padding: 10px 12px; background: var(--accent-soft); font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
-.missing .chars { display: flex; flex-wrap: wrap; gap: 4px; }
-.missing .chars button { border: 1px solid var(--line); background: var(--surface); border-radius: 6px; min-width: 32px; min-height: 32px; font: 600 15px/1 var(--f-display); }
-.missing.ok { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
+.ink[aria-checked="true"] { box-shadow: 0 0 0 2.5px var(--mango); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 
-.sheets { display: flex; flex-direction: column; gap: 22px; align-items: center; min-width: 0; }
-.sheetmeta { align-self: stretch; display: flex; justify-content: space-between; color: var(--muted); font: 500 12px/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; }
-.sheet { width: 100%; max-width: 760px; aspect-ratio: 210/297; background: #fff; box-shadow: 0 1px 1px rgba(20,28,70,.08), 0 14px 40px rgba(20,28,70,.14); border-radius: 2px; position: relative; }
-.sheet canvas.paper-cv { width: 100%; height: 100%; display: block; border-radius: 2px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.canvas { position: relative; overflow: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; background: var(--desk); }
+.palette { position: sticky; top: 12px; z-index: 8; margin: 12px auto 0; width: max-content; max-width: calc(100% - 24px); display: flex; align-items: center; gap: 4px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.tool { border: 0; background: transparent; border-radius: 12px; min-height: 48px; min-width: 52px; padding: 4px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.tool svg { width: 22px; height: 22px; }
+.tool:hover { background: var(--sunken); color: var(--fg); }
+.tool[aria-pressed="true"], .tool[aria-expanded="true"] { background: var(--accent-soft); color: var(--fg); box-shadow: inset 0 0 0 1.5px var(--mango); }
+.tool.primary { background: var(--mango); color: var(--on-mango); }
+.tool.primary:hover { filter: brightness(1.05); }
+.psep { width: 1px; align-self: stretch; margin: 6px 4px; background: var(--line); }
+.only-narrow { display: none !important; }
+.pop-wrap { position: relative; }
+.pop { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); z-index: 9; width: 320px; max-width: calc(100vw - 32px); background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-l); padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.pop.right { left: auto; right: 0; transform: none; width: 280px; }
+.tpl-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tpl-card { border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: var(--fg); min-width: 0; line-height: 1.2; text-align: center; }
+.tpl-card svg { width: 44px; height: 32px; stroke: var(--fg); fill: none; stroke-width: 1.6; stroke-linecap: round; }
+.tpl-card:hover { border-color: var(--mango); }
+.mine-list { display: flex; flex-direction: column; gap: 6px; }
+.mine { display: flex; align-items: stretch; }
+.mine .btn { flex: 1; justify-content: flex-start; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.mine-del { border: 1px solid var(--line); border-left: 0; background: var(--surface); color: var(--muted); border-radius: 0 12px 12px 0; padding: 0 12px; min-height: 44px; font-weight: 700; font-size: 13px; }
+.mine-del.arm { background: var(--signal); color: #fff; border-color: var(--signal); }
+.menu-item { border: 0; background: transparent; border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; gap: 12px; text-align: left; width: 100%; font-weight: 700; font-size: 14px; }
+.menu-item:hover { background: var(--sunken); }
+.menu-item svg { width: 22px; height: 22px; color: var(--accent); }
+.menu-item small { display: block; font-weight: 500; font-size: 12px; color: var(--muted); }
+.sheets { display: flex; flex-direction: column; gap: 34px; align-items: center; padding-block: 22px 120px; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(48px, calc(env(safe-area-inset-right, 0px) + 40px)); min-width: 0; }
+.sheetmeta { width: 100%; max-width: 820px; display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; margin-bottom: -18px; }
+.sheet { width: 100%; max-width: 820px; aspect-ratio: 210/297; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.08), 0 16px 44px rgba(10,14,25,.18); border-radius: 3px; position: relative; }
+.sheet canvas.paper-cv { width: 100%; height: 100%; display: block; border-radius: 3px; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.sheet .pno { position: absolute; bottom: -22px; right: 2px; font: 500 11px/1 var(--f-mono); color: var(--muted); }
 .sheet .lasso-svg, .sheet .catcher, .sheet .objs { position: absolute; inset: 0; }
 .sheet .lasso-svg { width: 100%; height: 100%; pointer-events: none; overflow: visible; }
-.lasso-path { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 0.5; stroke-dasharray: 1.5 1.2; vector-effect: non-scaling-stroke; }
-.sheet .catcher { display: none; touch-action: none; cursor: crosshair; -webkit-user-select: none; user-select: none; }
+.lasso-path { fill: var(--accent-soft); stroke: #e07800; stroke-width: 0.5; stroke-dasharray: 1.5 1.2; vector-effect: non-scaling-stroke; }
+.sheet .catcher { display: none; touch-action: none; -webkit-user-select: none; user-select: none; }
 .sheets.editing .catcher { display: block; }
 .sheets[data-mode="pen"] .catcher { cursor: crosshair; }
 .sheets[data-mode="erase"] .catcher { cursor: cell; }
+.sheets[data-mode="lasso"] .catcher { cursor: crosshair; }
 .sheets.editing .obj:not(.sel) { pointer-events: none; }
-.edmine { display: contents; }
-.mine { display: inline-flex; align-items: stretch; }
-.mine .btn { border-top-right-radius: 0; border-bottom-right-radius: 0; border-color: var(--accent); color: var(--accent); }
-.mine-del { border: 1px solid var(--accent); border-left: 0; background: var(--surface); color: var(--muted); border-radius: 0 10px 10px 0; padding: 0 10px; min-height: 40px; font-weight: 700; font-size: 14px; }
-.mine-del.arm { background: var(--signal); color: #fff; border-color: var(--signal); }
-.selbox .tbar { position: absolute; left: 0; bottom: calc(100% + 8px); display: flex; gap: 4px; }
-.selbox .tbar .chip { min-height: 32px; padding: 4px 10px; font-size: 13px; white-space: nowrap; box-shadow: var(--shadow); background: var(--surface); }
-.chip.danger { color: var(--signal); }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .sheet .objs { pointer-events: none; }
-.obj { position: absolute; pointer-events: auto; touch-action: none; cursor: move; border-radius: 3px; min-width: 20px; min-height: 20px; -webkit-user-select: none; user-select: none; }
-.obj.sel { outline: 1.5px dashed var(--accent); outline-offset: 3px; }
-.obj .rs { position: absolute; right: -16px; bottom: -16px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: var(--shadow); cursor: nwse-resize; touch-action: none; }
-.obj .del { position: absolute; right: -16px; top: -16px; width: 30px; height: 30px; border-radius: 50%; background: var(--signal); color: #fff; border: 3px solid #fff; font-weight: 700; font-size: 16px; line-height: 1; padding: 0; box-shadow: var(--shadow); }
-.obj .tbar { position: absolute; left: 0; bottom: calc(100% + 8px); display: flex; gap: 4px; flex-wrap: nowrap; }
-.obj .tbar .chip { min-height: 32px; padding: 4px 10px; font-size: 13px; white-space: nowrap; box-shadow: var(--shadow); }
-.selbox { position: absolute; pointer-events: auto; touch-action: none; cursor: move; outline: 1.5px dashed var(--accent); outline-offset: 0; background: rgba(39, 65, 214, 0.07); border-radius: 3px; }
-.edbar { align-self: stretch; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 66px); z-index: 4; background: var(--bg); padding-block: 8px; }
-.edbar .btn { min-height: 40px; padding: 6px 12px; font-size: 14px; }
-.edbar .btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-.edsep { width: 1px; height: 24px; background: var(--line); }
-#view-write .sheets { padding-right: 34px; }
-.rail { position: fixed; z-index: 6; right: max(6px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 84px); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 26px; border-radius: 13px; background: var(--sunken); border: 1px solid var(--line); touch-action: none; cursor: pointer; }
-.rail .thumb { position: absolute; left: 3px; right: 3px; top: 0; min-height: 44px; border-radius: 10px; background: var(--accent); opacity: .85; }
-.rail.drag .thumb { opacity: 1; }
-.sheet .pno { position: absolute; bottom: -20px; right: 0; font: 500 11px/1 var(--f-mono); color: var(--muted); }
+.obj { position: absolute; pointer-events: auto; touch-action: none; cursor: move; border-radius: 4px; min-width: 20px; min-height: 20px; -webkit-user-select: none; user-select: none; }
+.obj.sel { outline: 2px dashed #e07800; outline-offset: 3px; }
+.obj .rs { position: absolute; right: -17px; bottom: -17px; width: 32px; height: 32px; border-radius: 50%; background: #ffa928; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.25); cursor: nwse-resize; touch-action: none; }
+.obj .del { position: absolute; right: -17px; top: -17px; width: 32px; height: 32px; border-radius: 50%; background: #d23f2c; color: #fff; border: 3px solid #fff; font-weight: 800; font-size: 16px; line-height: 1; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.obj .tbar, .selbox .tbar { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% + 12px); display: flex; gap: 4px; padding: 4px; background: #17191e; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+.obj .tbar .chip, .selbox .tbar .chip { background: transparent; border: 0; color: #fff; min-height: 36px; padding: 0 12px; font-size: 13px; white-space: nowrap; border-radius: 10px; }
+.obj .tbar .chip:hover, .selbox .tbar .chip:hover { background: rgba(255,255,255,.12); }
+.selbox .tbar .chip.danger { color: #ff9d8c; }
+.selbox { position: absolute; pointer-events: auto; touch-action: none; cursor: move; outline: 2px dashed #e07800; background: rgba(255, 169, 40, 0.10); border-radius: 4px; }
+.rail { position: fixed; z-index: 7; right: max(8px, env(safe-area-inset-right, 0px)); top: calc(var(--barh) + env(safe-area-inset-top, 0px) + 14px); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 24px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-s); touch-action: none; cursor: pointer; }
+.rail .thumb { position: absolute; left: 3px; right: 3px; top: 0; min-height: 44px; border-radius: 9px; background: var(--mango); }
+.side-scrim { position: fixed; inset: 0; z-index: 20; background: rgba(10, 12, 16, .35); }
 
-footer { color: var(--muted); font-size: 13px; padding-block: 0 32px; }
-footer details { max-width: 80ch; }
-footer summary { cursor: pointer; }
+/* ---------- gate ---------- */
+.gate { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 0%, var(--accent-soft), transparent 60%), var(--bg); padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); overflow: auto; }
+.gate form { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow-l); padding: 30px 26px 26px; display: flex; flex-direction: column; gap: 14px; }
+.gate .logo { width: 64px; height: 64px; }
+.gate h2 { font: 700 26px/1.1 var(--f-display); letter-spacing: -0.02em; margin: 0; }
+.gate p { margin: 0; color: var(--muted); }
+.gate input { border: 1px solid var(--line); border-radius: 14px; padding: 0 16px; font-size: 18px; font-weight: 600; background: var(--bg); min-height: 54px; }
+.gate .btn { min-height: 52px; font-size: 16px; }
+.gate .err { color: var(--signal); font-weight: 700; font-size: 14px; min-height: 1.4em; }
+body.locked .app { display: none; }
 
-.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 700; z-index: 20; max-width: calc(100% - 32px); box-shadow: var(--shadow); }
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-size: 14px; font-weight: 700; z-index: 60; max-width: calc(100% - 32px); box-shadow: var(--shadow-l); text-align: center; }
+.credits { font-size: 12px; color: var(--muted); }
+.credits summary { cursor: pointer; font-weight: 600; }
 
-@media (max-width: 980px) {
-  .draw, .write { grid-template-columns: minmax(0, 1fr); }
-  .panel { position: static; max-height: none; }
-  .edbar { position: static; }
+/* ---------- narrow screens: iPad portrait and phones ---------- */
+@media (max-width: 1080px) {
+  #view-write { grid-template-columns: minmax(0, 1fr); }
+  .side { position: fixed; z-index: 21; top: 0; bottom: 0; left: 0; width: min(380px, 92vw); box-shadow: var(--shadow-l); transform: translateX(-105%); transition: transform .25s ease; padding-top: calc(18px + env(safe-area-inset-top, 0px)); }
+  .side.open { transform: none; }
+  .side-head { display: flex; }
+  .only-narrow { display: flex !important; }
 }
-@media (max-width: 560px) {
-  .progress .track { display: none; }
-  .brand small { display: none; }
-  .cur .big { font-size: 44px; }
+@media (max-width: 900px) {
+  #view-draw { display: block; overflow: auto; -webkit-overflow-scrolling: touch; }
+  .studio { overflow: visible; }
+  .drawer-side { border-left: 0; border-top: 1px solid var(--line); overflow: visible; }
+}
+@media (max-width: 640px) {
+  :root { --barh: 104px; }
+  .bar { flex-wrap: wrap; align-content: center; gap: 8px 12px; padding-block: 8px; }
+  .steps { order: 3; width: 100%; margin: 0; }
+  .steps button { flex: 1; justify-content: center; }
+  .progress { margin-left: auto; }
+  .tool { min-width: 44px; padding: 4px 6px; }
+  .tool span { display: none; }
+  .cur .big { width: 60px; height: 60px; font-size: 32px; }
   .nav { margin-left: 0; width: 100%; }
   .nav .btn { flex: 1; }
-  .papers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .paper { font-size: 11px; }
+  .sheets { padding-right: 44px; padding-left: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="mg-m" x1="0.15" y1="0.05" x2="0.9" y2="0.95"><stop offset="0" stop-color="#b9d24a"/><stop offset=".3" stop-color="#ffd23f"/><stop offset=".62" stop-color="#ff9a24"/><stop offset="1" stop-color="#e6402c"/></linearGradient>
+    <linearGradient id="mg-l" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#2f9b4f"/><stop offset="1" stop-color="#86d86f"/></linearGradient>
+    <symbol id="mango" viewBox="0 0 100 100">
+      <g transform="rotate(38 52 56)"><path d="M52 20c17 0 27 16 27 36 0 21-11 37-27 38-12 1-21-7-21-17 0-8 7-12 7-21 0-10-8-13-8-21 0-9 9-15 22-15z" fill="url(#mg-m)"/><path d="M44 34c1-5 5-8 10-8" fill="none" stroke="#fffbd6" stroke-width="3.6" stroke-linecap="round" opacity=".75"/></g>
+      <path d="M38 27c-2-3-3-6-2-10" fill="none" stroke="#6b4a1f" stroke-width="3" stroke-linecap="round"/>
+      <path d="M37 18c3-10 15-15 26-13-3 11-14 17-26 13z" fill="url(#mg-l)"/>
+    </symbol>
+  </defs>
+</svg>
+
 <div class="gate" id="gate" hidden>
   <form id="gate-form" autocomplete="off">
+    <svg class="logo" aria-hidden="true"><use href="#mango"/></svg>
     <h2>MangoUmwandler</h2>
     <p>Gib deinen Nutzer-Key ein. Danach kannst du die Seite auf diesem Gerät immer benutzen.</p>
-    <label for="gate-key">Nutzer-Key</label>
+    <label class="sec-h" for="gate-key">Nutzer-Key</label>
     <input id="gate-key" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Codewort">
     <button class="btn primary" type="submit" id="gate-go">Freischalten</button>
     <div class="err" id="gate-err" role="alert"></div>
   </form>
 </div>
 
-<header class="bar">
-  <div class="wrap">
-    <h1 class="brand">MangoUmwandler <small>deine Handschrift als Schrift</small></h1>
+<div class="app">
+  <header class="bar">
+    <h1 class="brand"><svg aria-hidden="true"><use href="#mango"/></svg><span>Mango<b>Umwandler</b></span></h1>
     <nav class="steps" role="tablist" aria-label="Arbeitsschritte">
       <button id="tab-draw" role="tab" aria-selected="true" aria-controls="view-draw"><span class="n">1</span>Zeichen zeichnen</button>
       <button id="tab-write" role="tab" aria-selected="false" aria-controls="view-write"><span class="n">2</span>Text schreiben</button>
     </nav>
-    <div class="progress" title="Gezeichnete Zeichen"><span id="prog-txt">0 / 0</span><div class="track"><div class="fill" id="prog-fill"></div></div></div>
-  </div>
-</header>
+    <div class="progress" title="Gezeichnete Zeichen">
+      <span id="prog-txt">0 / 0</span>
+      <svg class="ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="bg" cx="15" cy="15" r="12"/><circle class="fg" id="prog-fill" cx="15" cy="15" r="12" transform="rotate(-90 15 15)" stroke-dasharray="75.4" stroke-dashoffset="75.4"/></svg>
+    </div>
+  </header>
 
-<main class="wrap">
-  <!-- STEP 1 -->
-  <section id="view-draw" class="view" role="tabpanel" aria-labelledby="tab-draw">
-    <div class="draw">
-      <div class="station">
-        <div class="cur">
-          <div class="big" id="cur-big">a</div>
-          <div class="meta"><strong id="cur-name">Kleinbuchstabe a</strong><span id="cur-pos">1 von 26 · noch nicht gezeichnet</span></div>
-          <div class="nav">
-            <button class="btn" id="prev" aria-label="Vorheriges Zeichen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Zurück</button>
-            <button class="btn primary" id="next">Weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+  <main class="views">
+    <!-- STEP 1 -->
+    <section id="view-draw" class="view" role="tabpanel" aria-labelledby="tab-draw">
+      <div class="studio">
+        <div class="studio-in">
+          <div class="cur">
+            <div class="big" id="cur-big">a</div>
+            <div class="meta"><strong id="cur-name">Kleinbuchstabe a</strong><span id="cur-pos">1 von 26</span></div>
+            <div class="nav">
+              <button class="btn" id="prev" aria-label="Vorheriges Zeichen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Zurück</button>
+              <button class="btn primary" id="next">Weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+            </div>
           </div>
+          <div class="padbox" id="padbox"><canvas id="pad" aria-label="Zeichenfläche"></canvas></div>
+          <div class="tools">
+            <button class="btn quiet" id="undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>Rückgängig</button>
+            <button class="btn quiet" id="clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Leeren</button>
+            <div class="variants" id="variants"></div>
+            <span class="spacer"></span>
+            <label class="toggle inline"><input type="checkbox" id="opt-ghost" checked>Vorlage</label>
+            <label class="toggle inline"><input type="checkbox" id="opt-pen">Nur Apple Pencil</label>
+          </div>
+          <p class="hint">Kleine Buchstaben zwischen Grundlinie und Mittellinie, große bis zur Oberlinie, g, j, p, q und y nach unten. Mit bis zu drei Varianten pro Zeichen wirkt der Text lebendiger.</p>
         </div>
-        <div class="padbox" id="padbox"><canvas id="pad" aria-label="Zeichenfläche"></canvas></div>
-        <div class="tools">
-          <button class="btn quiet" id="undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>Rückgängig</button>
-          <button class="btn quiet" id="clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Leeren</button>
-          <div class="variants" id="variants"></div>
-          <span class="spacer"></span>
-          <label class="toggle"><input type="checkbox" id="opt-ghost" checked>Vorlage</label>
-          <label class="toggle"><input type="checkbox" id="opt-pen">Nur Apple Pencil</label>
-        </div>
-        <p class="hint">Schreib das Zeichen so, wie du es sonst auch schreibst: kleine Buchstaben zwischen Grundlinie und Mittellinie, Großbuchstaben bis zur Oberlinie, g, j, p, q und y nach unten. Mit bis zu drei Varianten pro Zeichen wirkt der Text später lebendiger.</p>
       </div>
 
-      <aside class="station drawer" aria-label="Zeichensatz">
-        <div id="groups" class="drawer"></div>
-        <div class="store">
+      <aside class="drawer-side" aria-label="Zeichensatz">
+        <div class="side-sec"><h2 class="sec-h">Zeichensatz</h2><div id="groups" class="side-sec"></div></div>
+        <div class="side-sec">
+          <h2 class="sec-h">Speichern</h2>
           <div class="status" id="status" data-s="local"><span class="dot"></span><span id="status-txt">Wird geladen …</span></div>
           <div class="row">
             <button class="btn quiet" id="backup">Sicherung speichern</button>
@@ -296,79 +376,102 @@ footer summary { cursor: pointer; }
             <div class="row"><button class="btn quiet" id="wipe-no" type="button">Abbrechen</button><button class="btn danger-solid" id="wipe-yes" type="button">Ja, alles löschen</button></div>
           </div>
         </div>
+        <details class="credits">
+          <summary>Über die Beispielschrift</summary>
+          <p>Solange du ein Zeichen noch nicht gezeichnet hast, kann die Vorschau es aus der Hershey Script ergänzen. The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the U. S. National Bureau of Standards. The format of the Font data in this distribution was originally created by James Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821. SVG-Fassung von Windell H. Oskay (Evil Mad Scientist), verteilt im Paket hersheytext (MIT).</p>
+        </details>
       </aside>
-    </div>
-  </section>
+    </section>
 
-  <!-- STEP 2 -->
-  <section id="view-write" class="view" role="tabpanel" aria-labelledby="tab-write" hidden>
-    <div class="write">
-      <div class="station panel">
-        <div class="field">
-          <label for="txt">Dein Text</label>
+    <!-- STEP 2 -->
+    <section id="view-write" class="view" role="tabpanel" aria-labelledby="tab-write" hidden>
+      <aside class="side" id="side" aria-label="Blatt einrichten">
+        <div class="side-head"><h2>Blatt einrichten</h2><button class="iconbtn" id="side-close" aria-label="Einstellungen schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+        <div class="side-sec">
+          <label class="sec-h" for="txt">Dein Text</label>
           <textarea id="txt" spellcheck="false"></textarea>
+          <div id="missing" class="missing"></div>
         </div>
-        <div id="missing" class="missing"></div>
-        <div class="field">
-          <span class="lab">Papier</span>
+        <div class="side-sec">
+          <span class="sec-h">Papier</span>
           <div class="papers" role="radiogroup" aria-label="Papier" id="papers"></div>
         </div>
-        <div class="field">
-          <span class="lab">Tinte</span>
+        <div class="side-sec">
+          <span class="sec-h">Tinte</span>
           <div class="inks" role="radiogroup" aria-label="Tinte" id="inks"></div>
         </div>
-        <div class="grid2">
-          <div class="field"><label for="size">Größe <output id="size-o"></output></label><input type="range" id="size" min="0.6" max="1.6" step="0.05"></div>
-          <div class="field"><label for="weight">Strich <output id="weight-o"></output></label><input type="range" id="weight" min="0.2" max="1.0" step="0.05"></div>
-          <div class="field"><label for="spacing">Abstand <output id="spacing-o"></output></label><input type="range" id="spacing" min="0" max="0.6" step="0.02"></div>
-          <div class="field"><label for="natural">Natürlich <output id="natural-o"></output></label><input type="range" id="natural" min="0" max="1" step="0.05"></div>
+        <div class="side-sec">
+          <span class="sec-h">Schrift</span>
+          <div class="grid2">
+            <div class="field"><label class="sec-h" for="size">Größe <output id="size-o"></output></label><input type="range" id="size" min="0.6" max="1.6" step="0.05"></div>
+            <div class="field"><label class="sec-h" for="weight">Strich <output id="weight-o"></output></label><input type="range" id="weight" min="0.2" max="1.0" step="0.05"></div>
+            <div class="field"><label class="sec-h" for="spacing">Abstand <output id="spacing-o"></output></label><input type="range" id="spacing" min="0" max="0.6" step="0.02"></div>
+            <div class="field"><label class="sec-h" for="natural">Natürlich <output id="natural-o"></output></label><input type="range" id="natural" min="0" max="1" step="0.05"></div>
+          </div>
+          <button class="btn quiet" id="reroll" title="Andere zufällige Abweichungen, Varianten und Fehler">Neu mischen</button>
         </div>
-        <div class="grid2">
-          <div class="field"><label for="linestep">Zeilen</label>
-            <select id="linestep"><option value="1">jede Zeile</option><option value="2">jede zweite</option></select></div>
-          <div class="field"><span class="lab">Optionen</span>
-            <label class="toggle"><input type="checkbox" id="margin">Rand links</label></div>
+        <div class="side-sec">
+          <span class="sec-h">Rechtschreibfehler</span>
+          <div class="seg" id="errors" role="radiogroup" aria-label="Rechtschreibfehler">
+            <button type="button" role="radio" data-err="0">keine</button>
+            <button type="button" role="radio" data-err="1">ein paar</button>
+            <button type="button" role="radio" data-err="2">einige</button>
+            <button type="button" role="radio" data-err="3">viele</button>
+          </div>
         </div>
-        <div class="field"><label for="errors">Rechtschreibfehler</label>
-          <select id="errors"><option value="0">keine</option><option value="1">ein paar</option><option value="2">einige</option><option value="3">viele</option></select></div>
-        <label class="toggle"><input type="checkbox" id="usedemo">Fehlende Zeichen aus der Beispielschrift ergänzen</label>
-        <div class="row">
-          <button class="btn quiet" id="reroll" title="Andere zufällige Abweichungen und Varianten">Neu mischen</button>
-          <span style="flex:1"></span>
-          <button class="btn" id="save-png">Als Bild</button>
-          <button class="btn" id="save-trans" title="Nur die Schrift auf durchsichtigem Hintergrund, zum Einfügen in Notiz-Apps">Nur Schrift</button>
-          <button class="btn primary" id="save-pdf">Als PDF</button>
+        <div class="side-sec">
+          <span class="sec-h">Blatt</span>
+          <div class="field"><label class="sec-h" for="linestep">Zeilen</label>
+            <select id="linestep"><option value="1">Auf jeder Zeile schreiben</option><option value="2">Jede zweite Zeile</option></select></div>
+          <label class="toggle"><span>Rand links</span><input type="checkbox" id="margin"></label>
+          <label class="toggle"><span>Fehlende Zeichen aus Beispielschrift</span><input type="checkbox" id="usedemo"></label>
+          <button class="btn quiet" id="ed-reset" title="Verschobenen oder gelöschten Text zurückholen">Text zurücksetzen</button>
         </div>
-        <p class="hint" id="save-hint" hidden>Speichern ist in dieser Ansicht nicht verfügbar. Halte eine Seite gedrückt und wähle „Zu Fotos hinzufügen“.</p>
-      </div>
-      <div class="sheets" id="sheets">
-        <div class="sheetmeta"><span id="sheet-info">A4</span><span id="sheet-paper"></span></div>
-        <div class="edbar" role="toolbar" aria-label="Blatt bearbeiten">
-          <button class="btn" id="ed-pen" aria-pressed="false" title="Mit dem Stift auf das Blatt schreiben"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 7l3 3"/></svg>Stift</button>
-          <button class="btn" id="ed-erase" aria-pressed="false" title="Selbst Geschriebenes wegradieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20h12"/><path d="M5 15l9-9 5 5-8 8H8l-3-3z"/></svg>Radierer</button>
-          <button class="btn" id="ed-lasso" aria-pressed="false" title="Text umkreisen und verschieben"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3"><ellipse cx="12" cy="10" rx="8" ry="6"/><path d="M8 15c-2 2-2 4 0 5" stroke-dasharray="none"/></svg>Lasso</button>
-          <button class="btn quiet" id="ed-undo" title="Letzten Strich rückgängig machen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><span class="sr">Rückgängig</span></button>
-          <span class="edsep"></span>
-          <button class="btn" data-tpl="table">+ Tabelle</button>
-          <button class="btn" data-tpl="coord">+ Koordinatensystem</button>
-          <button class="btn" data-tpl="numline">+ Zahlenstrahl</button>
-          <button class="btn" data-tpl="box">+ Kasten</button>
-          <button class="btn" data-tpl="circle">+ Kreis</button>
-          <span id="ed-mine" class="edmine" hidden></span>
-          <span class="edsep"></span>
-          <button class="btn quiet" id="ed-reset" title="Verschobenen Text an seinen Platz zurücksetzen">Text zurücksetzen</button>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
+      </aside>
+      <div class="side-scrim" id="side-scrim" hidden></div>
 
-<footer class="wrap">
-  <details>
-    <summary>Über die Beispielschrift</summary>
-    <p>Solange du ein Zeichen noch nicht gezeichnet hast, kann die Vorschau es aus der Hershey Script ergänzen. The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the U. S. National Bureau of Standards. The format of the Font data in this distribution was originally created by James Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821. SVG-Fassung von Windell H. Oskay (Evil Mad Scientist), verteilt im Paket hersheytext (MIT).</p>
-  </details>
-</footer>
+      <div class="canvas" id="canvas">
+        <div class="palette" role="toolbar" aria-label="Werkzeuge">
+          <button class="tool only-narrow" id="side-open" aria-label="Blatt einrichten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Text</span></button>
+          <span class="psep only-narrow"></span>
+          <button class="tool" id="ed-pen" aria-pressed="false" title="Auf das Blatt schreiben"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 7l3 3"/></svg><span>Stift</span></button>
+          <button class="tool" id="ed-erase" aria-pressed="false" title="Geschriebenes wegradieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20h12"/><path d="M5 15l9-9 5 5-8 8H8l-3-3z"/></svg><span>Radierer</span></button>
+          <button class="tool" id="ed-lasso" aria-pressed="false" title="Umkreisen, verschieben, löschen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="10" rx="8" ry="6" stroke-dasharray="3 3"/><path d="M8 15c-2 2-2 4 0 5"/></svg><span>Lasso</span></button>
+          <button class="tool" id="ed-undo" title="Rückgängig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><span>Zurück</span></button>
+          <span class="psep"></span>
+          <div class="pop-wrap">
+            <button class="tool" id="tpl-btn" aria-expanded="false" aria-controls="tpl-pop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M10 4v16"/></svg><span>Vorlagen</span></button>
+            <div class="pop" id="tpl-pop" hidden>
+              <span class="sec-h">Vorlagen</span>
+              <div class="tpl-grid">
+                <button class="tpl-card" data-tpl="table"><svg viewBox="0 0 44 32"><rect x="3" y="3" width="38" height="26"/><path d="M3 12h38M3 20h38M16 3v26M29 3v26"/></svg>Tabelle</button>
+                <button class="tpl-card" data-tpl="coord"><svg viewBox="0 0 44 32"><path d="M4 16h36M37 13l3 3-3 3M22 30V2M19 5l3-3 3 3M28 15v2M34 15v2M16 15v2M10 15v2M21 10h2M21 22h2"/></svg>Koordinaten&shy;system</button>
+                <button class="tpl-card" data-tpl="numline"><svg viewBox="0 0 44 32"><path d="M3 16h37M37 13l3 3-3 3M6 12v8M12 14v4M18 14v4M24 14v4M30 14v4M36 12v8"/></svg>Zahlen&shy;strahl</button>
+                <button class="tpl-card" data-tpl="box"><svg viewBox="0 0 44 32"><rect x="5" y="5" width="34" height="22" rx="1"/></svg>Kasten</button>
+                <button class="tpl-card" data-tpl="circle"><svg viewBox="0 0 44 32"><circle cx="22" cy="16" r="12"/></svg>Kreis</button>
+              </div>
+              <span class="sec-h">Meine Vorlagen</span>
+              <div id="ed-mine" class="mine-list"></div>
+              <p class="hint" id="mine-empty">Zeichne etwas mit dem Stift, umkreise es mit dem Lasso und tippe auf „Als Vorlage speichern“.</p>
+            </div>
+          </div>
+          <div class="pop-wrap">
+            <button class="tool primary" id="exp-btn" aria-expanded="false" aria-controls="exp-pop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/></svg><span>Speichern</span></button>
+            <div class="pop right" id="exp-pop" hidden>
+              <button class="menu-item" id="save-pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg><span>Als PDF<small>Gestochen scharf, ideal für Goodnotes</small></span></button>
+              <button class="menu-item" id="save-png"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg><span>Als Bild<small>PNG mit Papier</small></span></button>
+              <button class="menu-item" id="save-trans"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18c3-6 5-10 8-10 4 0 2 8 6 8 1 0 2-1 2-2"/></svg><span>Nur Schrift<small>Durchsichtig, zum Einfügen in Notiz-Apps</small></span></button>
+              <p class="hint" id="save-hint" hidden>Speichern ist in dieser Ansicht nicht verfügbar.</p>
+            </div>
+          </div>
+        </div>
+        <div class="sheets" id="sheets">
+          <div class="sheetmeta"><span id="sheet-info">A4</span><span id="sheet-paper"></span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
 
 <div class="rail" id="rail" hidden aria-hidden="true"><div class="thumb" id="rail-thumb"></div></div>
 <div class="toast" id="toast" hidden></div>
@@ -381,12 +484,12 @@ footer summary { cursor: pointer; }
 /* ---------- data ---------- */
 const DEMO_RAW = {"0":"1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.33 0.44,-0.89 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-1 2.11,-1.44 2.11,-1.77 2,-2.11 1.89,-2.22 1.66,-2.33 1.44,-2.33|1.44,-2.33 1.22,-2.22 1,-2 0.77,-1.66 0.67,-1.33 0.56,-0.89 0.56,-0.56 0.67,-0.22 0.89,0|1.11,0 1.33,-0.11 1.55,-0.33 1.77,-0.67 1.89,-1 2,-1.44 2,-1.77 1.89,-2.11 1.66,-2.33","1":"1.44,-1.89 0.89,0|1.66,-2.33 1,0|1.66,-2.33 1.33,-2 1,-1.77 0.77,-1.66|1.55,-2 1.11,-1.77 0.77,-1.66","2":"0.89,-1.89 1,-1.77 0.89,-1.66 0.77,-1.77 0.77,-1.89 0.89,-2.11 1,-2.22 1.33,-2.33 1.66,-2.33 2,-2.22 2.11,-2 2.11,-1.77 2,-1.55 1.77,-1.33 1.44,-1.11 1,-0.89 0.67,-0.67 0.44,-0.44 0.22,0|1.66,-2.33 1.89,-2.22 2,-2 2,-1.77 1.89,-1.55 1.66,-1.33 1,-0.89|0.33,-0.22 0.44,-0.33 0.67,-0.33 1.22,-0.11 1.55,-0.11 1.77,-0.22 1.89,-0.44|0.67,-0.33 1.22,0 1.55,0 1.77,-0.11 1.89,-0.44","3":"0.89,-1.89 1,-1.77 0.89,-1.66 0.77,-1.77 0.77,-1.89 0.89,-2.11 1,-2.22 1.33,-2.33 1.66,-2.33 2,-2.22 2.11,-2 2.11,-1.77 2,-1.55 1.66,-1.33 1.33,-1.22|1.66,-2.33 1.89,-2.22 2,-2 2,-1.77 1.89,-1.55 1.66,-1.33|1.11,-1.22 1.33,-1.22 1.66,-1.11 1.77,-1 1.89,-0.77 1.89,-0.44 1.77,-0.22 1.66,-0.11 1.33,0 0.89,0 0.56,-0.11 0.44,-0.22 0.33,-0.44 0.33,-0.56 0.44,-0.67 0.56,-0.56 0.44,-0.44|1.33,-1.22 1.55,-1.11 1.66,-1 1.77,-0.77 1.77,-0.44 1.66,-0.22 1.55,-0.11 1.33,0","4":"1.89,-2.22 1.22,0|2,-2.33 1.33,0|2,-2.33 0.33,-0.67 2.11,-0.67","5":"1.11,-2.33 0.56,-1.22|1.11,-2.33 2.22,-2.33|1.11,-2.22 1.66,-2.22 2.22,-2.33|0.56,-1.22 0.67,-1.33 1,-1.44 1.33,-1.44 1.66,-1.33 1.77,-1.22 1.89,-1 1.89,-0.67 1.77,-0.33 1.55,-0.11 1.22,0 0.89,0 0.56,-0.11 0.44,-0.22 0.33,-0.44 0.33,-0.56 0.44,-0.67 0.56,-0.56 0.44,-0.44|1.33,-1.44 1.55,-1.33 1.66,-1.22 1.77,-1 1.77,-0.67 1.66,-0.33 1.44,-0.11 1.22,0","6":"2,-2 1.89,-1.89 2,-1.77 2.11,-1.89 2.11,-2 2,-2.22 1.77,-2.33 1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.33 0.44,-0.89 0.44,-0.44 0.56,-0.22 0.67,-0.11 0.89,0 1.22,0 1.55,-0.11 1.77,-0.33 1.89,-0.56 1.89,-0.89 1.77,-1.11 1.66,-1.22 1.44,-1.33 1.11,-1.33 0.89,-1.22 0.67,-1 0.56,-0.77|1.44,-2.33 1.22,-2.22 1,-2 0.77,-1.66 0.67,-1.33 0.56,-0.89 0.56,-0.33 0.67,-0.11|1.22,0 1.44,-0.11 1.66,-0.33 1.77,-0.56 1.77,-1 1.66,-1.22","7":"0.77,-2.33 0.56,-1.66|2.22,-2.33 2.11,-2 1.89,-1.66 1.33,-1 1.11,-0.67 1,-0.44 0.89,0|1.89,-1.66 1.22,-1 1,-0.67 0.89,-0.44 0.77,0|0.67,-2 1,-2.33 1.22,-2.33 1.77,-2|0.77,-2.11 1,-2.22 1.22,-2.22 1.77,-2 2,-2 2.11,-2.11 2.22,-2.33","8":"1.33,-2.33 1,-2.22 0.89,-2.11 0.77,-1.89 0.77,-1.55 0.89,-1.33 1.11,-1.22 1.44,-1.22 1.89,-1.33 2,-1.44 2.11,-1.66 2.11,-2 2,-2.22 1.66,-2.33 1.33,-2.33|1.33,-2.33 1.11,-2.22 1,-2.11 0.89,-1.89 0.89,-1.55 1,-1.33 1.11,-1.22|1.44,-1.22 1.77,-1.33 1.89,-1.44 2,-1.66 2,-2 1.89,-2.22 1.66,-2.33|1.11,-1.22 0.67,-1.11 0.44,-0.89 0.33,-0.67 0.33,-0.33 0.44,-0.11 0.77,0 1.22,0 1.66,-0.11 1.77,-0.22 1.89,-0.44 1.89,-0.77 1.77,-1 1.66,-1.11 1.44,-1.22|1.11,-1.22 0.77,-1.11 0.56,-0.89 0.44,-0.67 0.44,-0.33 0.56,-0.11 0.77,0|1.22,0 1.55,-0.11 1.66,-0.22 1.77,-0.44 1.77,-0.89 1.66,-1.11","9":"2,-1.55 1.89,-1.33 1.66,-1.11 1.44,-1 1.11,-1 0.89,-1.11 0.77,-1.22 0.67,-1.44 0.67,-1.77 0.77,-2 1,-2.22 1.33,-2.33 1.66,-2.33 1.89,-2.22 2,-2.11 2.11,-1.89 2.11,-1.44 2,-1 1.89,-0.67 1.66,-0.33 1.44,-0.11 1.11,0 0.77,0 0.56,-0.11 0.44,-0.33 0.44,-0.44 0.56,-0.56 0.67,-0.44 0.56,-0.33|0.89,-1.11 0.77,-1.33 0.77,-1.77 0.89,-2 1.11,-2.22 1.33,-2.33|1.89,-2.22 2,-2 2,-1.44 1.89,-1 1.77,-0.67 1.55,-0.33 1.33,-0.11 1.11,0","!":"1.24,-2.33 1.13,-2.22 0.91,-0.89|1.24,-2.22 0.91,-0.89|1.24,-2.33 1.35,-2.22 0.91,-0.89|0.69,-0.22 0.58,-0.11 0.69,0 0.8,-0.11 0.69,-0.22","\"":"0.89,-2.33 0.67,-1.55|1,-2.33 0.67,-1.55|1.89,-2.33 1.66,-1.55|2,-2.33 1.66,-1.55","#":"1.33,-2.77 0.56,0.77|2,-2.77 1.22,0.77|0.56,-1.33 2.11,-1.33|0.44,-0.67 2,-0.67","$":"1.44,-2.77 0.56,0.44|2,-2.77 1.11,0.44|2.11,-1.89 2,-1.77 2.11,-1.66 2.22,-1.77 2.22,-1.89 2.11,-2.11 2,-2.22 1.66,-2.33 1.22,-2.33 0.89,-2.22 0.67,-2 0.67,-1.77 0.77,-1.55 0.89,-1.44 1.66,-1 1.89,-0.77|0.67,-1.77 0.89,-1.55 1.66,-1.11 1.77,-1 1.89,-0.77 1.89,-0.44 1.77,-0.22 1.66,-0.11 1.33,0 0.89,0 0.56,-0.11 0.44,-0.22 0.33,-0.44 0.33,-0.56 0.44,-0.67 0.56,-0.56 0.44,-0.44","%":"2.44,-2.33 0.44,0|1,-2.33 1.22,-2.11 1.22,-1.89 1.11,-1.66 0.89,-1.55 0.67,-1.55 0.44,-1.77 0.44,-2 0.56,-2.22 0.77,-2.33 1,-2.33 1.22,-2.22 1.55,-2.11 1.89,-2.11 2.22,-2.22 2.44,-2.33|2,-0.77 1.77,-0.67 1.66,-0.44 1.66,-0.22 1.89,0 2.11,0 2.33,-0.11 2.44,-0.33 2.44,-0.56 2.22,-0.77 2,-0.77","&":"2.66,-1.44 2.55,-1.33 2.66,-1.22 2.77,-1.33 2.77,-1.44 2.66,-1.55 2.55,-1.55 2.33,-1.44 2.11,-1.22 1.55,-0.33 1.33,-0.11 1.11,0 0.77,0 0.44,-0.11 0.33,-0.33 0.33,-0.56 0.44,-0.77 0.56,-0.89 0.77,-1 1.33,-1.22 1.55,-1.33 1.77,-1.55 1.89,-1.77 1.89,-2 1.77,-2.22 1.55,-2.33 1.33,-2.22 1.22,-2 1.22,-1.66 1.33,-1 1.44,-0.67 1.66,-0.33 1.89,-0.11 2.11,0 2.33,0 2.44,-0.22 2.44,-0.33|0.77,0 0.56,-0.11 0.44,-0.33 0.44,-0.56 0.56,-0.77 0.67,-0.89 1.33,-1.22|1.22,-1.66 1.33,-1.11 1.44,-0.77 1.66,-0.44 1.89,-0.22 2.11,-0.11 2.33,-0.11 2.44,-0.22","'":"1,-2.11 0.89,-2.22 1,-2.33 1.11,-2.22 1.11,-2.11 1,-1.89 0.77,-1.66","(":"1.77,-2.77 1.33,-2.44 1,-2.11 0.77,-1.77 0.56,-1.33 0.44,-0.77 0.44,-0.33 0.56,0.22 0.67,0.56 0.77,0.77|1.33,-2.44 1,-2 0.77,-1.55 0.67,-1.22 0.56,-0.67 0.56,-0.11 0.67,0.44 0.77,0.77",")":"1.11,-2.77 1.22,-2.55 1.33,-2.22 1.44,-1.66 1.44,-1.22 1.33,-0.67 1.11,-0.22 0.89,0.11 0.56,0.44 0.11,0.77|1.11,-2.77 1.22,-2.44 1.33,-1.89 1.33,-1.33 1.22,-0.77 1.11,-0.44 0.89,0 0.56,0.44","*":"1.22,-2.33 1.22,-1|0.67,-2 1.77,-1.33|1.77,-2 0.67,-1.33","+":"1.55,-2 1.55,0|0.56,-1 2.55,-1",",":"0.44,0 0.33,-0.11 0.44,-0.22 0.56,-0.11 0.56,0 0.44,0.22 0.22,0.44","-":"0.56,-1 2.55,-1",".":"0.67,-0.22 0.56,-0.11 0.67,0 0.77,-0.11 0.67,-0.22","/":"2.77,-2.77 -0.11,0.77",":":"0.77,-1.55 0.67,-1.44 0.77,-1.33 0.89,-1.44 0.77,-1.55|0.44,-0.22 0.33,-0.11 0.44,0 0.56,-0.11",";":"0.77,-1.55 0.67,-1.44 0.77,-1.33 0.89,-1.44 0.77,-1.55|0.44,0 0.33,-0.11 0.44,-0.22 0.56,-0.11 0.56,0 0.44,0.22 0.22,0.44","<":"2.33,-2 0.56,-1 2.33,0","=":"0.56,-1.33 2.55,-1.33|0.56,-0.67 2.55,-0.67",">":"0.56,-2 2.33,-1 0.56,0","?":"0.89,-1.89 1,-1.77 0.89,-1.66 0.77,-1.77 0.77,-1.89 0.89,-2.11 1,-2.22 1.33,-2.33 1.77,-2.33 2.11,-2.22 2.22,-2 2.22,-1.77 2.11,-1.55 2,-1.44 1.33,-1.22 1.11,-1.11 1.11,-0.89 1.22,-0.77 1.44,-0.77|1.77,-2.33 2,-2.22 2.11,-2 2.11,-1.77 2,-1.55 1.89,-1.44 1.66,-1.33|1,-0.22 0.89,-0.11 1,0 1.11,-0.11 1,-0.22","@":"2.11,-1.44 2,-1.66 1.77,-1.77 1.44,-1.77 1.22,-1.66 1.11,-1.55 1,-1.22 1,-0.89 1.11,-0.67 1.33,-0.56 1.66,-0.56 1.89,-0.67 2,-0.89|1.44,-1.77 1.22,-1.55 1.11,-1.22 1.11,-0.89 1.22,-0.67 1.33,-0.56|2.11,-1.77 2,-0.89 2,-0.67 2.22,-0.56 2.44,-0.56 2.66,-0.77 2.77,-1.11 2.77,-1.33 2.66,-1.66 2.55,-1.89 2.33,-2.11 2.11,-2.22 1.77,-2.33 1.44,-2.33 1.11,-2.22 0.89,-2.11 0.67,-1.89 0.56,-1.66 0.44,-1.33 0.44,-1 0.56,-0.67 0.67,-0.44 0.89,-0.22 1.11,-0.11 1.44,0 1.77,0 2.11,-0.11 2.33,-0.22 2.44,-0.33|2.22,-1.77 2.11,-0.89 2.11,-0.67 2.22,-0.56","A":"0.11,0 0.33,-0.11 0.67,-0.44 1,-0.89 1.44,-1.66 1.77,-2.33 1.77,0 1.66,-0.33 1.44,-0.67 1.22,-0.89 0.89,-1.11 0.67,-1.11 0.56,-1 0.56,-0.77 0.67,-0.56 0.89,-0.33 1.22,-0.11 1.55,0 2.11,0","B":"1.55,-2.11 1.66,-2 1.66,-1.66 1.55,-1.22 1.44,-0.89 1.33,-0.67 1.11,-0.33 0.89,-0.11 0.67,0 0.56,0 0.44,-0.11 0.44,-0.44 0.56,-1 0.67,-1.33 0.77,-1.55 1,-1.89 1.22,-2.11 1.44,-2.22 1.77,-2.33 2.11,-2.33 2.33,-2.22 2.44,-2 2.44,-1.77 2.33,-1.55 2.22,-1.44 2,-1.33 1.66,-1.22|1.55,-1.22 1.66,-1.22 2,-1.11 2.11,-1 2.22,-0.77 2.22,-0.44 2.11,-0.22 2,-0.11 1.77,0 1.44,0 1.22,-0.11 1.11,-0.33","C":"1.44,-1.66 1.44,-1.55 1.55,-1.44 1.77,-1.44 2,-1.55 2.11,-1.77 2.11,-2 2,-2.22 1.77,-2.33 1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.44 0.44,-1 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.77,-0.56","D":"1.55,-2.33 1.33,-2.22 1.22,-2 1.11,-1.55 1,-0.89 0.89,-0.56 0.77,-0.33 0.56,-0.11 0.33,0 0.11,0 0,-0.11 0,-0.33 0.11,-0.44 0.33,-0.44 0.56,-0.33 0.77,-0.11 1.11,0 1.44,0 1.77,-0.11 2,-0.33 2.22,-0.77 2.33,-1.33 2.33,-1.77 2.22,-2.11 2.11,-2.22 1.89,-2.33 1.55,-2.33 1.33,-2.11 1.33,-1.89 1.44,-1.55 1.66,-1.22 1.89,-1 2.22,-0.77 2.44,-0.67","E":"1.66,-1.89 1.66,-1.77 1.77,-1.66 2,-1.66 2.11,-1.77 2.11,-2 2,-2.22 1.66,-2.33 1.22,-2.33 0.89,-2.22 0.77,-2 0.77,-1.66 0.89,-1.44 1,-1.33 1.33,-1.22 1,-1.22 0.67,-1.11 0.56,-1 0.44,-0.77 0.44,-0.44 0.56,-0.22 0.67,-0.11 1,0 1.33,0 1.66,-0.11 1.89,-0.33 2,-0.56","F":"1.22,-1.66 1,-1.66 0.77,-1.77 0.67,-2 0.77,-2.22 1.11,-2.33 1.44,-2.33 1.89,-2.22 2.22,-2.22 2.44,-2.33|1.89,-2.22 1.66,-1.44 1.44,-0.77 1.22,-0.33 1,-0.11 0.77,0 0.56,0 0.33,-0.11 0.22,-0.33 0.22,-0.56 0.33,-0.67 0.56,-0.67 0.77,-0.56|1.11,-1.22 2.11,-1.22","G":"0.11,0 0.33,-0.11 0.77,-0.56 1.11,-1.11 1.22,-1.44 1.33,-1.89 1.33,-2.22 1.22,-2.33 1.11,-2.33 1,-2.22 0.89,-2 0.89,-1.66 1,-1.44 1.22,-1.33 1.66,-1.33 2,-1.44 2.11,-1.55 2.22,-1.77 2.22,-1.11 2.11,-0.56 2,-0.33 1.77,-0.11 1.44,0 1,0 0.67,-0.11 0.44,-0.33 0.33,-0.56 0.33,-0.77","H":"0.89,-1.55 0.67,-1.66 0.56,-1.89 0.56,-2 0.67,-2.22 0.89,-2.33 1,-2.33 1.22,-2.22 1.33,-2 1.33,-1.77 1.22,-1.33 1,-0.67 0.77,-0.22 0.56,0 0.33,0 0.22,-0.11 0.22,-0.33|0.89,-1 1.89,-1.33 2.11,-1.44 2.44,-1.66 2.66,-1.89 2.77,-2.11 2.77,-2.22 2.66,-2.33 2.55,-2.33 2.33,-2.11 2.11,-1.66 1.89,-1 1.77,-0.44 1.77,-0.11 1.89,0 2,0 2.22,-0.11 2.33,-0.22 2.55,-0.56","I":"1.66,-0.56 1.44,-0.77 1.22,-1.11 1.11,-1.33 1,-1.66 1,-2 1.11,-2.22 1.22,-2.33 1.44,-2.33 1.55,-2.22 1.66,-2 1.66,-1.66 1.55,-1.11 1.33,-0.56 1.22,-0.33 1,-0.11 0.77,0 0.56,0 0.33,-0.11 0.22,-0.33 0.22,-0.56 0.33,-0.67 0.56,-0.67 0.77,-0.56","J":"1.22,0.33 1,0 0.77,-0.56 0.67,-1.22 0.67,-1.89 0.77,-2.22 1,-2.33 1.22,-2.33 1.33,-2.22 1.44,-1.89 1.44,-1.55 1.33,-1 1,0 0.77,0.67 0.67,1 0.56,1.22 0.33,1.33 0.22,1.22 0.22,1 0.33,0.67 0.56,0.33 0.77,0.11 1.11,-0.11 1.55,-0.33","K":"0.89,-1.55 0.67,-1.66 0.56,-1.89 0.56,-2 0.67,-2.22 0.89,-2.33 1,-2.33 1.22,-2.22 1.33,-2 1.33,-1.77 1.22,-1.33 1,-0.67 0.77,-0.22 0.56,0 0.33,0 0.22,-0.11 0.22,-0.33|2.77,-2 2.77,-2.22 2.66,-2.33 2.55,-2.33 2.33,-2.22 2.11,-2 1.89,-1.66 1.66,-1.44 1.44,-1.33 1.22,-1.33|1.44,-1.33 1.55,-1.11 1.55,-0.33 1.66,-0.11 1.77,0 1.89,0 2.11,-0.11 2.22,-0.22 2.44,-0.56","L":"0.56,-1 0.77,-1 1.22,-1.11 1.55,-1.33 1.77,-1.55 1.89,-1.77 1.89,-2.11 1.77,-2.33 1.55,-2.33 1.44,-2.22 1.33,-2 1.22,-1.44 1.11,-0.89 1,-0.56 0.89,-0.33 0.67,-0.11 0.44,0 0.22,0 0.11,-0.11 0.11,-0.33 0.22,-0.44 0.44,-0.44 0.67,-0.33 1,-0.11 1.33,0 1.55,0 1.89,-0.11 2.11,-0.33","M":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.22 0.89,-0.77 0.67,0|0.89,-0.77 1.22,-1.66 1.44,-2.11 1.55,-2.22 1.77,-2.33 1.89,-2.33 2.11,-2.22 2.22,-2 2.22,-1.77 2.11,-1.22 2,-0.77 1.77,0|2,-0.77 2.33,-1.66 2.55,-2.11 2.66,-2.22 2.88,-2.33 2.99,-2.33 3.22,-2.22 3.33,-2 3.33,-1.77 3.22,-1.22 2.99,-0.44 2.99,-0.11 3.11,0 3.22,0 3.44,-0.11 3.55,-0.22 3.77,-0.56","N":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.22 0.89,-0.77 0.67,0|0.89,-0.77 1.22,-1.66 1.44,-2.11 1.55,-2.22 1.77,-2.33 2,-2.33 2.22,-2.22 2.33,-2 2.33,-1.77 2.22,-1.22 2,-0.44 2,-0.11 2.11,0 2.22,0 2.44,-0.11 2.55,-0.22 2.77,-0.56","O":"1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.44 0.44,-1 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-0.89 2.11,-1.33 2.11,-1.77 2,-2.11 1.89,-2.22 1.66,-2.33 1.44,-2.33 1.22,-2.11 1.22,-1.77 1.33,-1.44 1.55,-1.11 1.77,-0.89 2.11,-0.67 2.33,-0.56","P":"1.55,-2.11 1.66,-2 1.66,-1.66 1.55,-1.22 1.44,-0.89 1.33,-0.67 1.11,-0.33 0.89,-0.11 0.67,0 0.56,0 0.44,-0.11 0.44,-0.44 0.56,-1 0.67,-1.33 0.77,-1.55 1,-1.89 1.22,-2.11 1.44,-2.22 1.77,-2.33 2.33,-2.33 2.55,-2.22 2.66,-2.11 2.77,-1.89 2.77,-1.55 2.66,-1.33 2.55,-1.22 2.33,-1.11 2,-1.11 1.77,-1.22 1.66,-1.33","Q":"1.55,-1.66 1.44,-1.44 1.33,-1.33 1.11,-1.22 0.89,-1.22 0.77,-1.44 0.77,-1.66 0.89,-2 1.11,-2.22 1.44,-2.33 1.77,-2.33 2,-2.22 2.11,-2 2.11,-1.55 2,-1.22 1.77,-0.89 1.33,-0.44 1,-0.22 0.77,-0.11 0.44,0 0.22,0 0.11,-0.11 0.11,-0.33 0.22,-0.44 0.44,-0.44 0.67,-0.33 1,-0.11 1.33,0 1.66,0 2,-0.11 2.22,-0.33","R":"1.55,-2.11 1.66,-2 1.66,-1.66 1.55,-1.22 1.44,-0.89 1.33,-0.67 1.11,-0.33 0.89,-0.11 0.67,0 0.56,0 0.44,-0.11 0.44,-0.44 0.56,-1 0.67,-1.33 0.77,-1.55 1,-1.89 1.22,-2.11 1.44,-2.22 1.77,-2.33 2.22,-2.33 2.44,-2.22 2.55,-2.11 2.66,-1.89 2.66,-1.55 2.55,-1.33 2.44,-1.22 2.22,-1.11 1.89,-1.11 1.55,-1.22 1.66,-1.11 1.77,-0.89 1.77,-0.33 1.89,-0.11 2.11,0 2.33,-0.11 2.44,-0.22 2.66,-0.56","S":"0.11,0 0.33,-0.11 0.56,-0.33 0.89,-0.77 1.11,-1.11 1.33,-1.55 1.44,-1.89 1.44,-2.22 1.33,-2.33 1.22,-2.33 1.11,-2.22 1,-2 1,-1.77 1.11,-1.55 1.33,-1.33 1.66,-1.11 1.89,-0.89 2,-0.67 2,-0.44 1.89,-0.22 1.77,-0.11 1.44,0 1,0 0.67,-0.11 0.44,-0.33 0.33,-0.56 0.33,-0.77","T":"1.22,-1.66 1,-1.66 0.77,-1.77 0.67,-2 0.77,-2.22 1.11,-2.33 1.44,-2.33 1.89,-2.22 2.22,-2.22 2.44,-2.33|1.89,-2.22 1.66,-1.44 1.44,-0.77 1.22,-0.33 1,-0.11 0.77,0 0.56,0 0.33,-0.11 0.22,-0.33 0.22,-0.56 0.33,-0.67 0.56,-0.67 0.77,-0.56","U":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.33 0.89,-0.11 1.11,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.67 2.22,-1.55 2.44,-2.33|2.22,-1.55 2.11,-1.11 2,-0.44 2,-0.11 2.11,0 2.22,0 2.44,-0.11 2.55,-0.22 2.77,-0.56","V":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.22 0.89,0 1.11,0 1.33,-0.11 1.66,-0.44 1.89,-0.77 2.11,-1.22 2.22,-1.55 2.33,-2 2.33,-2.22 2.22,-2.33 2.11,-2.33 2,-2.22 1.89,-2 1.89,-1.77 2,-1.44 2.22,-1.22 2.44,-1.11","W":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.66 1,0|2.11,-2.33 1,0|2.11,-2.33 1.89,0|3.44,-2.33 3.22,-2.22 2.88,-1.89 2.55,-1.44 2.22,-0.77 1.89,0","X":"1,-1.66 0.77,-1.66 0.67,-1.77 0.67,-2 0.77,-2.22 1,-2.33 1.22,-2.33 1.44,-2.22 1.55,-2 1.55,-1.66 1.33,-0.67 1.33,-0.33 1.44,-0.11 1.66,0 1.89,0 2.11,-0.11 2.22,-0.33 2.22,-0.56 2.11,-0.67 1.89,-0.67|2.66,-2 2.66,-2.22 2.55,-2.33 2.33,-2.33 2.11,-2.22 1.89,-2 1.66,-1.66 1.22,-0.67 1,-0.33 0.77,-0.11 0.56,0 0.33,0 0.22,-0.11 0.22,-0.33","Y":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.33 0.89,-0.11 1,0 1.22,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-0.89 2.22,-1.55|2.44,-2.33 2.22,-1.55 1.89,-0.44 1.66,0.22 1.44,0.77 1.22,1.22 1,1.33 0.89,1.22 0.89,1 1,0.67 1.22,0.33 1.55,0 1.89,-0.22 2.44,-0.56","Z":"1.55,-1.66 1.44,-1.44 1.33,-1.33 1.11,-1.22 0.89,-1.22 0.77,-1.44 0.77,-1.66 0.89,-2 1.11,-2.22 1.44,-2.33 1.77,-2.33 2,-2.22 2.11,-2 2.11,-1.55 2,-1.22 1.77,-0.77 1.44,-0.44 1,-0.11 0.77,0 0.44,0 0.33,-0.11 0.33,-0.33 0.44,-0.44 0.77,-0.44 1,-0.33 1.11,-0.22 1.22,0 1.22,0.33 1.11,0.67 1,0.89 0.77,1.22 0.56,1.33 0.44,1.22 0.44,1 0.56,0.67 0.77,0.33 1.11,0 1.44,-0.22 2.11,-0.56","[":"0.56,-2.77 0.56,0.77|0.67,-2.77 0.67,0.77|0.56,-2.77 1.33,-2.77|0.56,0.77 1.33,0.77","]":"1.11,-2.77 1.11,0.77|1.22,-2.77 1.22,0.77|0.44,-2.77 1.22,-2.77|0.44,0.77 1.22,0.77","_":"0.11,0.22 1.89,0.22","a":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.33 1.22,-1 1.11,-0.44 1.11,-0.11 1.22,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.56","b":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.77 0.22,-0.11 0.33,0 0.44,0 0.67,-0.11 0.89,-0.33 1,-0.67 1,-1 1.11,-0.56 1.22,-0.44 1.44,-0.44 1.66,-0.56","c":"0.89,-0.77 0.89,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.77,0 1.11,-0.22 1.33,-0.56","d":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.33 1.66,-2.33|1.22,-1 1.11,-0.44 1.11,-0.11 1.22,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.56","e":"0.22,-0.22 0.44,-0.33 0.56,-0.44 0.67,-0.67 0.67,-0.89 0.56,-1 0.44,-1 0.22,-0.89 0.11,-0.67 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22 1.22,-0.56","f":"0.11,-0.56 0.56,-1.11 0.77,-1.44 0.89,-1.66 1,-2 1,-2.22 0.89,-2.33 0.67,-2.22 0.56,-2 0.33,-1.11 0,-0.11 -0.33,0.67 -0.44,1 -0.44,1.22 -0.33,1.33 -0.11,1.22 0,0.89 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.77,-0.22 1,-0.56","g":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22|1.22,-1 1,-0.22 0.56,1 0.44,1.22 0.22,1.33 0.11,1.22 0.11,1 0.22,0.67 0.56,0.33 0.89,0.11 1.11,0 1.44,-0.22 1.77,-0.56","h":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.89 0.11,0|0.11,0 0.22,-0.33 0.33,-0.56 0.56,-0.89 0.77,-1 1,-1 1.11,-0.89 1.11,-0.67 1,-0.33 1,-0.11 1.11,0 1.22,0 1.44,-0.11 1.55,-0.22 1.77,-0.56","i":"0.44,-1.55 0.44,-1.44 0.56,-1.44 0.56,-1.55 0.44,-1.55|0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.33,0 0.56,-0.11 0.67,-0.22 0.89,-0.56","j":"0.44,-1.55 0.44,-1.44 0.56,-1.44 0.56,-1.55 0.44,-1.55|0.11,-0.56 0.33,-1 -0.33,1 -0.44,1.22 -0.67,1.33 -0.77,1.22 -0.77,1 -0.67,0.67 -0.33,0.33 0,0.11 0.22,0 0.56,-0.22 0.89,-0.56","k":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.89 0.11,0|0.11,0 0.22,-0.33 0.33,-0.56 0.56,-0.89 0.77,-1 1,-1 1.11,-0.89 1.11,-0.67 0.89,-0.56 0.56,-0.56|0.56,-0.56 0.77,-0.44 0.89,-0.11 1,0 1.11,0 1.33,-0.11 1.44,-0.22 1.66,-0.56","l":"0.11,-0.56 0.33,-0.89 0.67,-1.44 0.77,-1.66 0.89,-2 0.89,-2.22 0.77,-2.33 0.56,-2.22 0.44,-2 0.33,-1.55 0.22,-0.77 0.22,-0.11 0.33,0 0.44,0 0.67,-0.11 0.77,-0.22 1,-0.56","m":"0.11,-0.56 0.33,-0.89 0.56,-1 0.67,-0.89 0.67,-0.77 0.56,-0.33 0.44,0|0.56,-0.33 0.67,-0.56 0.89,-0.89 1.11,-1 1.33,-1 1.44,-0.89 1.44,-0.77 1.33,-0.33 1.22,0|1.33,-0.33 1.44,-0.56 1.66,-0.89 1.89,-1 2.11,-1 2.22,-0.89 2.22,-0.67 2.11,-0.33 2.11,-0.11 2.22,0 2.33,0 2.55,-0.11 2.66,-0.22 2.88,-0.56","n":"0.11,-0.56 0.33,-0.89 0.56,-1 0.67,-0.89 0.67,-0.77 0.56,-0.33 0.44,0|0.56,-0.33 0.67,-0.56 0.89,-0.89 1.11,-1 1.33,-1 1.44,-0.89 1.44,-0.67 1.33,-0.33 1.33,-0.11 1.44,0 1.55,0 1.77,-0.11 1.89,-0.22 2.11,-0.56","o":"0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22 1.11,-0.44 1.11,-0.67 1,-0.89 0.77,-1 0.67,-0.89 0.67,-0.67 0.77,-0.44 1,-0.33 1.33,-0.33 1.55,-0.44 1.66,-0.56","p":"0.11,-0.56 0.33,-0.89 0.44,-1.11 0.33,-0.67 -0.33,1.33|0.33,-0.67 0.44,-0.89 0.67,-1 0.89,-1 1.11,-0.89 1.22,-0.67 1.22,-0.44 1.11,-0.22 1,-0.11 0.77,0|0.33,-0.11 0.56,0 0.89,0 1.22,-0.11 1.44,-0.22 1.77,-0.56","q":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11|1.22,-1 1.11,-0.67 0.89,-0.11 0.56,0.67 0.44,1 0.44,1.22 0.56,1.33 0.77,1.22 0.89,0.89 0.89,0.11 1.11,0 1.44,-0.22 1.77,-0.56","r":"0.11,-0.56 0.33,-0.89 0.44,-1.11 0.44,-0.89 0.77,-0.89 0.89,-0.77 0.89,-0.56 0.77,-0.22 0.77,-0.11 0.89,0 1,0 1.22,-0.11 1.33,-0.22 1.55,-0.56","s":"0.11,-0.56 0.33,-0.89 0.44,-1.11 0.44,-0.89 0.67,-0.56 0.77,-0.33 0.77,-0.11 0.56,0|0.11,-0.11 0.33,0 0.77,0 1,-0.11 1.11,-0.22 1.33,-0.56","t":"0.11,-0.56 0.33,-0.89 0.56,-1.33|0.89,-2.33 0.22,-0.33 0.22,-0.11 0.33,0 0.56,0 0.77,-0.11 0.89,-0.22 1.11,-0.56|0.22,-1.44 1,-1.44","u":"0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33 1.11,-0.67|1.22,-1 1,-0.33 1,-0.11 1.11,0 1.22,0 1.44,-0.11 1.55,-0.22 1.77,-0.56","v":"0.11,-0.56 0.33,-1 0.22,-0.44 0.22,-0.11 0.33,0 0.44,0 0.77,-0.11 1,-0.33 1.11,-0.67 1.11,-1|1.11,-1 1.22,-0.56 1.33,-0.44 1.55,-0.44 1.77,-0.56","w":"0.44,-1 0.22,-0.77 0.11,-0.44 0.11,-0.22 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33|1.11,-1 0.89,-0.33 0.89,-0.11 1,0 1.22,0 1.44,-0.11 1.66,-0.33 1.77,-0.67 1.77,-1|1.77,-1 1.89,-0.56 2,-0.44 2.22,-0.44 2.44,-0.56","x":"0.11,-0.56 0.33,-0.89 0.56,-1 0.77,-1 0.89,-0.89 0.89,-0.11 1,0 1.33,0 1.66,-0.22 1.89,-0.56|1.55,-0.89 1.44,-1 1.22,-1 1.11,-0.89 0.67,-0.11 0.56,0 0.33,0 0.22,-0.11","y":"0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33 1.11,-0.67|1.22,-1 0.56,1 0.44,1.22 0.22,1.33 0.11,1.22 0.11,1 0.22,0.67 0.56,0.33 0.89,0.11 1.11,0 1.44,-0.22 1.77,-0.56","z":"0.11,-0.56 0.33,-0.89 0.56,-1 0.77,-1 1,-0.77 1,-0.56 0.89,-0.33 0.67,-0.11 0.33,0 0.56,0.11 0.67,0.33 0.67,0.67 0.56,1 0.44,1.22 0.22,1.33 0.11,1.22 0.11,1 0.22,0.67 0.56,0.33 0.89,0.11 1.33,-0.22 1.66,-0.56","°":"0.87,-2.69 0.76,-2.66 0.7,-2.6 0.63,-2.5 0.6,-2.43 0.57,-2.3 0.57,-2.16 0.6,-2.06 0.63,-2.03 0.7,-2 0.76,-2 0.87,-2.03 0.93,-2.1 1,-2.2 1.03,-2.26 1.06,-2.39 1.06,-2.53 1.03,-2.63 1,-2.66 0.93,-2.69 0.87,-2.69 0.8,-2.63 0.8,-2.53 0.83,-2.43 0.9,-2.33 0.96,-2.26 1.06,-2.2 1.13,-2.16","Ä":"0.11,0 0.33,-0.11 0.67,-0.44 1,-0.89 1.44,-1.66 1.77,-2.33 1.77,0 1.66,-0.33 1.44,-0.67 1.22,-0.89 0.89,-1.11 0.67,-1.11 0.56,-1 0.56,-0.77 0.67,-0.56 0.89,-0.33 1.22,-0.11 1.55,0 2.11,0|1.33,-3.22 1.23,-3.11 1.33,-2.99 1.45,-3.11 1.33,-3.22|2.21,-3.22 2.1,-3.11 2.21,-2.99 2.32,-3.11 2.21,-3.22","Ö":"1.44,-2.33 1.11,-2.22 0.89,-2 0.67,-1.66 0.56,-1.44 0.44,-1 0.44,-0.56 0.56,-0.22 0.67,-0.11 0.89,0 1.11,0 1.44,-0.11 1.66,-0.33 1.89,-0.67 2,-0.89 2.11,-1.33 2.11,-1.77 2,-2.11 1.89,-2.22 1.66,-2.33 1.44,-2.33 1.22,-2.11 1.22,-1.77 1.33,-1.44 1.55,-1.11 1.77,-0.89 2.11,-0.67 2.33,-0.56|1.4,-3.22 1.29,-3.11 1.4,-2.99 1.51,-3.11 1.4,-3.22|2.26,-3.22 2.15,-3.11 2.26,-2.99 2.37,-3.11 2.26,-3.22","Ü":"0.67,-1.55 0.44,-1.66 0.33,-1.89 0.33,-2 0.44,-2.22 0.67,-2.33 0.77,-2.33 1,-2.22 1.11,-2 1.11,-1.77 1,-1.33 0.89,-1 0.77,-0.56 0.77,-0.33 0.89,-0.11 1.11,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.67 2.22,-1.55 2.44,-2.33|2.22,-1.55 2.11,-1.11 2,-0.44 2,-0.11 2.11,0 2.22,0 2.44,-0.11 2.55,-0.22 2.77,-0.56|1.53,-3.22 1.42,-3.11 1.53,-2.99 1.64,-3.11 1.53,-3.22|2.46,-3.22 2.35,-3.11 2.46,-2.99 2.57,-3.11 2.46,-3.22","ä":"1.11,-0.67 1,-0.89 0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.33 1.22,-1 1.11,-0.44 1.11,-0.11 1.22,0 1.33,0 1.55,-0.11 1.66,-0.22 1.89,-0.56|0.58,-2 0.47,-1.89 0.58,-1.77 0.69,-1.89 0.58,-2|1.42,-2 1.31,-1.89 1.42,-1.77 1.53,-1.89 1.42,-2","ö":"0.77,-1 0.56,-1 0.33,-0.89 0.22,-0.77 0.11,-0.56 0.11,-0.33 0.22,-0.11 0.44,0 0.67,0 0.89,-0.11 1,-0.22 1.11,-0.44 1.11,-0.67 1,-0.89 0.77,-1 0.67,-0.89 0.67,-0.67 0.77,-0.44 1,-0.33 1.33,-0.33 1.55,-0.44 1.66,-0.56|0.43,-2 0.31,-1.89 0.43,-1.77 0.54,-1.89 0.43,-2|1.35,-2 1.24,-1.89 1.35,-1.77 1.46,-1.89 1.35,-2","ü":"0.11,-0.56 0.33,-1 0.11,-0.33 0.11,-0.11 0.22,0 0.44,0 0.67,-0.11 0.89,-0.33 1.11,-0.67|1.22,-1 1,-0.33 1,-0.11 1.11,0 1.22,0 1.44,-0.11 1.55,-0.22 1.77,-0.56|0.5,-2 0.39,-1.89 0.5,-1.77 0.62,-1.89 0.5,-2|1.38,-2 1.27,-1.89 1.38,-1.77 1.49,-1.89 1.38,-2","“":"0.75,-2.99 0.65,-2.8 0.6,-2.6 0.6,-2.5 0.65,-2.39 0.7,-2.5 0.65,-2.6|1.25,-2.99 1.15,-2.8 1.1,-2.6 1.1,-2.5 1.15,-2.39 1.2,-2.5 1.15,-2.6","€":"2.33,-1.77 2.22,-2 2,-2.22 1.77,-2.33 1.33,-2.33 1.11,-2.22 0.89,-2 0.77,-1.77 0.67,-1.44 0.67,-0.89 0.77,-0.56 0.89,-0.33 1.11,-0.11 1.33,0 1.77,0 2,-0.11 2.22,-0.33 2.33,-0.56|0.5,-0.83 1.5,-0.83|0.5,-1.17 1.5,-1.17","ß":"0.82,-0.46 2.11,-0.22 2.22,-0.44 2.22,-0.77 2.11,-1 2,-1.11 1.66,-1.22 2,-1.33 2.22,-1.44 2.33,-1.55 2.44,-1.77 2.44,-2 2.33,-2.22 2.11,-2.33 1.77,-2.33"};
 const GROUPS = [
-  { key: "lower", name: "Kleinbuchstaben", one: "Kleinbuchstabe", chars: "abcdefghijklmnopqrstuvwxyz" },
-  { key: "upper", name: "Großbuchstaben", one: "Großbuchstabe", chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
-  { key: "umlaut", name: "Umlaute und ß", one: "Umlaut", chars: "äöüÄÖÜß" },
-  { key: "digit", name: "Ziffern", one: "Ziffer", chars: "0123456789" },
-  { key: "punct", name: "Satzzeichen", one: "Satzzeichen", chars: ".,;:!?-'\"„“()" },
-  { key: "sym", name: "Sonderzeichen", one: "Sonderzeichen", chars: "&@/€%+=*#§°$[]_<>" },
+  { key: "lower", short: "abc", name: "Kleinbuchstaben", one: "Kleinbuchstabe", chars: "abcdefghijklmnopqrstuvwxyz" },
+  { key: "upper", short: "ABC", name: "Großbuchstaben", one: "Großbuchstabe", chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
+  { key: "umlaut", short: "äöü ß", name: "Umlaute und ß", one: "Umlaut", chars: "äöüÄÖÜß" },
+  { key: "digit", short: "123", name: "Ziffern", one: "Ziffer", chars: "0123456789" },
+  { key: "punct", short: ".,?!", name: "Satzzeichen", one: "Satzzeichen", chars: ".,;:!?-'\"„“()" },
+  { key: "sym", short: "&@€", name: "Sonderzeichen", one: "Sonderzeichen", chars: "&@/€%+=*#§°$[]_<>" },
 ];
 const BASE = GROUPS.flatMap(g => Array.from(g.chars));
 const BASE_SET = new Set(BASE);
@@ -604,6 +707,7 @@ function persist(c) {
 }
 
 function selectChar(c, v) {
+  const gk = groupOf(c).key; if (gk !== activeGroup && tileEls.size) { activeGroup = gk; cur = c; buildGroups(); }
   cur = c; const g = glyphs[c]; curVar = v != null ? v : 0;
   if (g && curVar > g.v.length) curVar = g.v.length;
   document.querySelectorAll(".tile.cur").forEach(t => t.classList.remove("cur"));
@@ -675,48 +779,61 @@ function drawTile(c) {
   for (const s of v) strokePath(x, s, 0.13);
   if (g.v.length > 1) { const vc = document.createElement("span"); vc.className = "vc"; vc.textContent = "×" + g.v.length; t.appendChild(vc); }
 }
-function updateTile(c) { if (!tileEls.has(c)) { buildGroups(); return; } drawTile(c); }
+function updateTile(c) { if (!tileEls.has(c)) { updateProgress(); return; } drawTile(c); }
+let activeGroup = "lower";
+function groupList() {
+  const extra = allChars().filter(c => !BASE_SET.has(c));
+  return GROUPS.map(g => ({ key: g.key, short: g.short, name: g.name, list: Array.from(g.chars) }))
+    .concat([{ key: "custom", short: "Eigene", name: "Eigene Zeichen", list: extra }]);
+}
 function buildGroups() {
   const box = $("groups"); box.textContent = ""; tileEls.clear();
-  const extra = allChars().filter(c => !BASE_SET.has(c));
-  const groups = GROUPS.map(g => ({ ...g, list: Array.from(g.chars) }));
-  groups.push({ key: "custom", name: "Eigene Zeichen", list: extra });
-  for (const g of groups) {
-    const sec = document.createElement("section"); sec.className = "group";
-    const done = g.list.filter(c => glyphs[c]).length;
-    const h = document.createElement("h3"); h.innerHTML = "<span></span><span></span>";
-    h.children[0].textContent = g.name; h.children[1].textContent = g.list.length ? done + "/" + g.list.length : "";
-    sec.appendChild(h);
-    const tiles = document.createElement("div"); tiles.className = "tiles";
-    for (const c of g.list) {
-      const b = document.createElement("button"); b.className = "tile"; b.type = "button";
-      b.onclick = () => { selectChar(c); if (window.innerWidth <= 980) $("padbox").scrollIntoView({ behavior: "smooth", block: "center" }); };
-      tiles.appendChild(b); tileEls.set(c, b); drawTile(c);
-    }
-    sec.appendChild(tiles);
-    if (g.key === "custom") {
-      const add = document.createElement("div"); add.className = "addchar";
-      add.innerHTML = '<input id="addchar" maxlength="2" aria-label="Zeichen hinzufügen" placeholder="é"><button class="btn quiet" type="button" id="addchar-btn">Zeichen hinzufügen</button>';
-      sec.appendChild(add);
-      if (!g.list.length) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "Für alles, was oben fehlt, etwa é, ñ, ♥ oder ✓."; sec.insertBefore(p, add); }
-    }
-    box.appendChild(sec);
+  const groups = groupList(), g = groups.find(x => x.key === activeGroup) || groups[0];
+  const chips = document.createElement("div"); chips.className = "gchips"; chips.setAttribute("role", "tablist");
+  for (const gr of groups) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "gchip"; b.dataset.key = gr.key; b.setAttribute("role", "tab");
+    b.setAttribute("aria-selected", String(gr.key === g.key)); b.setAttribute("aria-label", gr.name);
+    b.innerHTML = '<span></span><span class="cnt"></span>'; b.children[0].textContent = gr.short;
+    b.onclick = () => { activeGroup = gr.key; buildGroups(); };
+    chips.appendChild(b);
+  }
+  box.appendChild(chips);
+  const h = document.createElement("div"); h.className = "sec-h"; h.innerHTML = "<span></span><output></output>";
+  h.children[0].textContent = g.name; box.appendChild(h);
+  const tiles = document.createElement("div"); tiles.className = "tiles";
+  for (const c of g.list) {
+    const b = document.createElement("button"); b.className = "tile"; b.type = "button";
+    b.onclick = () => { selectChar(c); if (window.innerWidth <= 900) $("padbox").scrollIntoView({ behavior: "smooth", block: "center" }); };
+    tiles.appendChild(b); tileEls.set(c, b); drawTile(c);
+  }
+  if (g.list.length) box.appendChild(tiles);
+  if (g.key === "custom") {
+    if (!g.list.length) { const p = document.createElement("p"); p.className = "hint"; p.textContent = "Für alles, was in den anderen Gruppen fehlt, etwa é, ñ, ♥ oder ✓."; box.appendChild(p); }
+    const add = document.createElement("div"); add.className = "addchar";
+    add.innerHTML = '<input id="addchar" maxlength="2" aria-label="Zeichen hinzufügen" placeholder="é"><button class="btn quiet" type="button" id="addchar-btn">Zeichen hinzufügen</button>';
+    box.appendChild(add);
+    $("addchar-btn").onclick = () => {
+      const c = Array.from($("addchar").value.trim())[0]; if (!c) return;
+      if (!BASE_SET.has(c) && !customChars.includes(c)) customChars.push(c);
+      activeGroup = "custom"; buildGroups(); selectChar(c); updateProgress();
+    };
   }
   const t = tileEls.get(cur); if (t) t.classList.add("cur");
-  $("addchar-btn").onclick = () => {
-    const c = Array.from($("addchar").value.trim())[0]; if (!c) return;
-    if (!BASE_SET.has(c) && !customChars.includes(c)) customChars.push(c);
-    buildGroups(); selectChar(c); updateProgress();
-  };
+  updateProgress();
 }
 function updateProgress() {
   const list = allChars(), done = list.filter(c => glyphs[c]).length;
   $("prog-txt").textContent = done + " / " + list.length;
-  $("prog-fill").style.width = (list.length ? done / list.length * 100 : 0) + "%";
-  document.querySelectorAll(".group").forEach((sec, i) => {
-    const g = i < GROUPS.length ? Array.from(GROUPS[i].chars) : list.filter(c => !BASE_SET.has(c));
-    const sp = sec.querySelector("h3 span:last-child"); if (sp) sp.textContent = g.length ? g.filter(c => glyphs[c]).length + "/" + g.length : "";
+  $("prog-fill").style.strokeDashoffset = String(75.4 * (1 - (list.length ? done / list.length : 0)));
+  const groups = groupList();
+  document.querySelectorAll(".gchip").forEach(b => {
+    const g = groups.find(x => x.key === b.dataset.key); if (!g) return;
+    const d = g.list.filter(c => glyphs[c]).length;
+    b.querySelector(".cnt").textContent = g.list.length ? d + "/" + g.list.length : "";
+    b.classList.toggle("full", g.list.length > 0 && d === g.list.length);
   });
+  const g = groups.find(x => x.key === activeGroup), out = document.querySelector("#groups .sec-h output");
+  if (g && out) out.textContent = g.list.length ? g.list.filter(c => glyphs[c]).length + " von " + g.list.length + " gezeichnet" : "";
 }
 
 /* ---------- cloud sync (per-person, private) ---------- */
@@ -854,14 +971,15 @@ function buildControls() {
     const out = () => { $(id + "-o").textContent = fmt[id](+el.value); };
     out(); el.oninput = () => { set[id] = +el.value; out(); saveSettings(); writeDirty(); };
   }
-  $("errors").value = String(set.errors || 0);
-  $("errors").onchange = e => { set.errors = +e.target.value; if (Object.keys(moves).length) { moves = {}; saveMoves(); } saveSettings(); writeDirty(); };
+  const syncErr = () => document.querySelectorAll("#errors button").forEach(b => b.setAttribute("aria-checked", String(+b.dataset.err === (set.errors || 0))));
+  document.querySelectorAll("#errors button").forEach(b => b.onclick = () => { set.errors = +b.dataset.err; syncErr(); clearTextEdits(); saveSettings(); writeDirty(); });
+  syncErr();
   $("linestep").value = String(set.lineStep);
   $("linestep").onchange = e => { set.lineStep = +e.target.value; saveSettings(); writeDirty(); };
   $("margin").checked = set.margin; $("margin").onchange = e => { set.margin = e.target.checked; saveSettings(); writeDirty(); };
   $("usedemo").checked = set.useDemo; $("usedemo").onchange = e => { set.useDemo = e.target.checked; saveSettings(); writeDirty(); };
   $("reroll").onclick = () => { set.seed = (Math.random() * 1e9) | 0; saveSettings(); writeDirty(); };
-  let tt; txt.addEventListener("input", () => { clearTimeout(tt); tt = setTimeout(() => store.set(K.text, txt.value), 400); if (Object.keys(moves).length) { moves = {}; saveMoves(); } writeDirty(); });
+  let tt; txt.addEventListener("input", () => { clearTimeout(tt); tt = setTimeout(() => store.set(K.text, txt.value), 400); clearTextEdits(); writeDirty(); });
   syncControls();
 }
 function syncControls() {
@@ -1020,6 +1138,7 @@ function layout() {
     return { g, gi, w: w + wmm, adv: w + wmm + Math.max(0.02, gap + jg) * u, sc, rot, dy, b };
   }
   function place(it) {
+    if (hiddenGi[it.gi]) { x += it.adv; return; }
     const y = lineY + (x - x0) * slope + it.dy * u, m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0;
     if (it.g.src === "font") ops.push({ t: "f", gi: it.gi, ch: it.g.ch, x: x + mx, y: y + my, size: fontSize });
     else ops.push({ t: "g", gi: it.gi, v: it.g.v, x: x + mx, y: y + my, rot: it.rot, k: u * it.sc, minX: it.b.minX, b: it.b });
@@ -1050,6 +1169,13 @@ const K_TPL = "mangoumwandler.templates.v1", K_MOVES = "mangoumwandler.moves.v1"
 const arr = v => Array.isArray(v) ? v : [];
 let templates = arr(store.get(K_TPL)), inkStrokes = arr(store.get(K_INK)), myTpls = arr(store.get(K_MINE));
 let moves = store.get(K_MOVES) || {};
+const K_HIDE = "mangoumwandler.hidden.v1";
+let hiddenGi = store.get(K_HIDE) || {};
+const saveHidden = () => store.set(K_HIDE, hiddenGi);
+function clearTextEdits() {
+  if (Object.keys(moves).length) { moves = {}; saveMoves(); }
+  if (Object.keys(hiddenGi).length) { hiddenGi = {}; saveHidden(); }
+}
 let mode = null, selTpl = null, selGlyphs = null, lastL = null, sheetEls = [], undoStack = [];
 const saveTpl = () => store.set(K_TPL, templates);
 const saveMoves = () => store.set(K_MOVES, moves);
@@ -1152,7 +1278,7 @@ function renderPages() {
   selGlyphs = null;
   const sheets = $("sheets");
   sheets.querySelectorAll(".sheet").forEach(s => s.remove()); sheetEls = [];
-  const avail = Math.min(760, sheets.clientWidth || 760), dpr = window.devicePixelRatio || 1;
+  const avail = Math.max(280, Math.min(820, (sheets.clientWidth || 820) - 68)), dpr = window.devicePixelRatio || 1;
   const px = Math.max(4, Math.min(9, avail * dpr / spec.w));
   L.pages.forEach((_, i) => {
     const wrap = document.createElement("div"); wrap.className = "sheet"; wrap.style.aspectRatio = spec.w + " / " + spec.h; wrap.style.background = spec.bg;
@@ -1220,10 +1346,14 @@ function renderObjs() {
     el.addEventListener("pointerdown", e => startDrag(e, se, "glyphs", null));
     const bar = document.createElement("div"); bar.className = "tbar";
     bar.appendChild(mkBtn("chip", "Als Vorlage speichern", "Auswahl als eigene Vorlage speichern", saveSelectionAsTemplate));
-    if (selGlyphs.ink.size) bar.appendChild(mkBtn("chip danger", "Löschen", "Gezeichnetes in der Auswahl löschen", () => {
-      const gone = inkStrokes.filter(s => selGlyphs.ink.has(s.id));
-      inkStrokes = inkStrokes.filter(s => !selGlyphs.ink.has(s.id)); undoStack.push({ t: "erase", strokes: gone });
-      saveInk(); selGlyphs = null; redrawAll();
+    bar.appendChild(mkBtn("chip danger", "Löschen", "Auswahl löschen", () => {
+      const gis = [...selGlyphs.gis], gone = inkStrokes.filter(s => selGlyphs.ink.has(s.id));
+      inkStrokes = inkStrokes.filter(s => !selGlyphs.ink.has(s.id));
+      for (const g of gis) hiddenGi[g] = 1;
+      undoStack.push({ t: "del", gis, strokes: gone });
+      saveInk(); saveHidden(); selGlyphs = null;
+      if (gis.length) renderPages(); else redrawAll();
+      toast("Gelöscht. Mit „Zurück“ holst du es wieder.");
     }));
     el.appendChild(bar);
     se.objs.appendChild(el);
@@ -1304,10 +1434,10 @@ function fingerScroll(e, el) {
   track(e, el, ev => {
     const dy = ev.clientY - lastY, now = performance.now();
     if (!dy) return;
-    window.scrollBy(0, -dy); vel = dy / Math.max(8, now - lastT) * 16; lastY = ev.clientY; lastT = now;
+    $("canvas").scrollBy(0, -dy); vel = dy / Math.max(8, now - lastT) * 16; lastY = ev.clientY; lastT = now;
   }, () => {
     if (performance.now() - lastT > 80) return;
-    const glide = () => { if (Math.abs(vel) < 0.4) return; window.scrollBy(0, -vel); vel *= 0.94; requestAnimationFrame(glide); };
+    const glide = () => { if (Math.abs(vel) < 0.4) return; $("canvas").scrollBy(0, -vel); vel *= 0.94; requestAnimationFrame(glide); };
     requestAnimationFrame(glide);
   });
 }
@@ -1387,15 +1517,15 @@ function saveSelectionAsTemplate() {
   let n = myTpls.length + 1; while (myTpls.some(m => m.name === "Vorlage " + n)) n++;
   const def = { id: newId("m"), name: "Vorlage " + n, w: rmm(bw), h: rmm(bh), strokes: strokes.map(st => st.map(p => [r4((p[0] - b[0]) / bw), r4((p[1] - b[1]) / bh), p[2]])) };
   myTpls.push(def); saveMine(); renderMine();
-  toast("„" + def.name + "“ gespeichert. Du findest sie oben bei den Vorlagen.");
+  toast("„" + def.name + "“ gespeichert. Du findest sie unter „Vorlagen“.");
 }
 function renderMine() {
   const box = $("ed-mine"); box.textContent = "";
-  box.hidden = !myTpls.length;
+  box.hidden = !myTpls.length; $("mine-empty").hidden = !!myTpls.length;
   for (const d of myTpls) {
     const g = document.createElement("span"); g.className = "mine";
     const add = document.createElement("button"); add.type = "button"; add.className = "btn"; add.textContent = "+ " + d.name;
-    add.onclick = () => addTemplate("custom", d);
+    add.onclick = () => { closePops(); addTemplate("custom", d); };
     const del = document.createElement("button"); del.type = "button"; del.className = "mine-del"; del.textContent = "×"; del.setAttribute("aria-label", d.name + " entfernen");
     del.onclick = () => {
       if (!del.classList.contains("arm")) { del.classList.add("arm"); del.textContent = "Entfernen?"; setTimeout(() => { del.classList.remove("arm"); del.textContent = "×"; }, 3000); return; }
@@ -1408,7 +1538,7 @@ function addTemplate(type, mine) {
   if (!lastL) return;
   const def = mine || TPL_TYPES[type], s = lastL.spec;
   let page = 0;
-  const mid = window.innerHeight / 2;
+  const cr = $("canvas").getBoundingClientRect(), mid = cr.top + cr.height / 2;
   sheetEls.forEach((se, i) => { const r = se.wrap.getBoundingClientRect(); if (r.top < mid && r.bottom > mid) page = i; });
   const se = sheetEls[page], r = se.wrap.getBoundingClientRect();
   let cy = (mid - r.top) / r.height * s.h; cy = Math.max(def.h / 2 + 10, Math.min(s.h - def.h / 2 - 10, cy));
@@ -1418,7 +1548,7 @@ function addTemplate(type, mine) {
   if (mode) setMode(null);
   templates.push(t); saveTpl(); selTpl = t.id; selGlyphs = null;
   drawSheet(se); renderObjs();
-  toast(def.name + " eingefügt. Zum Verschieben ziehen, am blauen Punkt größer oder kleiner ziehen.");
+  toast(def.name + " eingefügt. Zum Verschieben ziehen, am orangen Punkt größer oder kleiner ziehen.");
 }
 function setMode(m) {
   mode = mode === m ? null : m;
@@ -1435,14 +1565,16 @@ $("ed-undo").onclick = () => {
   if (!a) { toast("Es gibt nichts zum Rückgängigmachen."); return; }
   if (a.t === "add") inkStrokes = inkStrokes.filter(s => !a.ids.includes(s.id));
   else if (a.t === "erase") inkStrokes.push(...a.strokes);
-  saveInk(); selGlyphs = null; redrawAll();
+  else if (a.t === "del") { inkStrokes.push(...a.strokes); for (const g of a.gis) delete hiddenGi[g]; saveHidden(); }
+  saveInk(); selGlyphs = null;
+  if (a.t === "del" && a.gis.length) renderPages(); else redrawAll();
 };
 renderMine();
-document.querySelectorAll("[data-tpl]").forEach(b => b.onclick = () => addTemplate(b.dataset.tpl));
+document.querySelectorAll("[data-tpl]").forEach(b => b.onclick = () => { closePops(); addTemplate(b.dataset.tpl); });
 $("ed-reset").onclick = () => {
-  const had = Object.keys(moves).length;
-  moves = {}; saveMoves(); selGlyphs = null; renderPages();
-  toast(had ? "Text steht wieder an seinem Platz." : "Es wurde noch nichts verschoben.");
+  const had = Object.keys(moves).length + Object.keys(hiddenGi).length;
+  moves = {}; saveMoves(); hiddenGi = {}; saveHidden(); selGlyphs = null; renderPages();
+  toast(had ? "Der Text ist wieder vollständig und an seinem Platz." : "Am Text wurde noch nichts verschoben oder gelöscht.");
 };
 
 function renderMissing(missing, demoUsed) {
@@ -1455,8 +1587,11 @@ function renderMissing(missing, demoUsed) {
     ? "Du hast noch keine Zeichen gezeichnet. Die Vorschau zeigt deshalb die Beispielschrift."
     : (set.useDemo ? "Diese Zeichen fehlen dir noch und kommen aus der Beispielschrift:" : "Diese Zeichen fehlen dir noch und stehen grau in Druckschrift:");
   box.appendChild(p);
+  if (own === 0) return;
   const chars = document.createElement("div"); chars.className = "chars";
-  for (const c of [...missing].slice(0, 60)) {
+  const all = [...missing];
+  if (all.length > 24) { const more = document.createElement("span"); more.className = "hint"; more.textContent = "und " + (all.length - 24) + " weitere"; setTimeout(() => chars.appendChild(more)); }
+  for (const c of all.slice(0, 24)) {
     const b = document.createElement("button"); b.type = "button"; b.textContent = c; b.title = "„" + c + "“ jetzt zeichnen";
     b.onclick = () => { if (!BASE_SET.has(c) && !customChars.includes(c)) { customChars.push(c); buildGroups(); updateProgress(); } showTab("draw"); selectChar(c); };
     chars.appendChild(b);
@@ -1489,47 +1624,63 @@ $("save-trans").onclick = () => exportPng(true);
 $("save-pdf").onclick = exportPdf;
 
 /* ---------- scroll rail (works in every mode) ---------- */
-const rail = $("rail"), thumb = $("rail-thumb");
+const rail = $("rail"), thumb = $("rail-thumb"), desk = $("canvas");
 function railMetrics() {
-  const docH = document.documentElement.scrollHeight, vh = window.innerHeight, rh = rail.clientHeight;
-  const th = Math.max(44, rh * vh / docH), max = Math.max(1, docH - vh);
-  return { max, rh, th };
+  const docH = desk.scrollHeight, vh = desk.clientHeight, rh = rail.clientHeight;
+  return { max: Math.max(1, docH - vh), rh, th: Math.max(44, rh * vh / Math.max(1, docH)) };
 }
 function updateRail() {
   if ($("view-write").hidden) { rail.hidden = true; return; }
-  const docH = document.documentElement.scrollHeight;
-  rail.hidden = docH <= window.innerHeight + 8;
+  rail.hidden = desk.scrollHeight <= desk.clientHeight + 8;
   if (rail.hidden) return;
   const m = railMetrics();
   thumb.style.height = m.th + "px";
-  thumb.style.top = ((m.rh - m.th) * Math.min(1, window.scrollY / m.max)) + "px";
+  thumb.style.top = ((m.rh - m.th) * Math.min(1, desk.scrollTop / m.max)) + "px";
 }
 rail.addEventListener("pointerdown", e => {
   e.preventDefault();
   try { rail.setPointerCapture(e.pointerId); } catch (x) {}
-  rail.classList.add("drag");
-  const m = railMetrics(), r = rail.getBoundingClientRect();
-  const toScroll = y => window.scrollTo(0, Math.max(0, Math.min(1, (y - r.top - m.th / 2) / Math.max(1, m.rh - m.th))) * m.max);
-  const tr = thumb.getBoundingClientRect();
+  const m = railMetrics(), r = rail.getBoundingClientRect(), tr = thumb.getBoundingClientRect();
+  const toScroll = y => { desk.scrollTop = Math.max(0, Math.min(1, (y - r.top - m.th / 2) / Math.max(1, m.rh - m.th))) * m.max; };
   const grab = e.clientY >= tr.top && e.clientY <= tr.bottom ? e.clientY - tr.top - m.th / 2 : 0;
   toScroll(e.clientY - grab);
   const mv = ev => { if (ev.pointerId === e.pointerId) toScroll(ev.clientY - grab); };
-  const up = ev => { if (ev.pointerId !== e.pointerId) return; rail.classList.remove("drag"); rail.removeEventListener("pointermove", mv); rail.removeEventListener("pointerup", up); rail.removeEventListener("pointercancel", up); };
+  const up = ev => { if (ev.pointerId !== e.pointerId) return; rail.removeEventListener("pointermove", mv); rail.removeEventListener("pointerup", up); rail.removeEventListener("pointercancel", up); };
   rail.addEventListener("pointermove", mv); rail.addEventListener("pointerup", up); rail.addEventListener("pointercancel", up);
 });
-window.addEventListener("scroll", () => requestAnimationFrame(updateRail), { passive: true });
+desk.addEventListener("scroll", () => requestAnimationFrame(updateRail), { passive: true });
 window.addEventListener("resize", () => requestAnimationFrame(updateRail));
-new ResizeObserver(() => updateRail()).observe(document.body);
+new ResizeObserver(() => updateRail()).observe($("sheets"));
+
+/* ---------- popovers and settings drawer ---------- */
+function closePops(except) {
+  for (const [btn, pop] of [["tpl-btn", "tpl-pop"], ["exp-btn", "exp-pop"]]) {
+    if (pop === except) continue;
+    $(pop).hidden = true; $(btn).setAttribute("aria-expanded", "false");
+  }
+}
+for (const [btn, pop] of [["tpl-btn", "tpl-pop"], ["exp-btn", "exp-pop"]]) {
+  $(btn).onclick = e => { e.stopPropagation(); const open = $(pop).hidden; closePops(pop); $(pop).hidden = !open; $(btn).setAttribute("aria-expanded", String(open)); };
+  $(pop).addEventListener("click", e => e.stopPropagation());
+}
+document.addEventListener("click", () => closePops());
+document.querySelectorAll("#exp-pop .menu-item").forEach(b => b.addEventListener("click", () => setTimeout(closePops, 0)));
+function openSide(open) {
+  $("side").classList.toggle("open", open); $("side-scrim").hidden = !open;
+}
+$("side-open").onclick = e => { e.stopPropagation(); openSide(true); };
+$("side-close").onclick = () => openSide(false);
+$("side-scrim").onclick = () => openSide(false);
 
 /* ---------- tabs ---------- */
 function showTab(t) {
   const draw = t === "draw";
   $("view-draw").hidden = !draw; $("view-write").hidden = draw;
   $("tab-draw").setAttribute("aria-selected", String(draw)); $("tab-write").setAttribute("aria-selected", String(!draw));
-  writeVisible = !draw; store.set(K.tab, t); requestAnimationFrame(updateRail);
+  writeVisible = !draw; store.set(K.tab, t);
   if (draw) requestAnimationFrame(resizePad);
   else if (needsRender) renderPages();
-  window.scrollTo(0, 0);
+  closePops(); openSide(false); requestAnimationFrame(updateRail);
 }
 $("tab-draw").onclick = () => showTab("draw");
 $("tab-write").onclick = () => showTab("write");
