@@ -203,6 +203,10 @@ select { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; 
 .edbar .btn { min-height: 40px; padding: 6px 12px; font-size: 14px; }
 .edbar .btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .edsep { width: 1px; height: 24px; background: var(--line); }
+#view-write .sheets { padding-right: 34px; }
+.rail { position: fixed; z-index: 6; right: max(6px, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 84px); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 26px; border-radius: 13px; background: var(--sunken); border: 1px solid var(--line); touch-action: none; cursor: pointer; }
+.rail .thumb { position: absolute; left: 3px; right: 3px; top: 0; min-height: 44px; border-radius: 10px; background: var(--accent); opacity: .85; }
+.rail.drag .thumb { opacity: 1; }
 .sheet .pno { position: absolute; bottom: -20px; right: 0; font: 500 11px/1 var(--f-mono); color: var(--muted); }
 
 footer { color: var(--muted); font-size: 13px; padding-block: 0 32px; }
@@ -366,6 +370,7 @@ footer summary { cursor: pointer; }
   </details>
 </footer>
 
+<div class="rail" id="rail" hidden aria-hidden="true"><div class="thumb" id="rail-thumb"></div></div>
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1191,7 +1196,10 @@ function renderObjs() {
     const el = document.createElement("div"); el.className = "obj" + (t.id === selTpl ? " sel" : "");
     el.setAttribute("aria-label", t.name || (TPL_TYPES[t.type] ? TPL_TYPES[t.type].name : "Vorlage"));
     placeBox(el, [t.x, t.y, t.x + t.w, t.y + t.h]);
-    el.addEventListener("pointerdown", e => { selTpl = t.id; selGlyphs = null; renderObjs(); startDrag(e, se, "move", t); });
+    el.addEventListener("pointerdown", e => {
+      if (selTpl !== t.id) { selTpl = t.id; selGlyphs = null; se.objs.querySelectorAll(".obj.sel, .selbox").forEach(o => o.classList.remove("sel")); el.classList.add("sel"); }
+      startDrag(e, se, "move", t);
+    });
     if (t.id === selTpl) {
       el.appendChild(mkBtn("del", "×", "Vorlage löschen", () => { templates = templates.filter(o => o.id !== t.id); selTpl = null; saveTpl(); drawSheet(se); renderObjs(); }));
       const rs = document.createElement("div"); rs.className = "rs"; rs.setAttribute("aria-label", "Größe ändern");
@@ -1291,6 +1299,18 @@ function track(e, el, onPt, onEnd) {
   const up = ev => { if (ev.pointerId !== e.pointerId) return; el.removeEventListener("pointermove", mv); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up); onEnd(); };
   el.addEventListener("pointermove", mv); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
 }
+function fingerScroll(e, el) {
+  let lastY = e.clientY, lastT = performance.now(), vel = 0;
+  track(e, el, ev => {
+    const dy = ev.clientY - lastY, now = performance.now();
+    if (!dy) return;
+    window.scrollBy(0, -dy); vel = dy / Math.max(8, now - lastT) * 16; lastY = ev.clientY; lastT = now;
+  }, () => {
+    if (performance.now() - lastT > 80) return;
+    const glide = () => { if (Math.abs(vel) < 0.4) return; window.scrollBy(0, -vel); vel *= 0.94; requestAnimationFrame(glide); };
+    requestAnimationFrame(glide);
+  });
+}
 function penStroke(e, se) {
   const pts = [ptMM(e, se)], ctx = se.cv.getContext("2d"), wmm = set.weight;
   ctx.setTransform(se.px, 0, 0, se.px, 0, 0); ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = ctx.fillStyle = lastL.ink;
@@ -1348,9 +1368,9 @@ function attachSheet(se) {
   se.catcher.addEventListener("pointerdown", e => {
     if (e.button > 0 || !mode) return;
     if (e.pointerType === "pen" && !penSeen) { penSeen = true; if (!penOnly && store.get(K.pen) == null) { penOnly = true; $("opt-pen").checked = true; store.set(K.pen, true); } }
-    if ((mode === "pen" || mode === "erase") && penOnly && e.pointerType !== "pen") return;
     e.preventDefault();
     try { se.catcher.setPointerCapture(e.pointerId); } catch (x) {}
+    if (penOnly && e.pointerType !== "pen") { fingerScroll(e, se.catcher); return; }
     if (mode === "pen") penStroke(e, se); else if (mode === "erase") eraseDrag(e, se); else lassoDraw(e, se);
   });
 }
@@ -1468,12 +1488,45 @@ $("save-png").onclick = () => exportPng(false);
 $("save-trans").onclick = () => exportPng(true);
 $("save-pdf").onclick = exportPdf;
 
+/* ---------- scroll rail (works in every mode) ---------- */
+const rail = $("rail"), thumb = $("rail-thumb");
+function railMetrics() {
+  const docH = document.documentElement.scrollHeight, vh = window.innerHeight, rh = rail.clientHeight;
+  const th = Math.max(44, rh * vh / docH), max = Math.max(1, docH - vh);
+  return { max, rh, th };
+}
+function updateRail() {
+  if ($("view-write").hidden) { rail.hidden = true; return; }
+  const docH = document.documentElement.scrollHeight;
+  rail.hidden = docH <= window.innerHeight + 8;
+  if (rail.hidden) return;
+  const m = railMetrics();
+  thumb.style.height = m.th + "px";
+  thumb.style.top = ((m.rh - m.th) * Math.min(1, window.scrollY / m.max)) + "px";
+}
+rail.addEventListener("pointerdown", e => {
+  e.preventDefault();
+  try { rail.setPointerCapture(e.pointerId); } catch (x) {}
+  rail.classList.add("drag");
+  const m = railMetrics(), r = rail.getBoundingClientRect();
+  const toScroll = y => window.scrollTo(0, Math.max(0, Math.min(1, (y - r.top - m.th / 2) / Math.max(1, m.rh - m.th))) * m.max);
+  const tr = thumb.getBoundingClientRect();
+  const grab = e.clientY >= tr.top && e.clientY <= tr.bottom ? e.clientY - tr.top - m.th / 2 : 0;
+  toScroll(e.clientY - grab);
+  const mv = ev => { if (ev.pointerId === e.pointerId) toScroll(ev.clientY - grab); };
+  const up = ev => { if (ev.pointerId !== e.pointerId) return; rail.classList.remove("drag"); rail.removeEventListener("pointermove", mv); rail.removeEventListener("pointerup", up); rail.removeEventListener("pointercancel", up); };
+  rail.addEventListener("pointermove", mv); rail.addEventListener("pointerup", up); rail.addEventListener("pointercancel", up);
+});
+window.addEventListener("scroll", () => requestAnimationFrame(updateRail), { passive: true });
+window.addEventListener("resize", () => requestAnimationFrame(updateRail));
+new ResizeObserver(() => updateRail()).observe(document.body);
+
 /* ---------- tabs ---------- */
 function showTab(t) {
   const draw = t === "draw";
   $("view-draw").hidden = !draw; $("view-write").hidden = draw;
   $("tab-draw").setAttribute("aria-selected", String(draw)); $("tab-write").setAttribute("aria-selected", String(!draw));
-  writeVisible = !draw; store.set(K.tab, t);
+  writeVisible = !draw; store.set(K.tab, t); requestAnimationFrame(updateRail);
   if (draw) requestAnimationFrame(resizePad);
   else if (needsRender) renderPages();
   window.scrollTo(0, 0);
