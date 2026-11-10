@@ -125,6 +125,21 @@ main { padding-block: 20px 40px; }
 .status[data-s="synced"] .dot { background: #2f9e62; }
 .status[data-s="connecting"] .dot { background: #d2a12a; }
 .status[data-s="local"] .dot { background: var(--signal); }
+.btn.danger { color: var(--signal); border-color: transparent; background: transparent; padding-left: 0; padding-right: 0; justify-content: flex-start; }
+.btn.danger-solid { background: var(--signal); border-color: var(--signal); color: #fff; }
+.confirm { border: 1px solid var(--signal); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.confirm p { margin: 0; }
+[hidden] { display: none !important; }
+
+/* access gate */
+body.locked .bar, body.locked main, body.locked footer { display: none !important; }
+.gate { min-height: 100vh; display: grid; place-items: center; padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.gate form { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; }
+.gate h2 { font: 800 30px/1.05 var(--f-display); letter-spacing: -0.02em; margin: 0; }
+.gate p { margin: 0; color: var(--muted); }
+.gate label { font: 500 11px/1 var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.gate input { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 18px; background: var(--bg); min-height: 50px; }
+.gate .err { color: var(--signal); font-weight: 700; font-size: 14px; min-height: 1.5em; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* Step 2 */
@@ -185,6 +200,17 @@ footer summary { cursor: pointer; }
 </head>
 <body>
 
+<div class="gate" id="gate" hidden>
+  <form id="gate-form" autocomplete="off">
+    <h2>MangoUmwandler</h2>
+    <p>Gib deinen Nutzer-Key ein. Danach kannst du die Seite auf diesem Gerät immer benutzen.</p>
+    <label for="gate-key">Nutzer-Key</label>
+    <input id="gate-key" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Codewort">
+    <button class="btn primary" type="submit" id="gate-go">Freischalten</button>
+    <div class="err" id="gate-err" role="alert"></div>
+  </form>
+</div>
+
 <header class="bar">
   <div class="wrap">
     <h1 class="brand">MangoUmwandler <small>deine Handschrift als Schrift</small></h1>
@@ -229,6 +255,11 @@ footer summary { cursor: pointer; }
             <button class="btn quiet" id="backup">Sicherung speichern</button>
             <button class="btn quiet" id="restore">Sicherung laden</button>
             <input type="file" id="restore-file" accept=".json,application/json" hidden>
+          </div>
+          <button class="btn danger" id="wipe" type="button">Meine Schrift löschen</button>
+          <div class="confirm" id="wipe-confirm" hidden>
+            <p id="wipe-text">Alle gezeichneten Zeichen werden gelöscht.</p>
+            <div class="row"><button class="btn quiet" id="wipe-no" type="button">Abbrechen</button><button class="btn danger-solid" id="wipe-yes" type="button">Ja, alles löschen</button></div>
           </div>
         </div>
       </aside>
@@ -1039,6 +1070,73 @@ let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTime
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawPad(); writeDirty(); });
 if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { drawPad(); allChars().forEach(drawTile); });
 new MutationObserver(() => { drawPad(); allChars().forEach(drawTile); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+/* ---------- delete my handwriting ---------- */
+$("wipe").onclick = () => {
+  const n = Object.keys(glyphs).length;
+  if (!n) { toast("Es gibt noch keine gezeichneten Zeichen."); return; }
+  $("wipe-text").textContent = "Alle " + n + " gezeichneten Zeichen werden gelöscht" + (dbCol ? ", auch in deinem Claude-Konto" : "") + ". Das lässt sich nur mit einer Sicherung rückgängig machen.";
+  $("wipe-confirm").hidden = false; $("wipe").hidden = true;
+};
+$("wipe-no").onclick = () => { $("wipe-confirm").hidden = true; $("wipe").hidden = false; };
+$("wipe-yes").onclick = () => {
+  const list = Object.keys(glyphs);
+  glyphs = {}; customChars = [];
+  saveLocal(); list.forEach(queueWrite);
+  curVar = 0; buildGroups(); updateProgress(); selectChar("a"); writeDirty();
+  $("wipe-confirm").hidden = true; $("wipe").hidden = false;
+  toast(list.length + " Zeichen gelöscht.");
+};
+
+/* ---------- access gate (only on the stand-alone website) ---------- */
+const KEY_HASHES = ["e778a4fc20fd0b08fd20a676dbdf4d0664d3e2be9d1be20c43d182fd11622dfe", "56b6a2a53873531ba14076cf204501ea0688e9b8f555390fb434ebe45184de18", "ec7ae7260b54beb5ffdd617d524041786e657f0ed46d12c0a3eb7c74651bc809", "c9c8d4ea331d71e6296ffda37980807491677b26f8dd88e01e34ed864cc7078a", "2596d9a73e6786e38846c9696d09bc24646157e0ec93bea017d20fc2f4fc06d2", "5deb02d09a49a8bdfd38cc158cf6b39be2fe2729b109dc9419e1f5f3d47ae15c"];
+// Optional: a Supabase project makes every key usable on exactly one device.
+const REDEEM = { url: "", anonKey: "" };
+const K_UNLOCK = "mangoumwandler.unlock.v1";
+async function hashKey(k) {
+  const data = new TextEncoder().encode("mango:" + k.trim().toLowerCase());
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+function deviceId() {
+  let d = store.get("mangoumwandler.device.v1");
+  if (!d) { d = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)); store.set("mangoumwandler.device.v1", d); }
+  return d;
+}
+function unlocked() { const u = store.get(K_UNLOCK); return !!(u && KEY_HASHES.includes(u.h)); }
+function lockPage() {
+  document.body.classList.add("locked"); $("gate").hidden = false;
+  setTimeout(() => $("gate-key").focus(), 50);
+}
+$("gate-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const key = $("gate-key").value; const err = $("gate-err");
+  if (!key.trim()) { err.textContent = "Bitte gib deinen Nutzer-Key ein."; return; }
+  $("gate-go").disabled = true; err.textContent = "";
+  try {
+    const h = await hashKey(key);
+    if (!KEY_HASHES.includes(h)) { err.textContent = "Diesen Nutzer-Key gibt es nicht. Prüf die Schreibweise."; return; }
+    if (REDEEM.url) {
+      const res = await fetch(REDEEM.url.replace(/\/$/, "") + "/rest/v1/rpc/redeem_code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: REDEEM.anonKey, Authorization: "Bearer " + REDEEM.anonKey },
+        body: JSON.stringify({ p_hash: h, p_device: deviceId() }),
+      });
+      if (!res.ok) throw new Error("http " + res.status);
+      const r = await res.json();
+      if (r === "used") { err.textContent = "Dieser Nutzer-Key wurde schon auf einem anderen Gerät benutzt."; return; }
+      if (r !== "ok") { err.textContent = "Diesen Nutzer-Key gibt es nicht. Prüf die Schreibweise."; return; }
+    }
+    store.set(K_UNLOCK, { h, d: deviceId(), t: Date.now() });
+    if (!unlocked()) { err.textContent = "Dieses Gerät kann den Schlüssel nicht speichern. Öffne die Seite in Safari, nicht im privaten Modus."; return; }
+    document.body.classList.remove("locked"); $("gate").hidden = true;
+    requestAnimationFrame(resizePad);
+    toast("Freigeschaltet. Viel Spaß!");
+  } catch (x) {
+    err.textContent = "Keine Verbindung. Prüf dein Internet und versuch es nochmal.";
+  } finally { $("gate-go").disabled = false; }
+});
+if (STANDALONE && !unlocked()) lockPage();
 
 setStatus("local");
 initCloud();
