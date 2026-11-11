@@ -140,6 +140,13 @@ select { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; ba
 .variants { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .variants .lbl { font: 500 10.5px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
 .variants .chip { min-width: 34px; }
+.variants .chip.empty { border-style: dashed; color: var(--muted); background: transparent; }
+.variants .chip.empty[aria-pressed="true"] { border-color: var(--mango); color: var(--fg); background: var(--accent-soft); }
+.ultra-t { color: var(--fg) !important; font-weight: 800 !important; }
+.ultra-banner { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 14px; background: var(--accent-soft); font-size: 13.5px; font-weight: 600; }
+.ultra-banner b { font-weight: 800; }
+.tile.part { background: var(--sunken); border-color: transparent; }
+.tile .vc.part { color: var(--muted); }
 
 .drawer-side { background: var(--surface); border-left: 1px solid var(--line); overflow: auto; -webkit-overflow-scrolling: touch; padding-block: 18px 32px; padding-left: 18px; padding-right: max(18px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 22px; }
 .side-sec { display: flex; flex-direction: column; gap: 12px; }
@@ -365,12 +372,14 @@ body.locked .app { display: none; }
               <button class="btn primary" id="next">Weiter<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
             </div>
           </div>
+          <div class="ultra-banner" id="ultra-banner" hidden><span id="ultra-text"></span></div>
           <div class="padbox" id="padbox"><canvas id="pad" aria-label="Zeichenfläche"></canvas></div>
           <div class="tools">
             <button class="btn quiet" id="undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg>Rückgängig</button>
             <button class="btn quiet" id="clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Leeren</button>
             <div class="variants" id="variants"></div>
             <span class="spacer"></span>
+            <label class="toggle inline ultra-t" title="Jedes Zeichen dreimal verschieden schreiben"><input type="checkbox" id="opt-ultra">Ultra realistic</label>
             <label class="toggle inline"><input type="checkbox" id="opt-ghost" checked>Vorlage</label>
             <label class="toggle inline"><input type="checkbox" id="opt-pen">Nur Apple Pencil</label>
           </div>
@@ -549,7 +558,7 @@ const INKS = [
   { id: "gruen", name: "Grün", c: "#1d7347" },
 ];
 const SAMPLE = "Liebe Oma,\n\nvielen Dank für das Paket! Die Kekse waren nach zwei Tagen weg, und der Schal hält wunderbar warm. Nächste Woche schreiben wir eine Mathearbeit (Brüche, 3/4 + 1/8 = 7/8), drück mir die Daumen.\n\nViele Grüße und bis bald\ndein Jonas";
-const K = { glyphs: "schriftprobe.glyphs.v1", set: "schriftprobe.settings.v1", text: "schriftprobe.text.v1", tab: "schriftprobe.tab.v1", pen: "schriftprobe.pen.v1" };
+const K = { glyphs: "schriftprobe.glyphs.v1", set: "schriftprobe.settings.v1", text: "schriftprobe.text.v1", tab: "schriftprobe.tab.v1", pen: "schriftprobe.pen.v1", ultra: "mangoumwandler.ultra.v1" };
 
 const store = {
   get(k) { try { const v = localStorage.getItem(k); return v == null ? null : JSON.parse(v); } catch (e) { return null; } },
@@ -728,7 +737,7 @@ function endStroke(e) {
   if (curVar > g.v.length) curVar = g.v.length;
   if (!g.v[curVar]) g.v[curVar] = [];
   g.v[curVar].push(pts); g.t = Date.now();
-  persist(cur); drawPad(); renderVariants();
+  persist(cur); drawPad(); renderVariants(); updateHeader();
 }
 pad.addEventListener("pointerup", endStroke);
 pad.addEventListener("pointercancel", endStroke);
@@ -749,25 +758,42 @@ function selectChar(c, v) {
   const t = tileEls.get(c); if (t) { t.classList.add("cur"); }
   updateHeader(); renderVariants(); drawPad();
 }
+let ultra = !!store.get(K.ultra);
+const NEED = 3;
+const isDone = c => !!glyphs[c] && (!ultra || glyphs[c].v.length >= NEED);
+function updateUltraBanner() {
+  const box = $("ultra-banner"); box.hidden = !ultra; if (!ultra) return;
+  const n = glyphs[cur] ? glyphs[cur].v.length : 0, slot = Math.min(curVar, NEED - 1) + 1;
+  $("ultra-text").innerHTML = "";
+  const b = document.createElement("b"); b.textContent = "Variante " + slot + " von " + NEED + ": ";
+  const t = document.createElement("span");
+  t.textContent = n >= NEED && curVar < n ? "„" + cur + "“ ist fertig. Du kannst jede Variante neu zeichnen oder weitergehen."
+    : slot === 1 ? "Schreib „" + cur + "“ ganz normal."
+    : slot === 2 ? "Schreib „" + cur + "“ nochmal, diesmal etwas anders. Die erste Variante siehst du blass im Hintergrund."
+    : "Und ein drittes Mal, wieder ein bisschen anders.";
+  $("ultra-text").append(b, t);
+}
 function updateHeader() {
   const g = groupOf(cur), list = g.key === "custom" ? allChars().filter(c => !BASE_SET.has(c)) : Array.from(g.chars);
   $("cur-big").textContent = cur;
   $("cur-name").textContent = g.one + " " + cur;
   const n = glyphs[cur] ? glyphs[cur].v.length : 0;
-  $("cur-pos").textContent = (list.indexOf(cur) + 1) + " von " + list.length + " · " + (n ? n + (n === 1 ? " Variante" : " Varianten") : "noch nicht gezeichnet");
+  $("cur-pos").textContent = (list.indexOf(cur) + 1) + " von " + list.length + " · " +
+    (ultra ? n + " von " + NEED + " Varianten" + (n >= NEED ? " ✓" : "") : (n ? n + (n === 1 ? " Variante" : " Varianten") : "noch nicht gezeichnet"));
+  updateUltraBanner();
 }
 function renderVariants() {
   const box = $("variants"); box.textContent = "";
   const g = glyphs[cur], n = g ? g.v.length : 0;
   const lab = document.createElement("span"); lab.className = "lbl"; lab.textContent = "Variante"; box.appendChild(lab);
-  const count = Math.max(n, curVar + 1);
+  const count = ultra ? NEED : Math.max(n, curVar + 1);
   for (let i = 0; i < count; i++) {
-    const b = document.createElement("button"); b.className = "chip"; b.textContent = String(i + 1);
-    b.setAttribute("aria-pressed", String(i === curVar)); b.setAttribute("aria-label", "Variante " + (i + 1));
-    b.onclick = () => { curVar = i; renderVariants(); drawPad(); };
+    const b = document.createElement("button"); b.className = "chip" + (i >= n ? " empty" : ""); b.textContent = String(i + 1);
+    b.setAttribute("aria-pressed", String(i === curVar || (i >= n && curVar >= n && i === n))); b.setAttribute("aria-label", "Variante " + (i + 1));
+    b.onclick = () => { curVar = Math.min(i, n); renderVariants(); drawPad(); updateHeader(); };
     box.appendChild(b);
   }
-  if (count < 3 && n === count) {
+  if (!ultra && count < 3 && n === count) {
     const b = document.createElement("button"); b.className = "chip"; b.textContent = "+ neue";
     b.onclick = () => { curVar = n; renderVariants(); drawPad(); };
     box.appendChild(b);
@@ -784,7 +810,21 @@ $("clear").onclick = () => {
   drawPad(); renderVariants(); updateHeader();
 };
 function step(d) { const list = allChars(); let i = list.indexOf(cur); i = (i + d + list.length) % list.length; selectChar(list[i]); const t = tileEls.get(list[i]); if (t && window.innerWidth > 980) t.scrollIntoView({ block: "nearest" }); }
-$("next").onclick = () => step(1);
+$("next").onclick = () => {
+  const n = glyphs[cur] ? glyphs[cur].v.length : 0;
+  if (ultra && n > 0 && n < NEED) {
+    curVar = n; renderVariants(); drawPad(); updateHeader();
+    toast("Jetzt Variante " + (n + 1) + " von " + NEED + ": schreib „" + cur + "“ etwas anders.");
+    return;
+  }
+  step(1);
+};
+$("opt-ultra").checked = ultra;
+$("opt-ultra").onchange = e => {
+  ultra = e.target.checked; store.set(K.ultra, ultra);
+  buildGroups(); renderVariants(); updateHeader(); updateProgress(); writeDirty();
+  toast(ultra ? "Ultra realistic ist an: Schreib jedes Zeichen dreimal verschieden." : "Ultra realistic ist aus.");
+};
 $("prev").onclick = () => step(-1);
 $("opt-ghost").onchange = drawPad;
 $("opt-pen").onchange = e => { penOnly = e.target.checked; store.set(K.pen, penOnly); };
@@ -801,7 +841,7 @@ const tileEls = new Map();
 function drawTile(c) {
   const t = tileEls.get(c); if (!t) return;
   const g = glyphs[c];
-  t.classList.toggle("done", !!g);
+  t.classList.toggle("done", isDone(c)); t.classList.toggle("part", !!g && !isDone(c));
   t.textContent = "";
   if (!g) { t.textContent = c; t.setAttribute("aria-label", c + ", noch offen"); return; }
   t.setAttribute("aria-label", c + ", gezeichnet");
@@ -812,7 +852,8 @@ function drawTile(c) {
   x.setTransform(k, 0, 0, k, (S * dpr - (b.maxX - b.minX) * k) / 2 - b.minX * k, S * dpr * 0.66);
   x.strokeStyle = x.fillStyle = cssVar("--pad-ink"); x.lineCap = "round";
   for (const s of v) strokePath(x, s, 0.13);
-  if (g.v.length > 1) { const vc = document.createElement("span"); vc.className = "vc"; vc.textContent = "×" + g.v.length; t.appendChild(vc); }
+  if (ultra) { const vc = document.createElement("span"); vc.className = "vc" + (isDone(c) ? "" : " part"); vc.textContent = Math.min(g.v.length, NEED) + "/" + NEED; t.appendChild(vc); }
+  else if (g.v.length > 1) { const vc = document.createElement("span"); vc.className = "vc"; vc.textContent = "×" + g.v.length; t.appendChild(vc); }
 }
 function updateTile(c) { if (!tileEls.has(c)) { updateProgress(); return; } drawTile(c); }
 let activeGroup = "lower";
@@ -857,18 +898,18 @@ function buildGroups() {
   updateProgress();
 }
 function updateProgress() {
-  const list = allChars(), done = list.filter(c => glyphs[c]).length;
+  const list = allChars(), done = list.filter(isDone).length;
   $("prog-txt").textContent = done + " / " + list.length;
   $("prog-fill").style.strokeDashoffset = String(75.4 * (1 - (list.length ? done / list.length : 0)));
   const groups = groupList();
   document.querySelectorAll(".gchip").forEach(b => {
     const g = groups.find(x => x.key === b.dataset.key); if (!g) return;
-    const d = g.list.filter(c => glyphs[c]).length;
+    const d = g.list.filter(isDone).length;
     b.querySelector(".cnt").textContent = g.list.length ? d + "/" + g.list.length : "";
     b.classList.toggle("full", g.list.length > 0 && d === g.list.length);
   });
   const g = groups.find(x => x.key === activeGroup), out = document.querySelector("#groups .sec-h output");
-  if (g && out) out.textContent = g.list.length ? g.list.filter(c => glyphs[c]).length + " von " + g.list.length + " gezeichnet" : "";
+  if (g && out) out.textContent = g.list.length ? g.list.filter(isDone).length + " von " + g.list.length + (ultra ? " fertig" : " gezeichnet") : "";
 }
 
 /* ---------- cloud sync (per-person, private) ---------- */
@@ -1256,7 +1297,12 @@ function paintPaper(P, id, spec, pageIndex) {
 
 function pickGlyph(c, rng) {
   const pickV = list => list[Math.floor(rng() * list.length) % list.length];
-  const g = glyphs[c]; if (g && g.v.length) return { v: pickV(g.v), src: "user" };
+  const g = glyphs[c];
+  if (g && g.v.length) {
+    const n = g.v.length; let k = Math.floor(rng() * n) % n;
+    if (n > 1 && lastPick[c] === k) k = (k + 1 + Math.floor(rng() * (n - 1))) % n;
+    lastPick[c] = k; return { v: g.v[k], src: "user" };
+  }
   const ub = UMLAUT[c]; if (ub && glyphs[ub]) return { v: withDots(pickV(glyphs[ub].v)), src: "user" };
   const sb = SUBST[c]; if (sb && glyphs[sb]) return { v: pickV(glyphs[sb].v), src: "user" };
   if (set.useDemo) {
@@ -1290,7 +1336,9 @@ function addMistakes(text) {
 
 /* layout: text -> pages of drawing operations (in mm) */
 const measureCtx = document.createElement("canvas").getContext("2d");
+let lastPick = {};
 function layout() {
+  lastPick = {};
   if (set.paper === "custom") applyCustomSpec();
   const spec = PAPERS[set.paper] || PAPERS.liniert;
   const u = spec.u * set.size, nat = set.natural, gap = set.spacing;
@@ -1759,6 +1807,16 @@ $("ed-reset").onclick = () => {
 };
 
 function renderMissing(missing, demoUsed) {
+  renderMissingCore(missing, demoUsed);
+  if (!ultra) return;
+  const few = [...new Set(Array.from(txt.value))].filter(c => glyphs[c] && glyphs[c].v.length < NEED);
+  if (!few.length) return;
+  const box = $("missing"); if (box.classList.contains("ok")) { box.className = "missing"; box.textContent = ""; }
+  const p = document.createElement("div"); p.className = "hint";
+  p.textContent = "Ultra realistic: " + few.slice(0, 12).join(" ") + (few.length > 12 ? " …" : "") + " " + (few.length === 1 ? "hat" : "haben") + " noch keine 3 Varianten.";
+  box.appendChild(p);
+}
+function renderMissingCore(missing, demoUsed) {
   const box = $("missing"); box.textContent = "";
   const own = Object.keys(glyphs).length;
   if (!missing.size) { box.className = "missing ok"; box.textContent = "Alle Zeichen in diesem Text stammen aus deiner Handschrift."; return; }
