@@ -191,6 +191,22 @@ textarea:focus { background: var(--surface); }
 .sw.cremelin { background-color: #f9f7ea; border-color: #e6e2d2; background-image: repeating-linear-gradient(to bottom, transparent 0 4px, #d9d5c8 4px 5px); }
 .sw.cremekar { background-color: #f9f7ea; border-color: #e6e2d2; background-image: linear-gradient(#dcd9cb 1px, transparent 1px), linear-gradient(to right, #dcd9cb 1px, transparent 1px); background-size: 4px 4px; }
 .sw.vierlinien { background-image: repeating-linear-gradient(to bottom, transparent 0 3px, #c1c9dc 3px 4px, transparent 4px 6px, #dfe6f6 6px 9px, #8b9ac0 9px 10px, transparent 10px 12px, #c1c9dc 12px 13px, transparent 13px 16px); }
+.sw.custom { display: grid; place-items: center; background: var(--bg) center / cover no-repeat; border: 1.5px dashed var(--muted); color: var(--muted); }
+.sw.custom svg { width: 22px; height: 22px; }
+.sw.custom.has { border: 1px solid #e3e6ef; }
+.sw.custom.has svg { display: none; }
+.dropzone { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 14px; border-radius: 14px; border: 2px dashed var(--line); background: var(--bg); color: var(--muted); transition: border-color .15s, background .15s; }
+.dropzone svg { width: 26px; height: 26px; color: var(--accent); }
+.dropzone strong { display: block; color: var(--fg); font-size: 14px; }
+.dropzone small { display: block; font-size: 12px; font-weight: 500; }
+.dropzone:hover, .dropzone.over { border-color: var(--mango); background: var(--accent-soft); }
+.drop-veil { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(255, 169, 40, 0.16); border: 3px dashed var(--mango); border-radius: 6px; pointer-events: none; }
+.drop-veil div { background: var(--surface); color: var(--fg); border-radius: 18px; box-shadow: var(--shadow-l); padding: 18px 22px; font-weight: 800; font-size: 16px; display: flex; align-items: center; gap: 12px; }
+.drop-veil svg { width: 28px; height: 28px; color: var(--accent); }
+.custom-ctl { display: flex; flex-direction: column; gap: 12px; padding: 12px; border-radius: 14px; background: var(--bg); }
+.bg-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.bg-name { flex: 1 1 100%; font-weight: 700; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.bg-row .btn { min-height: 38px; }
 .inks { display: flex; gap: 10px; flex-wrap: wrap; }
 .ink { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line); padding: 0; }
 .ink[aria-checked="true"] { box-shadow: 0 0 0 2.5px var(--mango); }
@@ -313,9 +329,9 @@ body.locked .app { display: none; }
   <form id="gate-form" autocomplete="off">
     <svg class="logo" aria-hidden="true"><use href="#mango"/></svg>
     <h2>MangoUmwandler</h2>
-    <p>Gib deinen Nutzer-Key ein. Danach kannst du die Seite auf diesem Gerät immer benutzen.</p>
-    <label class="sec-h" for="gate-key">Nutzer-Key</label>
-    <input id="gate-key" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Codewort">
+    <p>Gib dein Passwort ein. Danach kannst du die Seite auf diesem Gerät immer benutzen.</p>
+    <label class="sec-h" for="gate-key">Passwort</label>
+    <input id="gate-key" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Passwort">
     <button class="btn primary" type="submit" id="gate-go">Freischalten</button>
     <div class="err" id="gate-err" role="alert"></div>
   </form>
@@ -395,6 +411,21 @@ body.locked .app { display: none; }
         <div class="side-sec">
           <span class="sec-h">Papier</span>
           <div class="papers" role="radiogroup" aria-label="Papier" id="papers"></div>
+          <input type="file" id="bg-file" accept="image/*,application/pdf,.pdf" hidden>
+          <button type="button" class="dropzone" id="dropzone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg>
+            <span><strong>Bild oder PDF hierher ziehen</strong><small>oder tippen, um eine Datei auszuwählen</small></span>
+          </button>
+          <div class="custom-ctl" id="custom-ctl" hidden>
+            <div class="bg-row"><span class="bg-name" id="bg-name">Keine Datei</span>
+              <button class="btn quiet" id="bg-replace" type="button">Andere Datei</button>
+              <button class="btn ghost" id="bg-remove" type="button" aria-label="Eigenes Blatt entfernen">Entfernen</button></div>
+            <div class="grid2">
+              <div class="field"><label class="sec-h" for="cpitch">Zeilen <output id="cpitch-o"></output></label><input type="range" id="cpitch" min="5" max="16" step="0.25"></div>
+              <div class="field"><label class="sec-h" for="ctop">Oben <output id="ctop-o"></output></label><input type="range" id="ctop" min="8" max="120" step="1"></div>
+            </div>
+            <p class="hint">Mit dem Lasso schiebst du Text an jede Stelle, zum Beispiel in die Lücken eines Arbeitsblatts.</p>
+          </div>
         </div>
         <div class="side-sec">
           <span class="sec-h">Tinte</span>
@@ -465,6 +496,7 @@ body.locked .app { display: none; }
             </div>
           </div>
         </div>
+        <div class="drop-veil" id="drop-veil" hidden><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7 9l5-5 5 5"/><path d="M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/></svg>Loslassen, um es als Blatt zu benutzen</div></div>
         <div class="sheets" id="sheets">
           <div class="sheetmeta"><span id="sheet-info">A4</span><span id="sheet-paper"></span></div>
         </div>
@@ -504,6 +536,7 @@ const PAPERS = {
   cremelin:   { name: "Creme liniert", w: 215.9, h: 279.4, bg: "#f9f7ea", u: 1.95, first: 23.9, pitch: 6.2, left: [12, 30], right: 204, maxBase: 266 },
   cremekar:   { name: "Creme kariert", w: 215.9, h: 279.4, bg: "#f9f7ea", u: 2.9, first: 27.9, pitch: 11.3, left: [16.6, 33.55], right: 205, maxBase: 266, marginX: 27.9 },
 };
+PAPERS.custom = { name: "Eigenes", custom: true, u: 2.7, first: 25, pitch: 9, left: [15, 25], right: 195 };
 for (const k in PAPERS) PAPERS[k] = Object.assign({ w: 210, h: 297, bg: "#ffffff", marginX: 25 }, PAPERS[k]);
 const STANDALONE = true;
 const INKS = [
@@ -943,7 +976,7 @@ $("restore-file").onchange = async e => {
    ============================================================ */
 const PX = 8; // preview pixels per mm
 const PX_EXPORT = 12; // image export pixels per mm (A4 = 2520 × 3564)
-const defaults = { paper: "liniert", ink: "blau", size: 1, weight: 0.6, spacing: 0.16, natural: 0.5, lineStep: 1, margin: true, useDemo: true, seed: 7, errors: 0 };
+const defaults = { paper: "liniert", ink: "blau", size: 1, weight: 0.6, spacing: 0.16, natural: 0.5, lineStep: 1, margin: true, useDemo: true, seed: 7, errors: 0, cPitch: 9, cTop: 25 };
 const set = Object.assign({}, defaults, store.get(K.set) || {});
 if (!(set.v >= 2)) { if (set.weight <= 0.45) set.weight = 0.6; set.v = 2; store.set(K.set, set); }
 const txt = $("txt");
@@ -955,7 +988,11 @@ function buildControls() {
   for (const [id, p] of Object.entries(PAPERS)) {
     const b = document.createElement("button"); b.type = "button"; b.className = "paper"; b.setAttribute("role", "radio"); b.dataset.id = id;
     b.innerHTML = '<span class="sw ' + id + '"></span><span></span>'; b.children[1].textContent = p.name;
-    b.onclick = () => { set.paper = id; syncControls(); saveSettings(); writeDirty(); };
+    if (id === "custom") {
+      b.children[0].innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>';
+      b.children[1].textContent = "Eigenes Bild / PDF";
+      b.onclick = () => { if (!customBg) { $("bg-file").click(); return; } set.paper = id; syncControls(); saveSettings(); writeDirty(); };
+    } else b.onclick = () => { set.paper = id; syncControls(); saveSettings(); writeDirty(); };
     pb.appendChild(b);
   }
   const ib = $("inks");
@@ -971,6 +1008,36 @@ function buildControls() {
     const out = () => { $(id + "-o").textContent = fmt[id](+el.value); };
     out(); el.oninput = () => { set[id] = +el.value; out(); saveSettings(); writeDirty(); };
   }
+  for (const [id, key, unit] of [["cpitch", "cPitch", " mm"], ["ctop", "cTop", " mm"]]) {
+    const el = $(id); el.value = set[key];
+    const out = () => { $(id + "-o").textContent = (+el.value).toFixed(key === "cPitch" ? 1 : 0).replace(".", ",") + unit; };
+    out(); el.oninput = () => { set[key] = +el.value; out(); saveSettings(); writeDirty(); };
+  }
+  $("bg-replace").onclick = () => $("bg-file").click();
+  $("dropzone").onclick = () => $("bg-file").click();
+  // drag and drop: onto the drop zone or anywhere on the desk
+  const hasFiles = e => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes("Files");
+  let depth = 0;
+  const veil = on => { $("drop-veil").hidden = !on; $("dropzone").classList.toggle("over", on); };
+  const pickFile = e => {
+    const files = Array.from((e.dataTransfer && e.dataTransfer.files) || []);
+    return files.find(f => f.type === "application/pdf" || /\.pdf$/i.test(f.name) || /^image\//.test(f.type)) || files[0];
+  };
+  for (const zone of [$("dropzone"), $("canvas")]) {
+    zone.addEventListener("dragenter", e => { if (!hasFiles(e)) return; e.preventDefault(); depth++; veil(true); });
+    zone.addEventListener("dragover", e => { if (!hasFiles(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = "copy"; });
+    zone.addEventListener("dragleave", () => { depth = Math.max(0, depth - 1); if (!depth) veil(false); });
+    zone.addEventListener("drop", e => {
+      e.preventDefault(); depth = 0; veil(false);
+      const f = pickFile(e);
+      if (f) importBackground(f);
+      else toast("Zieh ein Bild oder eine PDF aus der Fotos- oder Dateien-App hierher.");
+    });
+  }
+  window.addEventListener("dragover", e => { if (hasFiles(e)) e.preventDefault(); });
+  window.addEventListener("drop", e => { if (hasFiles(e)) { e.preventDefault(); depth = 0; veil(false); } });
+  $("bg-file").onchange = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) importBackground(f); };
+  $("bg-remove").onclick = removeBackground;
   const syncErr = () => document.querySelectorAll("#errors button").forEach(b => b.setAttribute("aria-checked", String(+b.dataset.err === (set.errors || 0))));
   document.querySelectorAll("#errors button").forEach(b => b.onclick = () => { set.errors = +b.dataset.err; syncErr(); clearTextEdits(); saveSettings(); writeDirty(); });
   syncErr();
@@ -982,8 +1049,106 @@ function buildControls() {
   let tt; txt.addEventListener("input", () => { clearTimeout(tt); tt = setTimeout(() => store.set(K.text, txt.value), 400); clearTextEdits(); writeDirty(); });
   syncControls();
 }
+/* ---------- own paper: an image or PDF as the sheet ---------- */
+let customBg = null;
+const idb = {
+  open() {
+    return new Promise((res, rej) => {
+      try { const r = indexedDB.open("mangoumwandler", 1); r.onupgradeneeded = () => r.result.createObjectStore("files"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }
+      catch (e) { rej(e); }
+    });
+  },
+  async run(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => { const tx = db.transaction("files", mode); const rq = fn(tx.objectStore("files")); tx.oncomplete = () => res(rq && rq.result); tx.onerror = () => rej(tx.error); });
+  },
+  get(k) { return this.run("readonly", st => st.get(k)); },
+  set(k, v) { return this.run("readwrite", st => st.put(v, k)); },
+  del(k) { return this.run("readwrite", st => st.delete(k)); },
+};
+function loadScript(src) {
+  return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("script")); document.head.appendChild(s); });
+}
+let pdfjsReady = null;
+function ensurePdfJs() {
+  if (!pdfjsReady) pdfjsReady = (async () => {
+    const base = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+    await loadScript(base + "pdf.min.js");
+    await loadScript(base + "pdf.worker.min.js"); // runs in the page, no separate worker needed
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = base + "pdf.worker.min.js";
+    return window.pdfjsLib;
+  })().catch(e => { pdfjsReady = null; throw e; });
+  return pdfjsReady;
+}
+function thumbOf(src, w, h) {
+  const c = document.createElement("canvas"); c.width = 90; c.height = Math.round(90 * h / w);
+  const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(src, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.8);
+}
+async function loadBackground(rec) {
+  if (rec.kind === "image") {
+    const url = URL.createObjectURL(new Blob([rec.buf], { type: rec.type || "image/jpeg" }));
+    const img = new Image(); img.src = url;
+    await (img.decode ? img.decode() : new Promise((r, j) => { img.onload = r; img.onerror = j; }));
+    const wmm = 210, hmm = Math.max(60, Math.min(600, 210 * img.naturalHeight / img.naturalWidth));
+    customBg = { kind: "image", name: rec.name, pages: [img], repeat: true, wmm, hmm, jpeg: [], thumb: thumbOf(img, img.naturalWidth, img.naturalHeight) };
+  } else {
+    const lib = await ensurePdfJs();
+    const pdf = await lib.getDocument({ data: new Uint8Array(rec.buf.slice(0)) }).promise;
+    const n = Math.min(pdf.numPages, 20), first = await pdf.getPage(1), v1 = first.getViewport({ scale: 1 });
+    const wmm = v1.width * 25.4 / 72, hmm = v1.height * 25.4 / 72;
+    const render = async (i, pxPerMm) => {
+      const page = await pdf.getPage(i + 1), base = page.getViewport({ scale: 1 });
+      const vp = page.getViewport({ scale: pxPerMm * wmm / base.width });
+      const c = document.createElement("canvas"); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+      const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: x, viewport: vp }).promise;
+      return c;
+    };
+    const pages = [];
+    for (let i = 0; i < n; i++) pages.push(await render(i, 6));
+    customBg = { kind: "pdf", name: rec.name, pages, repeat: false, wmm, hmm, jpeg: [], thumb: thumbOf(pages[0], pages[0].width, pages[0].height), more: pdf.numPages > n };
+    const bg = customBg;
+    (async () => { for (let i = 0; i < n && customBg === bg; i++) { const c = await render(i, 11); bg.jpeg[i] = c.toDataURL("image/jpeg", 0.9); c.width = 0; } })().catch(() => {});
+  }
+  syncControls();
+  if (set.paper === "custom") writeDirty();
+}
+async function importBackground(file) {
+  const isPdf = file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+  if (!isPdf && !/^image\//.test(file.type)) { toast("Bitte wähle ein Bild oder eine PDF."); return; }
+  if (file.size > 40 * 1024 * 1024) { toast("Die Datei ist zu groß (höchstens 40 MB)."); return; }
+  toast(isPdf ? "PDF wird geladen …" : "Bild wird geladen …");
+  try {
+    const rec = { kind: isPdf ? "pdf" : "image", name: file.name || (isPdf ? "PDF" : "Bild"), type: file.type, buf: await file.arrayBuffer() };
+    await loadBackground(rec);
+    try { await idb.set("bg", rec); } catch (e) { toast("Geladen. Merken kann sich der Browser die Datei aber nicht."); }
+    set.paper = "custom"; saveSettings(); syncControls(); writeDirty();
+    if (customBg.more) toast("Die PDF hat mehr als 20 Seiten. Die ersten 20 werden benutzt.");
+    else toast((isPdf ? "PDF" : "Bild") + " ist jetzt dein Blatt.");
+  } catch (e) {
+    toast(isPdf ? "Die PDF ließ sich nicht öffnen. Prüf deine Internetverbindung oder versuch eine andere Datei." : "Das Bild ließ sich nicht öffnen. Versuch ein JPG oder PNG.");
+  }
+}
+async function removeBackground() {
+  customBg = null; try { await idb.del("bg"); } catch (e) {}
+  if (set.paper === "custom") { set.paper = "blanko"; saveSettings(); }
+  syncControls(); writeDirty(); toast("Eigenes Blatt entfernt.");
+}
+function applyCustomSpec() {
+  const c = PAPERS.custom;
+  c.w = customBg ? Math.round(customBg.wmm * 100) / 100 : 210; c.h = customBg ? Math.round(customBg.hmm * 100) / 100 : 297;
+  c.right = c.w - 15; c.first = set.cTop; c.pitch = set.cPitch; c.u = set.cPitch * 0.3; c.maxBase = c.h - 10 - c.u;
+}
+(async () => { try { const rec = await idb.get("bg"); if (rec && rec.buf) await loadBackground(rec); } catch (e) {} })();
+
 function syncControls() {
   document.querySelectorAll(".paper").forEach(b => b.setAttribute("aria-checked", String(b.dataset.id === set.paper)));
+  $("custom-ctl").hidden = set.paper !== "custom" || !customBg;
+  $("dropzone").querySelector("strong").textContent = customBg ? "Anderes Bild oder PDF hierher ziehen" : "Bild oder PDF hierher ziehen";
+  $("bg-name").textContent = customBg ? customBg.name + (customBg.kind === "pdf" ? " · " + customBg.pages.length + (customBg.pages.length === 1 ? " Seite" : " Seiten") : "") : "Keine Datei";
+  const sw = document.querySelector(".sw.custom");
+  if (sw) { sw.classList.toggle("has", !!customBg); sw.style.backgroundImage = customBg && customBg.thumb ? "url(" + customBg.thumb + ")" : ""; }
   document.querySelectorAll(".ink").forEach(b => b.setAttribute("aria-checked", String(b.dataset.id === set.ink)));
 }
 
@@ -995,6 +1160,7 @@ function canvasPainter(ctx, px) {
     line(x0, y0, x1, y1, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); },
     dot(x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); },
     stroke(pts, col, w) { ctx.strokeStyle = ctx.fillStyle = col; strokePath(ctx, pts, w); },
+    image(src, x, y, w, h) { ctx.drawImage(src, x, y, w, h); },
     ellipse(cx, cy, rx, ry, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI * 2); ctx.stroke(); },
     glyph(op, ink, wmm) {
       ctx.save(); ctx.translate(op.x, op.y); ctx.rotate(op.rot); ctx.scale(op.k, op.k); ctx.translate(-op.minX, 0);
@@ -1019,6 +1185,14 @@ function pdfStroke(doc, P, wmm) {
   }
   if (open) doc.stroke();
 }
+const jpegCache = new WeakMap();
+function jpegOf(src) {
+  let u = jpegCache.get(src); if (u) return u;
+  const sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height, k = Math.min(1, 2600 / sw);
+  const c = document.createElement("canvas"); c.width = Math.round(sw * k); c.height = Math.round(sh * k);
+  const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(src, 0, 0, c.width, c.height);
+  u = c.toDataURL("image/jpeg", 0.9); jpegCache.set(src, u); c.width = 0; return u;
+}
 function pdfPainter(doc) {
   doc.setLineCap("round"); doc.setLineJoin("round");
   return {
@@ -1026,6 +1200,7 @@ function pdfPainter(doc) {
     line(x0, y0, x1, y1, col, w) { doc.setDrawColor(col); doc.setLineWidth(w); doc.line(x0, y0, x1, y1); },
     dot(x, y, r, col) { doc.setFillColor(col); doc.circle(x, y, r, "F"); },
     stroke(pts, col, w) { doc.setDrawColor(col); doc.setFillColor(col); pdfStroke(doc, pts, w); },
+    image(src, x, y, w, h, hiJpeg) { doc.addImage(hiJpeg || jpegOf(src), "JPEG", x, y, w, h, undefined, "FAST"); },
     ellipse(cx, cy, rx, ry, col, w) { doc.setDrawColor(col); doc.setLineWidth(w); doc.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), "S"); },
     glyph(op, ink, wmm) {
       doc.setDrawColor(ink); doc.setFillColor(ink);
@@ -1039,7 +1214,7 @@ function pdfPainter(doc) {
   };
 }
 
-function paintPaper(P, id, spec) {
+function paintPaper(P, id, spec, pageIndex) {
   const W = spec.w, H = spec.h;
   P.rect(0, 0, W, H, spec.bg);
   const hl = (y, x0, x1, col, w) => P.line(x0, y, x1, y, col, w);
@@ -1069,6 +1244,9 @@ function paintPaper(P, id, spec) {
     for (let y = 5.3; y <= H; y += 5.65) hl(y, 0, W, "#dedbcd", 0.16);
     for (let x = 5.3; x <= W; x += 5.65) vl(x, 0, H, "#dedbcd", 0.16);
     if (set.margin) vl(spec.marginX, 0, H, "#e3b4ad", 0.22);
+  } else if (id === "custom") {
+    const bg = customBg;
+    if (bg) { const i = bg.repeat ? 0 : pageIndex, src = bg.pages[i]; if (src) P.image(src, 0, 0, W, H, bg.kind === "pdf" ? bg.jpeg[i] : null); }
   } else if (set.margin) {
     vl(25, 0, H, "#ead0d0", 0.2);
   }
@@ -1111,6 +1289,7 @@ function addMistakes(text) {
 /* layout: text -> pages of drawing operations (in mm) */
 const measureCtx = document.createElement("canvas").getContext("2d");
 function layout() {
+  if (set.paper === "custom") applyCustomSpec();
   const spec = PAPERS[set.paper] || PAPERS.liniert;
   const u = spec.u * set.size, nat = set.natural, gap = set.spacing;
   const ink = (INKS.find(i => i.id === set.ink) || INKS[0]).c;
@@ -1243,7 +1422,7 @@ function opBounds(op) {
 }
 function paintPage(P, L, i, withPaper, opt) {
   opt = opt || {};
-  if (withPaper) paintPaper(P, set.paper, L.spec);
+  if (withPaper) paintPaper(P, set.paper, L.spec, i);
   for (const op of L.pages[i]) {
     if (opt.skipGi && opt.skipGi.has(op.gi)) continue;
     if (op.t === "g") P.glyph(op, L.ink, L.wmm); else P.text(op, L.ink);
@@ -1294,7 +1473,7 @@ function renderPages() {
     drawSheet(se); attachSheet(se);
   });
   renderObjs();
-  $("sheet-info").textContent = L.pages.length + (L.pages.length === 1 ? " Seite" : " Seiten") + " · " + (spec.w === 210 ? "A4" : "US Letter");
+  $("sheet-info").textContent = L.pages.length + (L.pages.length === 1 ? " Seite" : " Seiten") + " · " + (spec.custom ? "eigenes Blatt" : spec.w === 210 ? "A4" : "US Letter");
   $("sheet-paper").textContent = spec.name + " · " + (INKS.find(i => i.id === set.ink) || INKS[0]).name;
   renderMissing(L.missing, L.demoUsed);
 }
@@ -1736,11 +1915,11 @@ function lockPage() {
 $("gate-form").addEventListener("submit", async e => {
   e.preventDefault();
   const key = $("gate-key").value; const err = $("gate-err");
-  if (!key.trim()) { err.textContent = "Bitte gib deinen Nutzer-Key ein."; return; }
+  if (!key.trim()) { err.textContent = "Bitte gib dein Passwort ein."; return; }
   $("gate-go").disabled = true; err.textContent = "";
   try {
     const h = await hashKey(key);
-    if (!KEY_HASHES.includes(h)) { err.textContent = "Diesen Nutzer-Key gibt es nicht. Prüf die Schreibweise."; return; }
+    if (!KEY_HASHES.includes(h)) { err.textContent = "Das Passwort stimmt nicht. Prüf die Schreibweise."; return; }
     if (REDEEM.url) {
       const res = await fetch(REDEEM.url.replace(/\/$/, "") + "/rest/v1/rpc/redeem_code", {
         method: "POST",
@@ -1749,8 +1928,8 @@ $("gate-form").addEventListener("submit", async e => {
       });
       if (!res.ok) throw new Error("http " + res.status);
       const r = await res.json();
-      if (r === "used") { err.textContent = "Dieser Nutzer-Key wurde schon auf einem anderen Gerät benutzt."; return; }
-      if (r !== "ok") { err.textContent = "Diesen Nutzer-Key gibt es nicht. Prüf die Schreibweise."; return; }
+      if (r === "used") { err.textContent = "Dieses Passwort wurde schon auf einem anderen Gerät benutzt."; return; }
+      if (r !== "ok") { err.textContent = "Das Passwort stimmt nicht. Prüf die Schreibweise."; return; }
     }
     store.set(K_UNLOCK, { h, d: deviceId(), t: Date.now() });
     if (!unlocked()) { err.textContent = "Dieses Gerät kann den Schlüssel nicht speichern. Öffne die Seite in Safari, nicht im privaten Modus."; return; }
