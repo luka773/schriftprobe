@@ -268,7 +268,7 @@ textarea:focus { background: var(--surface); }
 .side-scrim { position: fixed; inset: 0; z-index: 20; background: rgba(10, 12, 16, .35); }
 
 /* ---------- gate ---------- */
-.gate { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 0%, var(--accent-soft), transparent 60%), var(--bg); padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); overflow: auto; }
+.gate { position: relative; min-height: 100%; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 0%, var(--accent-soft), transparent 60%), var(--bg); padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); overflow: auto; }
 .gate form { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow-l); padding: 30px 26px 26px; display: flex; flex-direction: column; gap: 14px; }
 .gate .logo { width: 64px; height: 64px; }
 .gate h2 { font: 700 26px/1.1 var(--f-display); letter-spacing: -0.02em; margin: 0; }
@@ -276,7 +276,9 @@ textarea:focus { background: var(--surface); }
 .gate input { border: 1px solid var(--line); border-radius: 14px; padding: 0 16px; font-size: 18px; font-weight: 600; background: var(--bg); min-height: 54px; }
 .gate .btn { min-height: 52px; font-size: 16px; }
 .gate .err { color: var(--signal); font-weight: 700; font-size: 14px; min-height: 1.4em; }
+body.locked { overflow: auto; }
 body.locked .app { display: none; }
+.gate input.masked { -webkit-text-security: disc; text-security: disc; letter-spacing: .12em; }
 
 .toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-size: 14px; font-weight: 700; z-index: 60; max-width: calc(100% - 32px); box-shadow: var(--shadow-l); text-align: center; }
 .credits { font-size: 12px; color: var(--muted); }
@@ -331,7 +333,7 @@ body.locked .app { display: none; }
     <h2>MangoUmwandler</h2>
     <p>Gib dein Passwort ein. Danach kannst du die Seite auf diesem Gerät immer benutzen.</p>
     <label class="sec-h" for="gate-key">Passwort</label>
-    <input id="gate-key" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Passwort">
+    <input id="gate-key" class="masked" type="text" name="mango-access" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="go" placeholder="Passwort" data-lpignore="true" data-1p-ignore>
     <button class="btn primary" type="submit" id="gate-go">Freischalten</button>
     <div class="err" id="gate-err" role="alert"></div>
   </form>
@@ -1910,7 +1912,18 @@ function deviceId() {
 function unlocked() { const u = store.get(K_UNLOCK); return !!(u && KEY_HASHES.includes(u.h)); }
 function lockPage() {
   document.body.classList.add("locked"); $("gate").hidden = false;
-  setTimeout(() => $("gate-key").focus(), 50);
+  const key = $("gate-key");
+  // browsers without masking support get a normal password field
+  if (!(window.CSS && (CSS.supports("-webkit-text-security", "disc") || CSS.supports("text-security", "disc")))) { key.type = "password"; key.classList.remove("masked"); }
+  // only auto-focus with a mouse: on iPad a focus without a tap leaves the keyboard stuck
+  const touch = window.matchMedia && matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
+  if (!touch) setTimeout(() => key.focus(), 50);
+  // a tap anywhere on the card puts the cursor into the field (inside the tap, so iOS opens the keyboard)
+  $("gate-form").addEventListener("click", e => { if (e.target.closest("button")) return; if (document.activeElement !== key) key.focus(); });
+  key.addEventListener("touchend", () => {
+    const vv = window.visualViewport, kbdHidden = !vv || vv.height > window.innerHeight * 0.85;
+    if (document.activeElement === key && kbdHidden) { key.blur(); key.focus(); }
+  }, { passive: true });
 }
 $("gate-form").addEventListener("submit", async e => {
   e.preventDefault();
