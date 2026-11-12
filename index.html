@@ -113,6 +113,7 @@ svg { flex: none; }
 .toggle input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow-s); transition: transform .2s; }
 .toggle input:checked { background: var(--leaf); border-color: var(--leaf); }
 .toggle input:checked::after { transform: translateX(18px); }
+.tsub { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
 .toggle.inline { justify-content: flex-start; color: var(--muted); }
 .hint { color: var(--muted); font-size: 13px; margin: 0; line-height: 1.5; }
 .sec-h { font: 500 10.5px/1 var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0; }
@@ -182,6 +183,17 @@ select { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; ba
 .side-head h2 { font: 700 16px/1 var(--f-display); margin: 0; }
 .iconbtn { width: 44px; height: 44px; border-radius: 12px; border: 0; background: var(--sunken); display: grid; place-items: center; }
 .iconbtn svg { width: 20px; height: 20px; }
+.txtbar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.tb { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 48px; padding: 4px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10.5px; font-weight: 700; color: var(--muted); min-width: 0; }
+.tb > span, .tb > svg { font: 700 14px/1 var(--f-body); color: var(--fg); height: 18px; display: flex; align-items: center; }
+.tb > svg { width: 18px; }
+.tb:hover { border-color: var(--mango); }
+.tb[aria-pressed="true"] { background: var(--signal); border-color: var(--signal); color: #fff; }
+.tb[aria-pressed="true"] svg { color: #fff; }
+.hlmark { background: linear-gradient(transparent 35%, #ffe14d 35%, #ffe14d 85%, transparent 85%); padding: 0 2px; }
+.fr { flex-direction: column; font-size: 10px !important; line-height: 1 !important; }
+.fr i { font-style: normal; display: block; text-align: center; }
+.fr i:first-child { border-bottom: 1.5px solid currentColor; padding: 0 2px; }
 textarea { width: 100%; min-height: 160px; resize: vertical; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: var(--bg); line-height: 1.55; font-weight: 500; }
 textarea:focus { background: var(--surface); }
 .missing { border-radius: 14px; padding: 12px; background: var(--accent-soft); font-size: 13px; font-weight: 600; display: flex; flex-direction: column; gap: 8px; }
@@ -269,6 +281,7 @@ textarea:focus { background: var(--surface); }
 .obj .tbar .chip, .selbox .tbar .chip { background: transparent; border: 0; color: #fff; min-height: 36px; padding: 0 12px; font-size: 13px; white-space: nowrap; border-radius: 10px; }
 .obj .tbar .chip:hover, .selbox .tbar .chip:hover { background: rgba(255,255,255,.12); }
 .selbox .tbar .chip.danger { color: #ff9d8c; }
+.tin { position: absolute; pointer-events: auto; z-index: 5; min-width: 180px; max-width: 70%; font: 600 16px/1.2 var(--f-body); padding: 8px 10px; border: 2px solid #ffa928; border-radius: 10px; background: #fffdf5; color: #17191e; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
 .selbox { position: absolute; pointer-events: auto; touch-action: none; cursor: move; outline: 2px dashed #e07800; background: rgba(255, 169, 40, 0.10); border-radius: 4px; }
 .rail { position: fixed; z-index: 7; right: max(8px, env(safe-area-inset-right, 0px)); top: calc(var(--barh) + env(safe-area-inset-top, 0px) + 14px); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 24px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-s); touch-action: none; cursor: pointer; }
 .rail .thumb { position: absolute; left: 3px; right: 3px; top: 0; min-height: 44px; border-radius: 9px; background: var(--mango); }
@@ -288,6 +301,18 @@ body.locked .app { display: none; }
 .gate input.masked { -webkit-text-security: disc; text-security: disc; letter-spacing: .12em; }
 
 .toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-size: 14px; font-weight: 700; z-index: 60; max-width: calc(100% - 32px); box-shadow: var(--shadow-l); text-align: center; }
+.howto { margin: 0; padding: 0; list-style: none; counter-reset: st; display: flex; flex-direction: column; gap: 12px; }
+.howto li { counter-increment: st; position: relative; padding-left: 34px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.howto li::before { content: counter(st); position: absolute; left: 0; top: -1px; width: 24px; height: 24px; border-radius: 50%; background: var(--mango); color: var(--on-mango); font: 700 12px/24px var(--f-mono); text-align: center; }
+.howto small { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.modal { position: fixed; inset: 0; z-index: 70; background: rgba(10, 12, 16, .45); display: grid; place-items: center; padding: 20px max(16px, env(safe-area-inset-right, 0px)) 20px max(16px, env(safe-area-inset-left, 0px)); }
+.modal-card { width: 100%; max-width: 640px; max-height: calc(100% - 20px); overflow: auto; background: var(--surface); border-radius: 24px; box-shadow: var(--shadow-l); padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+.modal-card h2 { font: 700 20px/1.2 var(--f-display); margin: 0; }
+.imp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; max-height: 46vh; overflow: auto; }
+.imp-tile { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 4px; gap: 2px; }
+.imp-tile canvas { width: 52px; height: 52px; }
+.imp-tile span { font: 500 10px/1 var(--f-mono); color: var(--muted); }
+.seg.two { grid-template-columns: 1fr 1fr; }
 .credits { font-size: 12px; color: var(--muted); }
 .credits summary { cursor: pointer; font-weight: 600; }
 
@@ -310,7 +335,10 @@ body.locked .app { display: none; }
   .steps { order: 3; width: 100%; margin: 0; }
   .steps button { flex: 1; justify-content: center; }
   .progress { margin-left: auto; }
-  .tool { min-width: 44px; padding: 4px 6px; }
+  .tool { min-width: 36px; padding: 4px 3px; }
+  .palette { gap: 1px; padding: 5px; max-width: calc(100% - 16px); }
+  .psep { margin: 6px 2px; }
+  .txtbar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .tool span { display: none; }
   .cur .big { width: 60px; height: 60px; font-size: 32px; }
   .nav { margin-left: 0; width: 100%; }
@@ -403,6 +431,18 @@ body.locked .app { display: none; }
             <div class="row"><button class="btn quiet" id="wipe-no" type="button">Abbrechen</button><button class="btn danger-solid" id="wipe-yes" type="button">Ja, alles löschen</button></div>
           </div>
         </div>
+        <div class="side-sec">
+          <h2 class="sec-h">Aus Foto lernen</h2>
+          <p class="hint">Statt alles hier nachzuzeichnen: Vorlage ausfüllen, Foto oder PDF einlesen, fertig. Selbst zeichnen geht trotzdem weiter.</p>
+          <ol class="howto">
+            <li><strong>Schreibvorlage holen</strong>
+              <div class="row"><button class="btn quiet" id="imp-tpl1" type="button">1 Seite</button><button class="btn quiet" id="imp-tpl3" type="button">3 Seiten · Ultra</button></div></li>
+            <li><strong>In Goodnotes oder auf Papier ausfüllen</strong><small>Jedes Zeichen in sein Kästchen, mit dunklem Stift. Die vier schwarzen Ecken frei lassen.</small></li>
+            <li><strong>Foto oder PDF einlesen</strong><small>Mehrere Seiten oder Fotos werden zu Varianten.</small>
+              <button class="btn primary" id="imp-go" type="button">Ausgefüllte Vorlage einlesen</button></li>
+          </ol>
+          <input type="file" id="imp-file" accept="image/*,application/pdf,.pdf" multiple hidden>
+        </div>
         <details class="credits">
           <summary>Über die Beispielschrift</summary>
           <p>Solange du ein Zeichen noch nicht gezeichnet hast, kann die Vorschau es aus der Hershey Script ergänzen. The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the U. S. National Bureau of Standards. The format of the Font data in this distribution was originally created by James Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821. SVG-Fassung von Windell H. Oskay (Evil Mad Scientist), verteilt im Paket hersheytext (MIT).</p>
@@ -416,6 +456,14 @@ body.locked .app { display: none; }
         <div class="side-head"><h2>Blatt einrichten</h2><button class="iconbtn" id="side-close" aria-label="Einstellungen schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
         <div class="side-sec">
           <label class="sec-h" for="txt">Dein Text</label>
+          <div class="txtbar" role="toolbar" aria-label="Text formatieren">
+            <button type="button" class="tb" id="tb-hl" title="Markierten Text mit Textmarker hervorheben"><span class="hlmark">ab</span>Marker</button>
+            <button type="button" class="tb" id="tb-ul" title="Markierten Text unterstreichen"><span style="text-decoration:underline">ab</span>Unterstr.</button>
+            <button type="button" class="tb" id="tb-frac" title="Bruch einfügen (Mathe-Modus)"><span class="fr"><i>a</i><i>b</i></span>Bruch</button>
+            <button type="button" class="tb" id="tb-sup" title="Hochzahl einfügen (Mathe-Modus)"><span>x<sup>2</sup></span>Hoch</button>
+            <button type="button" class="tb" id="tb-root" title="Wurzel einfügen (Mathe-Modus)"><span>√x</span>Wurzel</button>
+            <button type="button" class="tb" id="tb-mic" aria-pressed="false" title="Text diktieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Diktieren</button>
+          </div>
           <textarea id="txt" spellcheck="false"></textarea>
           <div id="missing" class="missing"></div>
         </div>
@@ -466,6 +514,8 @@ body.locked .app { display: none; }
           <div class="field"><label class="sec-h" for="linestep">Zeilen</label>
             <select id="linestep"><option value="1">Auf jeder Zeile schreiben</option><option value="2">Jede zweite Zeile</option></select></div>
           <label class="toggle"><span>Rand links</span><input type="checkbox" id="margin"></label>
+          <label class="toggle"><span>Mathe-Modus<small class="tsub">3/4 als Bruch, x^2 hoch, √(16) als Wurzel</small></span><input type="checkbox" id="mathmode"></label>
+          <label class="toggle"><span>Vokabel-Liste<small class="tsub">Pro Zeile „Haus - house“ oder „Haus = house“</small></span><input type="checkbox" id="vocab"></label>
           <label class="toggle"><span>Fehlende Zeichen aus Beispielschrift</span><input type="checkbox" id="usedemo"></label>
           <button class="btn quiet" id="ed-reset" title="Verschobenen oder gelöschten Text zurückholen">Text zurücksetzen</button>
         </div>
@@ -479,6 +529,7 @@ body.locked .app { display: none; }
           <button class="tool" id="ed-pen" aria-pressed="false" title="Auf das Blatt schreiben"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M14 7l3 3"/></svg><span>Stift</span></button>
           <button class="tool" id="ed-erase" aria-pressed="false" title="Geschriebenes wegradieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20h12"/><path d="M5 15l9-9 5 5-8 8H8l-3-3z"/></svg><span>Radierer</span></button>
           <button class="tool" id="ed-lasso" aria-pressed="false" title="Umkreisen, verschieben, löschen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="10" rx="8" ry="6" stroke-dasharray="3 3"/><path d="M8 15c-2 2-2 4 0 5"/></svg><span>Lasso</span></button>
+          <button class="tool" id="ed-text" aria-pressed="false" title="Antippen und Text an diese Stelle schreiben"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg><span>Text</span></button>
           <button class="tool" id="ed-undo" title="Rückgängig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><span>Zurück</span></button>
           <span class="psep"></span>
           <div class="pop-wrap">
@@ -491,6 +542,12 @@ body.locked .app { display: none; }
                 <button class="tpl-card" data-tpl="numline"><svg viewBox="0 0 44 32"><path d="M3 16h37M37 13l3 3-3 3M6 12v8M12 14v4M18 14v4M24 14v4M30 14v4M36 12v8"/></svg>Zahlen&shy;strahl</button>
                 <button class="tpl-card" data-tpl="box"><svg viewBox="0 0 44 32"><rect x="5" y="5" width="34" height="22" rx="1"/></svg>Kasten</button>
                 <button class="tpl-card" data-tpl="circle"><svg viewBox="0 0 44 32"><circle cx="22" cy="16" r="12"/></svg>Kreis</button>
+                <button class="tpl-card" data-tpl="venn"><svg viewBox="0 0 44 32"><ellipse cx="17" cy="16" rx="12" ry="11"/><ellipse cx="27" cy="16" rx="12" ry="11"/></svg>Venn-Diagramm</button>
+                <button class="tpl-card" data-tpl="timeline"><svg viewBox="0 0 44 32"><path d="M3 16h37M37 13l3 3-3 3M7 12v8M17 12v8M27 12v8"/><circle cx="7" cy="16" r="1.5"/><circle cx="17" cy="16" r="1.5"/><circle cx="27" cy="16" r="1.5"/></svg>Zeitstrahl</button>
+                <button class="tpl-card" data-tpl="mindmap"><svg viewBox="0 0 44 32"><ellipse cx="22" cy="16" rx="7" ry="4.5"/><path d="M27 12l7-7h7M27 20l7 7h7M17 12l-7-7H3M17 20l-7 7H3"/></svg>Mindmap</button>
+                <button class="tpl-card" data-tpl="arrow"><svg viewBox="0 0 44 32"><path d="M5 16h34M32 10l7 6-7 6"/></svg>Pfeil</button>
+                <button class="tpl-card" data-tpl="bubble"><svg viewBox="0 0 44 32"><path d="M9 4h26a5 5 0 015 5v10a5 5 0 01-5 5H17l-7 6 1-6H9a5 5 0 01-5-5V9a5 5 0 015-5z"/></svg>Sprechblase</button>
+                <button class="tpl-card" data-tpl="staff"><svg viewBox="0 0 44 32"><path d="M3 9h38M3 13h38M3 17h38M3 21h38M3 25h38M3 9v16M41 9v16"/></svg>Notenlinien</button>
               </div>
               <span class="sec-h">Meine Vorlagen</span>
               <div id="ed-mine" class="mine-list"></div>
@@ -516,6 +573,18 @@ body.locked .app { display: none; }
   </main>
 </div>
 
+<div class="modal" id="imp-modal" hidden role="dialog" aria-modal="true" aria-labelledby="imp-title">
+  <div class="modal-card">
+    <h2 id="imp-title">Zeichen erkannt</h2>
+    <p class="hint" id="imp-info"></p>
+    <div class="imp-grid" id="imp-grid"></div>
+    <div class="seg two" id="imp-mode" role="radiogroup" aria-label="Wie übernehmen">
+      <button type="button" role="radio" data-m="fill" aria-checked="true">Ergänzen</button>
+      <button type="button" role="radio" data-m="replace" aria-checked="false">Alles ersetzen</button>
+    </div>
+    <div class="row"><button class="btn quiet" id="imp-cancel" type="button">Abbrechen</button><button class="btn primary" id="imp-apply" type="button">Übernehmen</button></div>
+  </div>
+</div>
 <div class="rail" id="rail" hidden aria-hidden="true"><div class="thumb" id="rail-thumb"></div></div>
 <div class="toast" id="toast" hidden></div>
 
@@ -1019,7 +1088,7 @@ $("restore-file").onchange = async e => {
    ============================================================ */
 const PX = 8; // preview pixels per mm
 const PX_EXPORT = 12; // image export pixels per mm (A4 = 2520 × 3564)
-const defaults = { paper: "liniert", ink: "blau", size: 1, weight: 0.6, spacing: 0.16, natural: 0.5, lineStep: 1, margin: true, useDemo: true, seed: 7, errors: 0, cPitch: 9, cTop: 25 };
+const defaults = { paper: "liniert", ink: "blau", size: 1, weight: 0.6, spacing: 0.16, natural: 0.5, lineStep: 1, margin: true, useDemo: true, seed: 7, errors: 0, cPitch: 9, cTop: 25, math: false, vocab: false };
 const set = Object.assign({}, defaults, store.get(K.set) || {});
 if (!(set.v >= 2)) { if (set.weight <= 0.45) set.weight = 0.6; set.v = 2; store.set(K.set, set); }
 const txt = $("txt");
@@ -1087,6 +1156,41 @@ function buildControls() {
   $("linestep").value = String(set.lineStep);
   $("linestep").onchange = e => { set.lineStep = +e.target.value; saveSettings(); writeDirty(); };
   $("margin").checked = set.margin; $("margin").onchange = e => { set.margin = e.target.checked; saveSettings(); writeDirty(); };
+  $("mathmode").checked = !!set.math; $("mathmode").onchange = e => { set.math = e.target.checked; clearTextEdits(); saveSettings(); writeDirty(); };
+  $("vocab").checked = !!set.vocab; $("vocab").onchange = e => { set.vocab = e.target.checked; clearTextEdits(); saveSettings(); writeDirty(); };
+  const wrapSel = (pre, post, empty) => {
+    const a = txt.selectionStart, b = txt.selectionEnd, v = txt.value, sel = v.slice(a, b) || empty;
+    txt.value = v.slice(0, a) + pre + sel + post + v.slice(b);
+    txt.focus(); txt.setSelectionRange(a + pre.length, a + pre.length + sel.length);
+    txt.dispatchEvent(new Event("input"));
+  };
+  const needMath = () => { if (!set.math) { set.math = true; $("mathmode").checked = true; saveSettings(); toast("Mathe-Modus ist jetzt an."); } };
+  $("tb-hl").onclick = () => wrapSel("==", "==", "Wort");
+  $("tb-ul").onclick = () => wrapSel("__", "__", "Wort");
+  $("tb-frac").onclick = () => { needMath(); const sel = txt.value.slice(txt.selectionStart, txt.selectionEnd); if (sel.includes("/")) wrapSel("", "", ""); else wrapSel(sel ? "" : "", sel ? "/2" : "", sel || "1/2"); };
+  $("tb-sup").onclick = () => { needMath(); wrapSel("^{", "}", "2"); };
+  $("tb-root").onclick = () => { needMath(); wrapSel("√(", ")", "16"); };
+  // dictation (web speech; on iPad the keyboard microphone also works)
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let rec = null;
+  $("tb-mic").onclick = () => {
+    if (rec) { rec.stop(); return; }
+    if (!SR) { toast("Diktieren geht hier über das Mikrofon auf der iPad-Tastatur: ins Textfeld tippen, dann auf die Mikrofon-Taste."); txt.focus(); return; }
+    try { rec = new SR(); } catch (e) { rec = null; toast("Diktieren geht hier über das Mikrofon auf der iPad-Tastatur."); return; }
+    rec.lang = "de-DE"; rec.continuous = true; rec.interimResults = false;
+    rec.onresult = ev => {
+      for (let i = ev.resultIndex; i < ev.results.length; i++) if (ev.results[i].isFinal) {
+        const t = ev.results[i][0].transcript.trim(); if (!t) continue;
+        const a = txt.selectionStart, v = txt.value, pad = a > 0 && !/\s$/.test(v.slice(0, a)) ? " " : "";
+        txt.value = v.slice(0, a) + pad + t + v.slice(a); const c = a + pad.length + t.length; txt.setSelectionRange(c, c);
+        txt.dispatchEvent(new Event("input"));
+      }
+    };
+    rec.onerror = ev => { toast(ev.error === "not-allowed" || ev.error === "service-not-allowed" ? "Das Mikrofon ist nicht erlaubt. Nutze das Mikrofon auf der iPad-Tastatur." : "Diktieren hat nicht geklappt. Versuch es nochmal."); };
+    rec.onend = () => { rec = null; $("tb-mic").setAttribute("aria-pressed", "false"); };
+    try { rec.start(); $("tb-mic").setAttribute("aria-pressed", "true"); toast("Sprich jetzt. Tipp nochmal auf Diktieren zum Beenden."); }
+    catch (e) { rec = null; toast("Diktieren hat nicht geklappt. Nutze das Mikrofon auf der iPad-Tastatur."); }
+  };
   $("usedemo").checked = set.useDemo; $("usedemo").onchange = e => { set.useDemo = e.target.checked; saveSettings(); writeDirty(); };
   $("reroll").onclick = () => { set.seed = (Math.random() * 1e9) | 0; saveSettings(); writeDirty(); };
   let tt; txt.addEventListener("input", () => { clearTimeout(tt); tt = setTimeout(() => store.set(K.text, txt.value), 400); clearTextEdits(); writeDirty(); });
@@ -1204,6 +1308,11 @@ function canvasPainter(ctx, px) {
     dot(x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); },
     stroke(pts, col, w) { ctx.strokeStyle = ctx.fillStyle = col; strokePath(ctx, pts, w); },
     image(src, x, y, w, h) { ctx.drawImage(src, x, y, w, h); },
+    hl(op) {
+      const y1 = op.y + (op.x1 - op.x0) * op.slope, a = 1.2 * op.u, b = 0.3 * op.u;
+      ctx.save(); ctx.globalAlpha = 0.45; ctx.fillStyle = "#ffe14d";
+      ctx.beginPath(); ctx.moveTo(op.x0, op.y - a); ctx.lineTo(op.x1, y1 - a); ctx.lineTo(op.x1, y1 + b); ctx.lineTo(op.x0, op.y + b); ctx.closePath(); ctx.fill(); ctx.restore();
+    },
     ellipse(cx, cy, rx, ry, col, w) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI * 2); ctx.stroke(); },
     glyph(op, ink, wmm) {
       ctx.save(); ctx.translate(op.x, op.y); ctx.rotate(op.rot); ctx.scale(op.k, op.k); ctx.translate(-op.minX, 0);
@@ -1243,6 +1352,14 @@ function pdfPainter(doc) {
     line(x0, y0, x1, y1, col, w) { doc.setDrawColor(col); doc.setLineWidth(w); doc.line(x0, y0, x1, y1); },
     dot(x, y, r, col) { doc.setFillColor(col); doc.circle(x, y, r, "F"); },
     stroke(pts, col, w) { doc.setDrawColor(col); doc.setFillColor(col); pdfStroke(doc, pts, w); },
+    hl(op) {
+      const y1 = op.y + (op.x1 - op.x0) * op.slope, a = 1.2 * op.u, b = 0.3 * op.u;
+      const gs = doc.GState ? new doc.GState({ opacity: 0.45 }) : null;
+      if (gs) { doc.saveGraphicsState(); doc.setGState(gs); }
+      doc.setFillColor(gs ? "#ffe14d" : "#fff3a6");
+      doc.triangle(op.x0, op.y - a, op.x1, y1 - a, op.x1, y1 + b, "F"); doc.triangle(op.x0, op.y - a, op.x1, y1 + b, op.x0, op.y + b, "F");
+      if (gs) doc.restoreGraphicsState();
+    },
     image(src, x, y, w, h, hiJpeg) { doc.addImage(hiJpeg || jpegOf(src), "JPEG", x, y, w, h, undefined, "FAST"); },
     ellipse(cx, cy, rx, ry, col, w) { doc.setDrawColor(col); doc.setLineWidth(w); doc.ellipse(cx, cy, Math.abs(rx), Math.abs(ry), "S"); },
     glyph(op, ink, wmm) {
@@ -1349,10 +1466,16 @@ function layout() {
   measureCtx.font = "400 100px " + cssVar("--f-body");
   const missing = new Set(), demoUsed = new Set(), pages = [];
   let ops = null, lineY = 0, x = 0, x0 = 0, slope = 0, lineNo = 0, idx = 0;
+  let colL = left, colR = right, hl = false, ul = false, hlRun = null, ulRun = null;
 
   function newPage() { ops = []; pages.push(ops); lineY = spec.first; startLine(); }
-  function startLine() { const r = rngAt(set.seed, 1e6 + lineNo); slope = (r() - 0.5) * 0.012 * nat; x = left + (r() - 0.5) * 1.6 * nat; x0 = x; }
+  function startLine() { hlRun = ulRun = null; const r = rngAt(set.seed, 1e6 + lineNo); slope = (r() - 0.5) * 0.012 * nat; x = colL + (r() - 0.5) * 1.6 * nat; x0 = x; }
   function newLine() { lineNo++; lineY += step; if (lineY > yMax) newPage(); else startLine(); }
+  const baseY = at => lineY + (at - x0) * slope;
+  function mark(a, b) {
+    if (hl) { if (hlRun && hlRun.ops === ops) hlRun.op.x1 = b; else { const op = { t: "hl", gi: -1, x0: a, x1: b, y: baseY(a), slope, u }; ops.push(op); hlRun = { op, ops }; } }
+    if (ul) { if (ulRun && ulRun.ops === ops) ulRun.op.x1 = b; else { const op = { t: "ul", gi: -1, x0: a, x1: b, y: baseY(a), slope, u, seed: idx }; ops.push(op); ulRun = { op, ops }; } }
+  }
   function item(c) {
     const gi = idx, r = rngAt(set.seed, idx++);
     const g = pickGlyph(c, r);
@@ -1366,30 +1489,109 @@ function layout() {
     const b = bbox(g.v), w = Math.max(0.08, b.maxX - b.minX) * sc * u;
     return { g, gi, w: w + wmm, adv: w + wmm + Math.max(0.02, gap + jg) * u, sc, rot, dy, b };
   }
+  function glyphOp(it, px, py, s) {
+    const m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0;
+    if (it.g.src === "font") return { t: "f", gi: it.gi, ch: it.g.ch, x: px + mx, y: py + my, size: fontSize * s };
+    return { t: "g", gi: it.gi, v: it.g.v, x: px + mx, y: py + my + it.dy * u * s, rot: it.rot, k: u * it.sc * s, minX: it.b.minX, b: it.b };
+  }
   function place(it) {
-    if (hiddenGi[it.gi]) { x += it.adv; return; }
-    const y = lineY + (x - x0) * slope + it.dy * u, m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0;
-    if (it.g.src === "font") ops.push({ t: "f", gi: it.gi, ch: it.g.ch, x: x + mx, y: y + my, size: fontSize });
-    else ops.push({ t: "g", gi: it.gi, v: it.g.v, x: x + mx, y: y + my, rot: it.rot, k: u * it.sc, minX: it.b.minX, b: it.b });
+    if (it.marker) { if (it.marker === "hl") { hl = !hl; hlRun = null; } else { ul = !ul; ulRun = null; } return; }
+    const xs = x, y = baseY(x);
+    if (it.grp) {
+      for (const sb of it.subs) if (!hiddenGi[sb.it.gi]) ops.push(glyphOp(sb.it, xs + sb.dx, y + sb.dy, sb.s));
+      if (!hiddenGi[it.gi]) {
+        const m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0;
+        for (const e of it.extras) ops.push({ t: "s", gi: it.gi, pts: e.map(p => [xs + p[0] + mx, y + p[1] + my, 0.5]) });
+      }
+    } else if (!hiddenGi[it.gi]) {
+      ops.push(glyphOp(it, xs, y, 1));
+    }
+    mark(xs, xs + it.adv);
     x += it.adv;
+  }
+  // building blocks for maths
+  function seq(str, s) {
+    const its = Array.from(str).map(item); const subs = []; let cx = 0;
+    for (const it of its) { subs.push({ it, dx: cx, dy: 0, s }); cx += it.adv * s; }
+    const last = its[its.length - 1];
+    return { subs, w: last ? cx - (last.adv - last.w) * s : 0 };
+  }
+  function frac(a, b) {
+    const s = 0.7, A = seq(a, s), B = seq(b, s), W = Math.max(A.w, B.w) + 0.5 * u, bar = -0.6 * u;
+    A.subs.forEach(o => { o.dx += (W - A.w) / 2; o.dy = bar - 0.32 * u; });
+    B.subs.forEach(o => { o.dx += (W - B.w) / 2; o.dy = bar + 0.32 * u + 2 * u * s; });
+    const gi = A.subs.length ? A.subs[0].it.gi : idx;
+    return { grp: true, gi, subs: A.subs.concat(B.subs), extras: [[[0.12 * u, bar], [W - 0.12 * u, bar + 0.02 * u]]], w: W, adv: W + gap * u };
+  }
+  function sup(run) {
+    const R = seq(run, 0.6); R.subs.forEach(o => { o.dy = -1.3 * u; });
+    return { grp: true, gi: R.subs.length ? R.subs[0].it.gi : idx, subs: R.subs, extras: [], w: R.w, adv: R.w + gap * u * 0.6 };
+  }
+  function root(run) {
+    const R = seq(run, 1), off = 0.85 * u; R.subs.forEach(o => { o.dx += off; });
+    const W = off + R.w + 0.3 * u, top = -2.2 * u;
+    return { grp: true, gi: R.subs.length ? R.subs[0].it.gi : idx, subs: R.subs,
+      extras: [[[0, -0.5 * u], [0.22 * u, -0.64 * u], [0.45 * u, 0.22 * u], [0.78 * u, top], [W, top + 0.04 * u]]], w: W, adv: W + gap * u };
+  }
+  const MK = { "": "hl", "": "ul" }, ALNUM = /[0-9A-Za-zÄÖÜäöüß]/;
+  function tokenItems(tok) {
+    const ch = Array.from(tok), out = [];
+    for (let i = 0; i < ch.length; i++) {
+      const c = ch[i];
+      if (MK[c]) { out.push({ marker: MK[c], w: 0, adv: 0 }); continue; }
+      if (set.math) {
+        if (ALNUM.test(c) && (i === 0 || !ALNUM.test(ch[i - 1]))) {
+          const fm = ch.slice(i).join("").match(/^([0-9A-Za-zÄÖÜäöü]+)\/([0-9A-Za-zÄÖÜäöü]+)/);
+          if (fm) { out.push(frac(fm[1], fm[2])); i += Array.from(fm[0]).length - 1; continue; }
+        }
+        if ((c === "^" || c === "√") && i + 1 < ch.length) {
+          let j = i + 1, run = "";
+          const open = c === "^" ? "{" : "(", close = c === "^" ? "}" : ")";
+          if (ch[j] === open || ch[j] === "(") { const cl = ch[j] === "(" ? ")" : close; j++; while (j < ch.length && ch[j] !== cl) run += ch[j++]; j++; }
+          else while (j < ch.length && (c === "^" ? /[0-9A-Za-z+\-]/ : ALNUM).test(ch[j])) run += ch[j++];
+          if (run) { out.push(c === "^" ? sup(run) : root(run)); i = j - 1; continue; }
+        }
+      }
+      out.push(item(c));
+    }
+    return out;
+  }
+  function placeText(p) {
+    for (const tok of p.split(/( +)/).filter(t => t.length)) {
+      if (tok[0] === " ") {
+        const r = rngAt(set.seed, idx++), sw = tok.length * (0.72 + gap * 0.6) * u * (1 + (r() - 0.5) * 0.3 * nat);
+        if (x > x0 + 0.01) mark(x, x + sw);
+        x += sw;
+        continue;
+      }
+      const items = tokenItems(tok);
+      const ww = items.reduce((s, it) => s + it.adv, 0);
+      if (x + ww > colR && x > x0 + 0.5) newLine();
+      if (ww > colR - x0) { for (const it of items) { if (x + it.w > colR && x > x0 + 0.5) newLine(); place(it); } }
+      else for (const it of items) place(it);
+    }
   }
 
   newPage();
-  const text = addMistakes(txt.value.replace(/\r\n?/g, "\n").replace(/\t/g, "    ").replace(/ /g, " ").replace(/…/g, "..."));
+  let src = txt.value.replace(/\r\n?/g, "\n").replace(/\t/g, " ; ").replace(/ /g, " ").replace(/…/g, "...");
+  src = src.replace(/==/g, "").replace(/__/g, "");
+  if (set.math) src = src.replace(/sqrt\(/gi, "√(").replace(/\bwurzel\(/gi, "√(");
+  const text = addMistakes(src);
+  const VSEP = set.math ? /^(.*?\S)\s*(?:\s[-–]\s|;)\s*(\S.*)$/ : /^(.*?\S)\s*(?:\s[-–]\s|=|;)\s*(\S.*)$/;
   text.split("\n").forEach((p, pi) => {
     if (pi > 0) newLine();
-    for (const tok of p.split(/( +)/).filter(t => t.length)) {
-      if (tok[0] === " ") {
-        const r = rngAt(set.seed, idx++);
-        x += tok.length * (0.72 + gap * 0.6) * u * (1 + (r() - 0.5) * 0.3 * nat);
-        continue;
-      }
-      const items = Array.from(tok).map(item);
-      const ww = items.reduce((s, it) => s + it.adv, 0);
-      if (x + ww > right && x > x0 + 0.5) newLine();
-      if (ww > right - x0) { for (const it of items) { if (x + it.w > right && x > x0 + 0.5) newLine(); place(it); } }
-      else for (const it of items) place(it);
-    }
+    const vm = set.vocab ? p.match(VSEP) : null;
+    if (!vm) { placeText(p); return; }
+    const mid = left + (right - left) * 0.5;
+    const s0 = { y: lineY, n: lineNo, ops };
+    colL = left; colR = mid - 4; startLine(); placeText(vm[1]);
+    const e1 = { y: lineY, n: lineNo, ops };
+    if (ops === s0.ops) { lineY = s0.y; lineNo = s0.n; }
+    colL = mid + 4; colR = right; startLine(); placeText(vm[2]);
+    if (e1.ops === ops && e1.y > lineY) { lineY = e1.y; lineNo = e1.n; }
+    const top = (ops === s0.ops ? s0.y : spec.first) - step * 0.72, bottom = lineY + step * 0.28;
+    ops.push({ t: "s", gi: -1, pts: [[mid, top, 0.5], [mid + 0.15, (top + bottom) / 2, 0.5], [mid, bottom, 0.5]] });
+    colL = left; colR = right;
   });
   return { spec, pages, ink, wmm, missing, demoUsed };
 }
@@ -1418,6 +1620,12 @@ const TPL_TYPES = {
   numline: { name: "Zahlenstrahl", w: 150, h: 14 },
   box:     { name: "Kasten", w: 80, h: 40 },
   circle:  { name: "Kreis", w: 40, h: 40 },
+  venn:    { name: "Venn-Diagramm", w: 110, h: 70 },
+  timeline:{ name: "Zeitstrahl", w: 160, h: 16 },
+  mindmap: { name: "Mindmap", w: 160, h: 100 },
+  arrow:   { name: "Pfeil", w: 60, h: 10 },
+  bubble:  { name: "Sprechblase", w: 80, h: 45 },
+  staff:   { name: "Notenlinien", w: 170, h: 12 },
 };
 function tplPage(t, L) { return Math.max(0, Math.min(t.page || 0, L.pages.length - 1)); }
 const inkBB = new WeakMap();
@@ -1462,25 +1670,74 @@ function paintTemplate(P, t, ink) {
     let n = 0;
     for (let d = 3; x + d < x + w - 3; d += 5, n++) { const tk = n % 5 === 0 ? 2 : 1.2; L(x + d, cy - tk, x + d, cy + tk); }
     paintLabel(P, "0", x + 2.2, cy + 6.5, ink);
+  } else if (t.type === "venn") {
+    P.ellipse(x + w * 0.36, y + h / 2, w * 0.34, h * 0.48, ink, lw); P.ellipse(x + w * 0.64, y + h / 2, w * 0.34, h * 0.48, ink, lw);
+  } else if (t.type === "timeline") {
+    const cy = y + h / 2, a = 2.4, n = Math.max(3, Math.round(w / 28));
+    L(x, cy, x + w, cy); L(x + w, cy, x + w - a, cy - a * 0.6); L(x + w, cy, x + w - a, cy + a * 0.6);
+    for (let k = 0; k < n; k++) { const tx = x + 4 + (w - 12) * k / (n - 1); L(tx, cy - 2.6, tx, cy + 2.6); P.ellipse(tx, cy, 0.9, 0.9, ink, lw); }
+  } else if (t.type === "mindmap") {
+    const cx = x + w / 2, cy = y + h / 2, rx = w * 0.15, ry = h * 0.12;
+    P.ellipse(cx, cy, rx, ry, ink, lw);
+    for (let k = 0; k < 6; k++) {
+      const ang = -Math.PI / 2 + Math.PI / 6 + k * Math.PI / 3, c = Math.cos(ang), sn = Math.sin(ang);
+      const sx = cx + rx * c, sy = cy + ry * sn, ex = cx + w * 0.36 * c, ey = cy + h * 0.38 * sn;
+      P.stroke([[sx, sy, 0.5], [(sx + ex) / 2 + sn * 2, (sy + ey) / 2 - c * 2, 0.5], [ex, ey, 0.5]], ink, lw);
+      const lw2 = Math.min(28, w * 0.18); L(c >= 0 ? ex : ex - lw2, ey, c >= 0 ? ex + lw2 : ex, ey);
+    }
+  } else if (t.type === "arrow") {
+    const cy = y + h / 2, a = Math.min(h * 0.5, 4);
+    P.stroke([[x, cy, 0.5], [x + w * 0.5, cy - 0.3, 0.5], [x + w, cy, 0.5]], ink, lw);
+    L(x + w, cy, x + w - a * 1.4, cy - a); L(x + w, cy, x + w - a * 1.4, cy + a);
+  } else if (t.type === "bubble") {
+    const bh = h * 0.8, r = Math.min(7, bh * 0.3, w * 0.2), pts = [];
+    const arc = (cx, cy, a0) => { for (let k = 0; k <= 6; k++) { const a = a0 + k / 6 * Math.PI / 2; pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a), 0.5]); } };
+    pts.push([x + w * 0.32, y + bh, 0.5], [x + w * 0.14, y + h, 0.5], [x + w * 0.2, y + bh, 0.5]);
+    arc(x + r, y + bh - r, Math.PI / 2); arc(x + r, y + r, Math.PI); arc(x + w - r, y + r, -Math.PI / 2); arc(x + w - r, y + bh - r, 0);
+    pts.push([x + w * 0.32, y + bh, 0.5]);
+    P.stroke(pts, ink, lw);
+  } else if (t.type === "staff") {
+    for (let k = 0; k < 5; k++) L(x, y + h * k / 4, x + w, y + h * k / 4);
+    L(x, y, x, y + h); L(x + w, y, x + w, y + h);
+  } else if (t.type === "text") {
+    paintTextLine(P, t.text || "", x, y + t.h * 0.64, t.h / 3.3, t.id, ink);
   } else if (t.type === "custom") {
     for (const st of t.strokes || []) P.stroke(st.map(p => [x + p[0] * w, y + p[1] * h, p[2]]), ink, set.weight);
   }
 }
 function opBounds(op) {
+  if (op.pts) { let b = [Infinity, Infinity, -Infinity, -Infinity]; for (const p of op.pts) b = [Math.min(b[0], p[0]), Math.min(b[1], p[1]), Math.max(b[2], p[0]), Math.max(b[3], p[1])]; return b; }
+  if (op.t === "hl" || op.t === "ul") return [op.x0, op.y - op.u, op.x1, op.y + op.u * 0.5];
   if (op.t === "g") return [op.x, op.y + op.b.minY * op.k, op.x + (op.b.maxX - op.b.minX) * op.k, op.y + op.b.maxY * op.k];
   return [op.x, op.y - op.size * 0.7, op.x + op.size * 0.5, op.y];
 }
 function paintPage(P, L, i, withPaper, opt) {
   opt = opt || {};
   if (withPaper) paintPaper(P, set.paper, L.spec, i);
+  for (const op of L.pages[i]) if (op.t === "hl") P.hl(op);
   for (const op of L.pages[i]) {
-    if (opt.skipGi && opt.skipGi.has(op.gi)) continue;
-    if (op.t === "g") P.glyph(op, L.ink, L.wmm); else P.text(op, L.ink);
+    if (op.t === "hl" || (opt.skipGi && opt.skipGi.has(op.gi))) continue;
+    paintOp(P, op, L);
   }
   for (const t of templates) if (tplPage(t, L) === i && t.id !== opt.skipTpl) paintTemplate(P, t, L.ink);
   for (const s of inkStrokes) if (tplPage(s, L) === i && !(opt.skipInk && opt.skipInk.has(s.id))) P.stroke(s.pts, L.ink, s.w || set.weight);
 }
 function redrawAll() { for (const se of sheetEls) drawSheet(se); renderObjs(); }
+function ulPoints(op) {
+  const n = Math.max(4, Math.round((op.x1 - op.x0) / 4)), r = mulberry32(op.seed + 77), pts = [];
+  for (let k = 0; k <= n; k++) { const xx = op.x0 + (op.x1 - op.x0) * k / n; pts.push([xx, op.y + (xx - op.x0) * op.slope + op.u * (0.42 + (r() - 0.5) * 0.12), 0.5]); }
+  return pts;
+}
+function paintOp(P, op, L) {
+  if (op.t === "g") P.glyph(op, L.ink, L.wmm);
+  else if (op.t === "f") P.text(op, L.ink);
+  else if (op.t === "s") P.stroke(op.pts, L.ink, L.wmm * 0.9);
+  else if (op.t === "ul") P.stroke(ulPoints(op), L.ink, L.wmm * 0.85);
+}
+function shiftOp(op, dx, dy) {
+  if (op.pts) op.pts = op.pts.map(p => [p[0] + dx, p[1] + dy, p[2]]);
+  else { op.x += dx; op.y += dy; }
+}
 function pageCanvas(L, i, px, withPaper) {
   const cv = document.createElement("canvas");
   cv.width = Math.round(L.spec.w * px); cv.height = Math.round(L.spec.h * px);
@@ -1559,6 +1816,11 @@ function renderObjs() {
       el.appendChild(mkBtn("del", "×", "Vorlage löschen", () => { templates = templates.filter(o => o.id !== t.id); selTpl = null; saveTpl(); drawSheet(se); renderObjs(); }));
       const rs = document.createElement("div"); rs.className = "rs"; rs.setAttribute("aria-label", "Größe ändern");
       rs.addEventListener("pointerdown", e => startDrag(e, se, "resize", t)); el.appendChild(rs);
+      if (t.type === "text") {
+        const bar = document.createElement("div"); bar.className = "tbar";
+        bar.append(mkBtn("chip", "Bearbeiten", "Text bearbeiten", () => openTextInput(se, null, t)));
+        el.appendChild(bar);
+      }
       if (t.type === "table") {
         const bar = document.createElement("div"); bar.className = "tbar";
         const chg = (k, d) => { t[k] = Math.max(1, Math.min(30, (t[k] || (k === "rows" ? 4 : 3)) + d)); saveTpl(); drawSheet(se); };
@@ -1604,7 +1866,7 @@ function startDrag(e, se, kind, t) {
   let d = [0, 0], raf = 0, moved = false;
   const geom = () => {
     if (kind === "move") return { x: Math.max(-t.w + 8, Math.min(s.w - 8, t.x + d[0])), y: Math.max(-t.h + 8, Math.min(s.h - 8, t.y + d[1])), w: t.w, h: t.h };
-    if (kind === "resize" && t.type === "custom") { const w = Math.max(6, t.w + d[0]); return { x: t.x, y: t.y, w, h: w * t.h / t.w }; }
+    if (kind === "resize" && (t.type === "custom" || t.type === "text")) { const w = Math.max(6, t.w + d[0]); return { x: t.x, y: t.y, w, h: w * t.h / t.w }; }
     if (kind === "resize") return { x: t.x, y: t.y, w: Math.max(8, t.w + d[0]), h: Math.max(t.type === "numline" ? 6 : 8, t.h + d[1]) };
     return null;
   };
@@ -1613,7 +1875,7 @@ function startDrag(e, se, kind, t) {
     const ctx = se.cv.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(off, 0, 0);
     const P = canvasPainter(ctx, se.px);
     if (kind === "glyphs") {
-      for (const op of movingOps) { const o = Object.assign({}, op, { x: op.x + d[0], y: op.y + d[1] }); if (o.t === "g") P.glyph(o, lastL.ink, lastL.wmm); else P.text(o, lastL.ink); }
+      for (const op of movingOps) { const o = Object.assign({}, op); shiftOp(o, d[0], d[1]); paintOp(P, o, lastL); }
       for (const s of movingInk) P.stroke(s.pts.map(p => [p[0] + d[0], p[1] + d[1], p[2]]), lastL.ink, s.w || set.weight);
       placeBox(el, [box0[0] + d[0], box0[1] + d[1], box0[2] + d[0], box0[3] + d[1]]);
     } else {
@@ -1633,7 +1895,8 @@ function startDrag(e, se, kind, t) {
     if (raf) { cancelAnimationFrame(raf); raf = 0; }
     if (moved) {
       if (kind === "glyphs") {
-        for (const op of movingOps) { op.x += d[0]; op.y += d[1]; const m = moves[op.gi] || [0, 0]; moves[op.gi] = [Math.round((m[0] + d[0]) * 100) / 100, Math.round((m[1] + d[1]) * 100) / 100]; }
+        for (const op of movingOps) shiftOp(op, d[0], d[1]);
+        for (const g of new Set(movingOps.map(o => o.gi))) { const m = moves[g] || [0, 0]; moves[g] = [Math.round((m[0] + d[0]) * 100) / 100, Math.round((m[1] + d[1]) * 100) / 100]; }
         for (const s of movingInk) { s.pts = s.pts.map(p => [rmm(p[0] + d[0]), rmm(p[1] + d[1]), p[2]]); inkBB.delete(s); }
         selGlyphs.box = [box0[0] + d[0], box0[1] + d[1], box0[2] + d[0], box0[3] + d[1]];
         saveMoves(); if (movingInk.length) saveInk();
@@ -1715,17 +1978,62 @@ function lassoDraw(e, se) {
     if (pts.length < 4) return;
     const gis = new Set(), ink = new Set(); let box = null;
     const grow = b => { box = box ? [Math.min(box[0], b[0]), Math.min(box[1], b[1]), Math.max(box[2], b[2]), Math.max(box[3], b[3])] : b.slice(); };
-    for (const op of lastL.pages[se.i]) { const b = opBounds(op); if (inPoly((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, pts)) { gis.add(op.gi); grow(b); } }
+    for (const op of lastL.pages[se.i]) { if (op.gi < 0) continue; const b = opBounds(op); if (inPoly((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, pts)) { gis.add(op.gi); grow(b); } }
     for (const s of inkStrokes) { if (tplPage(s, lastL) !== se.i) continue; const b = strokeBox(s); if (inPoly((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, pts)) { ink.add(s.id); grow(b); } }
     if (gis.size || ink.size) selGlyphs = { page: se.i, gis, ink, box: [box[0] - 1.5, box[1] - 1.5, box[2] + 1.5, box[3] + 1.5] };
     else { const hitT = templates.find(t => tplPage(t, lastL) === se.i && inPoly(t.x + t.w / 2, t.y + t.h / 2, pts)); if (hitT) selTpl = hitT.id; }
     renderObjs();
   });
 }
+function measureTextLine(text, uT, seed) {
+  let w = 0; const r0 = hashSeed(seed);
+  Array.from(text).forEach((c, i) => {
+    if (c === " ") { w += 0.72 * uT; return; }
+    const g = pickGlyph(c, rngAt(r0, i));
+    if (g.src === "font") { measureCtx.font = "400 100px " + cssVar("--f-body"); w += measureCtx.measureText(c).width / 100 * uT * 2.6 + set.spacing * uT; return; }
+    const b = bbox(g.v); w += Math.max(0.08, b.maxX - b.minX) * uT + set.weight + set.spacing * uT;
+  });
+  return w;
+}
+function hashSeed(s) { let h = 2166136261; for (const ch of String(s)) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return h >>> 0; }
+function paintTextLine(P, text, x, base, uT, seed, ink) {
+  const r0 = hashSeed(seed);
+  Array.from(text).forEach((c, i) => {
+    if (c === " ") { x += 0.72 * uT; return; }
+    const g = pickGlyph(c, rngAt(r0, i));
+    if (g.src === "font") { P.text({ ch: c, x, y: base, size: uT * 2.6 }, ink); measureCtx.font = "400 100px " + cssVar("--f-body"); x += measureCtx.measureText(c).width / 100 * uT * 2.6 + set.spacing * uT; return; }
+    const b = bbox(g.v);
+    P.glyph({ v: g.v, x, y: base, rot: 0, k: uT, minX: b.minX }, ink, set.weight);
+    x += Math.max(0.08, b.maxX - b.minX) * uT + set.weight + set.spacing * uT;
+  });
+}
+function openTextInput(se, at, t) {
+  se.objs.querySelectorAll(".tin").forEach(n => n.remove());
+  const s = lastL.spec, uT = t ? t.h / 3.3 : (s.u * set.size);
+  const inp = document.createElement("input"); inp.type = "text"; inp.className = "tin"; inp.value = t ? t.text : "";
+  inp.setAttribute("aria-label", "Text für diese Stelle"); inp.setAttribute("autocomplete", "off"); inp.setAttribute("enterkeyhint", "done");
+  const x = t ? t.x : at[0], top = t ? t.y : at[1] - uT * 2.1;
+  inp.style.left = (x / s.w * 100) + "%"; inp.style.top = (top / s.h * 100) + "%";
+  se.objs.appendChild(inp);
+  let done = false;
+  const commit = keep => {
+    if (done) return; done = true; inp.remove();
+    const v = inp.value.trim();
+    if (!keep) return;
+    if (t) { if (!v) templates = templates.filter(o => o.id !== t.id); else { t.text = v; t.w = Math.max(6, measureTextLine(v, uT, t.id) + 1); } }
+    else if (v) { const id = newId("x"); templates.push({ id, type: "text", page: se.i, x, y: top, h: uT * 3.3, w: Math.max(6, measureTextLine(v, uT, id) + 1), text: v }); }
+    saveTpl(); drawSheet(se); renderObjs();
+  };
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); commit(true); } else if (e.key === "Escape") commit(false); });
+  inp.addEventListener("blur", () => commit(true));
+  inp.addEventListener("pointerdown", e => e.stopPropagation());
+  inp.focus();
+}
 function attachSheet(se) {
+  se.catcher.addEventListener("click", e => { if (mode === "text") openTextInput(se, toMM(e, se)); });
   se.cv.addEventListener("click", () => { if (selTpl || selGlyphs) { selTpl = null; selGlyphs = null; renderObjs(); } });
   se.catcher.addEventListener("pointerdown", e => {
-    if (e.button > 0 || !mode) return;
+    if (e.button > 0 || !mode || mode === "text") return;
     if (e.pointerType === "pen" && !penSeen) { penSeen = true; if (!penOnly && store.get(K.pen) == null) { penOnly = true; $("opt-pen").checked = true; store.set(K.pen, true); } }
     e.preventDefault();
     try { se.catcher.setPointerCapture(e.pointerId); } catch (x) {}
@@ -1736,7 +2044,7 @@ function attachSheet(se) {
 function saveSelectionAsTemplate() {
   if (!selGlyphs) return;
   const strokes = [];
-  for (const op of lastL.pages[selGlyphs.page]) if (selGlyphs.gis.has(op.gi) && op.t === "g") strokes.push(...glyphToMM(op));
+  for (const op of lastL.pages[selGlyphs.page]) if (selGlyphs.gis.has(op.gi)) { if (op.t === "g") strokes.push(...glyphToMM(op)); else if (op.pts) strokes.push(op.pts); }
   for (const s of inkStrokes) if (selGlyphs.ink.has(s.id)) strokes.push(s.pts);
   if (!strokes.length) { toast("In der Auswahl ist nichts, was sich als Vorlage speichern lässt."); return; }
   let b = [Infinity, Infinity, -Infinity, -Infinity];
@@ -1781,7 +2089,7 @@ function addTemplate(type, mine) {
 }
 function setMode(m) {
   mode = mode === m ? null : m;
-  for (const [id, k] of [["ed-pen", "pen"], ["ed-erase", "erase"], ["ed-lasso", "lasso"]]) $(id).setAttribute("aria-pressed", String(mode === k));
+  for (const [id, k] of [["ed-pen", "pen"], ["ed-erase", "erase"], ["ed-lasso", "lasso"], ["ed-text", "text"]]) $(id).setAttribute("aria-pressed", String(mode === k));
   const sh = $("sheets"); sh.classList.toggle("editing", !!mode);
   sh.dataset.mode = mode || "";
   selTpl = null; if (mode !== "lasso") selGlyphs = null; renderObjs();
@@ -1789,6 +2097,7 @@ function setMode(m) {
 $("ed-pen").onclick = () => setMode("pen");
 $("ed-erase").onclick = () => setMode("erase");
 $("ed-lasso").onclick = () => setMode("lasso");
+$("ed-text").onclick = () => { setMode("text"); if (mode === "text") toast("Tipp auf eine Stelle im Blatt und schreib los. Enter fertig."); };
 $("ed-undo").onclick = () => {
   const a = undoStack.pop();
   if (!a) { toast("Es gibt nichts zum Rückgängigmachen."); return; }
@@ -1934,6 +2243,250 @@ let rt, lastW = window.innerWidth; window.addEventListener("resize", () => { cle
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { drawPad(); writeDirty(); });
 if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { drawPad(); allChars().forEach(drawTile); });
 new MutationObserver(() => { drawPad(); allChars().forEach(drawTile); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+/* ---------- learn handwriting from a photo or PDF of a filled-in template ---------- */
+const TV = { mk: [[12, 12], [198, 12], [12, 285], [198, 285]], cols: 9, rows: 11, cw: 18.7, ch: 22, gx: 20.85, gy: 34, unit: 5.5, R: 7 };
+const tvCell = i => ({ x: TV.gx + (i % TV.cols) * TV.cw, y: TV.gy + Math.floor(i / TV.cols) * TV.ch });
+function templatePdf(pagesN) {
+  const J = window.jspdf && window.jspdf.jsPDF; if (!J) return null;
+  const doc = new J({ unit: "mm", format: "a4", compress: true });
+  for (let pg = 0; pg < pagesN; pg++) {
+    if (pg) doc.addPage();
+    doc.setFillColor(0, 0, 0); for (const [cx, cy] of TV.mk) doc.rect(cx - 4, cy - 4, 8, 8, "F");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(13); doc.setTextColor(60, 60, 60);
+    doc.text("MangoUmwandler · Schreibvorlage", 22, 21);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(120, 120, 120);
+    doc.text("Seite " + (pg + 1) + " von " + pagesN + "  ·  Jedes Zeichen mit dunklem Stift in sein Kästchen schreiben, wie auf den Linien im Heft.", 22, 27);
+    doc.text("Die vier schwarzen Ecken nicht bemalen und beim Fotografieren mit aufs Bild nehmen.", 22, 31);
+    BASE.forEach((c, i) => {
+      const { x, y } = tvCell(i), u = TV.unit;
+      doc.setLineWidth(0.15); doc.setDrawColor(214, 218, 226); doc.rect(x, y, TV.cw, TV.ch, "S");
+      doc.setDrawColor(190, 212, 245); doc.setLineDashPattern([0.8, 0.8], 0);
+      doc.line(x + 0.6, y + 0.5 * u, x + TV.cw - 0.6, y + 0.5 * u); doc.line(x + 0.6, y + 1.5 * u, x + TV.cw - 0.6, y + 1.5 * u); doc.line(x + 0.6, y + 3.5 * u, x + TV.cw - 0.6, y + 3.5 * u);
+      doc.setLineDashPattern([], 0); doc.setDrawColor(160, 192, 238); doc.setLineWidth(0.25); doc.line(x + 0.6, y + 2.5 * u, x + TV.cw - 0.6, y + 2.5 * u);
+      doc.setFontSize(8); doc.setTextColor(178, 184, 196); doc.text(c, x + 1, y + 3.2);
+    });
+  }
+  return doc.output("blob");
+}
+async function sourcesToCanvases(files) {
+  const out = [];
+  for (const f of files) {
+    const isPdf = f.type === "application/pdf" || /\.pdf$/i.test(f.name);
+    if (isPdf) {
+      const lib = await ensurePdfJs(), pdf = await lib.getDocument({ data: new Uint8Array(await f.arrayBuffer()) }).promise;
+      for (let i = 1; i <= Math.min(pdf.numPages, 6); i++) {
+        const page = await pdf.getPage(i), v1 = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: 2200 / v1.height });
+        const c = document.createElement("canvas"); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+        const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+        await page.render({ canvasContext: x, viewport: vp }).promise; out.push({ canvas: c, name: f.name + " S." + i });
+      }
+    } else {
+      const url = URL.createObjectURL(f), img = new Image(); img.src = url;
+      await (img.decode ? img.decode() : new Promise((r, j) => { img.onload = r; img.onerror = j; }));
+      const k = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); out.push({ canvas: c, name: f.name });
+    }
+  }
+  return out;
+}
+function otsu(gray) {
+  const hist = new Array(256).fill(0); for (const v of gray) hist[v]++;
+  const total = gray.length; let sum = 0; for (let i = 0; i < 256; i++) sum += i * hist[i];
+  let sumB = 0, wB = 0, best = 0, t = 128;
+  for (let i = 0; i < 256; i++) { wB += hist[i]; if (!wB) continue; const wF = total - wB; if (!wF) break; sumB += i * hist[i]; const mB = sumB / wB, mF = (sum - sumB) / wF, v = wB * wF * (mB - mF) * (mB - mF); if (v > best) { best = v; t = i; } }
+  return t;
+}
+function findMarkers(cv) {
+  const S = Math.min(1, 1000 / Math.max(cv.width, cv.height)), w = Math.round(cv.width * S), h = Math.round(cv.height * S);
+  const c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d"); x.drawImage(cv, 0, 0, w, h);
+  const d = x.getImageData(0, 0, w, h).data, gray = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) gray[i] = (d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000;
+  const t = Math.min(otsu(gray), 150) * 0.85, lab = new Int32Array(w * h), cands = [];
+  for (let s = 0; s < w * h; s++) {
+    if (lab[s] || gray[s] >= t) continue;
+    let minx = w, miny = h, maxx = 0, maxy = 0, n = 0; const st = [s]; lab[s] = 1;
+    while (st.length) {
+      const p = st.pop(), px = p % w, py = (p - px) / w; n++;
+      if (px < minx) minx = px; if (px > maxx) maxx = px; if (py < miny) miny = py; if (py > maxy) maxy = py;
+      for (const q of [p - 1, p + 1, p - w, p + w]) if (q >= 0 && q < w * h && !lab[q] && gray[q] < t && Math.abs((q % w) - px) <= 1) { lab[q] = 1; st.push(q); }
+    }
+    const bw = maxx - minx + 1, bh = maxy - miny + 1, m = Math.min(w, h), size = Math.max(bw, bh);
+    if (n < 20 || n / (bw * bh) < 0.7 || bw / bh < 0.6 || bw / bh > 1.67 || size < m * 0.012 || size > m * 0.09) continue;
+    cands.push([(minx + maxx) / 2, (miny + maxy) / 2]);
+  }
+  const corners = [[0, 0], [w, 0], [0, h], [w, h]], diag = Math.hypot(w, h), found = [];
+  for (const [cx, cy] of corners) {
+    let best = null, bd = Infinity;
+    for (const p of cands) { const dd = Math.hypot(p[0] - cx, p[1] - cy); if (dd < bd && !found.includes(p)) { bd = dd; best = p; } }
+    if (!best || bd > diag * 0.4) return null;
+    found.push(best);
+  }
+  return found.map(p => [p[0] / S, p[1] / S]);
+}
+function homography(src, dst) {
+  const A = [], b = [];
+  for (let i = 0; i < 4; i++) {
+    const [x, y] = src[i], [u, v] = dst[i];
+    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u);
+    A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v);
+  }
+  for (let c = 0; c < 8; c++) {
+    let piv = c; for (let r = c + 1; r < 8; r++) if (Math.abs(A[r][c]) > Math.abs(A[piv][c])) piv = r;
+    [A[c], A[piv]] = [A[piv], A[c]]; [b[c], b[piv]] = [b[piv], b[c]];
+    for (let r = 0; r < 8; r++) if (r !== c) { const f = A[r][c] / A[c][c]; for (let k = c; k < 8; k++) A[r][k] -= f * A[c][k]; b[r] -= f * b[c]; }
+  }
+  const hm = b.map((v, i) => v / A[i][i]);
+  return (x, y) => { const dd = hm[6] * x + hm[7] * y + 1; return [(hm[0] * x + hm[1] * y + hm[2]) / dd, (hm[3] * x + hm[4] * y + hm[5]) / dd]; };
+}
+function zhangSuen(m, w, h) {
+  const at = (x, y) => (x >= 0 && y >= 0 && x < w && y < h ? m[y * w + x] : 0);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let pass = 0; pass < 2; pass++) {
+      const del = [];
+      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
+        if (!m[y * w + x]) continue;
+        const p = [at(x, y - 1), at(x + 1, y - 1), at(x + 1, y), at(x + 1, y + 1), at(x, y + 1), at(x - 1, y + 1), at(x - 1, y), at(x - 1, y - 1)];
+        const B = p.reduce((a, v) => a + v, 0); if (B < 2 || B > 6) continue;
+        let A = 0; for (let k = 0; k < 8; k++) if (!p[k] && p[(k + 1) % 8]) A++;
+        if (A !== 1) continue;
+        if (pass === 0 ? (p[0] * p[2] * p[4] || p[2] * p[4] * p[6]) : (p[0] * p[2] * p[6] || p[0] * p[4] * p[6])) continue;
+        del.push(y * w + x);
+      }
+      if (del.length) { changed = true; for (const i of del) m[i] = 0; }
+    }
+  }
+  return m;
+}
+function rdp(pts, eps) {
+  if (pts.length < 3) return pts;
+  const [a, b] = [pts[0], pts[pts.length - 1]]; let idx = 0, dm = 0;
+  for (let i = 1; i < pts.length - 1; i++) { const d = segDist(pts[i], a, b); if (d > dm) { dm = d; idx = i; } }
+  if (dm <= eps) return [a, b];
+  return rdp(pts.slice(0, idx + 1), eps).slice(0, -1).concat(rdp(pts.slice(idx), eps));
+}
+function traceSkeleton(sk, w, h) {
+  const at = (x, y) => x >= 0 && y >= 0 && x < w && y < h && sk[y * w + x];
+  const N = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+  const deg = (x, y) => N.reduce((n, [dx, dy]) => n + (at(x + dx, y + dy) ? 1 : 0), 0);
+  const vis = new Uint8Array(w * h), strokes = [];
+  const walk = (sx, sy) => {
+    const pts = []; let joined = false;
+    for (const [dx, dy] of N) if (at(sx + dx, sy + dy) && vis[(sy + dy) * w + sx + dx]) { pts.push([sx + dx, sy + dy]); joined = true; break; }
+    let x = sx, y = sy, ddx = 0, ddy = 0;
+    for (;;) {
+      pts.push([x, y]); vis[y * w + x] = 1;
+      let best = null, bs = -9;
+      for (const [dx, dy] of N) { const nx = x + dx, ny = y + dy; if (!at(nx, ny) || vis[ny * w + nx]) continue; const sc = ddx * dx + ddy * dy - (dx && dy ? 0.3 : 0); if (sc > bs) { bs = sc; best = [nx, ny, dx, dy]; } }
+      if (!best) {
+        const prev = pts[pts.length - 2];
+        for (const [dx, dy] of N) { const nx = x + dx, ny = y + dy; if (at(nx, ny) && vis[ny * w + nx] && !(prev && prev[0] === nx && prev[1] === ny)) { pts.push([nx, ny]); break; } }
+        break;
+      }
+      [x, y, ddx, ddy] = best;
+    }
+    return { pts, joined };
+  };
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (at(x, y) && !vis[y * w + x] && deg(x, y) === 1) strokes.push(walk(x, y));
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (at(x, y) && !vis[y * w + x]) strokes.push(walk(x, y));
+  return strokes.filter(s => !(s.joined && s.pts.length < 6)).map(s => s.pts);
+}
+function cellStrokes(srcData, sw, sh, H, cell) {
+  const R = TV.R, w = Math.round(TV.cw * R), h = Math.round(TV.ch * R), g = new Uint8Array(w * h);
+  for (let v = 0; v < h; v++) for (let u = 0; u < w; u++) {
+    const [ix, iy] = H(cell.x + (u + 0.5) / R, cell.y + (v + 0.5) / R), px = Math.round(ix), py = Math.round(iy);
+    if (px < 0 || py < 0 || px >= sw || py >= sh) { g[v * w + u] = 255; continue; }
+    const k = (py * sw + px) * 4; g[v * w + u] = (srcData[k] * 299 + srcData[k + 1] * 587 + srcData[k + 2] * 114) / 1000;
+  }
+  const sorted = Array.from(g).sort((a, b) => a - b), bg = sorted[Math.floor(sorted.length * 0.6)];
+  const thr = Math.min(bg - 45, bg * 0.7), m = new Uint8Array(w * h), edge = Math.round(1.1 * R);
+  let ink = 0;
+  for (let v = 0; v < h; v++) for (let u = 0; u < w; u++) {
+    if (u < edge || v < edge || u >= w - edge || v >= h - edge) continue;
+    if (u < 4.6 * R && v < 4.2 * R) continue; // printed label
+    if (g[v * w + u] < thr) { m[v * w + u] = 1; ink++; }
+  }
+  if (ink < 25) return null;
+  // drop specks
+  const seen = new Uint8Array(w * h);
+  for (let s = 0; s < w * h; s++) {
+    if (!m[s] || seen[s]) continue;
+    const comp = [s], st = [s]; seen[s] = 1;
+    while (st.length) { const p = st.pop(), px = p % w; for (const q of [p - 1, p + 1, p - w, p + w, p - w - 1, p - w + 1, p + w - 1, p + w + 1]) if (q >= 0 && q < w * h && m[q] && !seen[q] && Math.abs((q % w) - px) <= 1) { seen[q] = 1; st.push(q); comp.push(q); } }
+    if (comp.length < 10) for (const q of comp) m[q] = 0;
+  }
+  const sk = zhangSuen(m, w, h), raw = traceSkeleton(sk, w, h), U = R * TV.unit;
+  const strokes = raw.map(pts => rdp(pts, 0.8).map(([x, y]) => [r3(x / U), r3(y / U - 2.5), 0.5])).filter(s => s.length);
+  return strokes.length ? strokes : null;
+}
+let importResult = null;
+async function runImport(files) {
+  if (!files.length) return;
+  toast("Lese die Vorlage …");
+  let sources;
+  try { sources = await sourcesToCanvases(files); }
+  catch (e) { toast("Die Datei ließ sich nicht öffnen. Für PDFs brauchst du Internet, Fotos gehen immer."); return; }
+  const res = new Map(), bad = [];
+  for (const [pi, s] of sources.entries()) {
+    await new Promise(r => setTimeout(r, 30));
+    const mk = findMarkers(s.canvas);
+    if (!mk) { bad.push(pi + 1); continue; }
+    const H = homography(TV.mk, mk), sd = s.canvas.getContext("2d").getImageData(0, 0, s.canvas.width, s.canvas.height).data;
+    BASE.forEach((c, i) => {
+      const st = cellStrokes(sd, s.canvas.width, s.canvas.height, H, tvCell(i));
+      if (st) { if (!res.has(c)) res.set(c, []); res.get(c).push(st); }
+    });
+    s.canvas.width = 0;
+  }
+  importResult = res;
+  showImport(res, sources.length, bad);
+}
+function showImport(res, pagesN, bad) {
+  $("imp-title").textContent = res.size ? res.size + (res.size === 1 ? " Zeichen erkannt" : " Zeichen erkannt") : "Keine Zeichen erkannt";
+  const parts = [];
+  if (bad.length) parts.push((bad.length === pagesN ? "Auf dem Bild" : "Auf Seite " + bad.join(", ")) + " habe ich die vier schwarzen Ecken nicht gefunden. Fotografiere die ganze Seite gerade von oben, mit allen vier Ecken im Bild.");
+  if (res.size) parts.push("So sehen deine Zeichen aus. Was nicht passt, kannst du danach im Zeichnen-Schritt einfach neu zeichnen.");
+  $("imp-info").textContent = parts.join(" ");
+  const grid = $("imp-grid"); grid.textContent = "";
+  for (const [c, vars] of res) {
+    const t = document.createElement("div"); t.className = "imp-tile";
+    const cv = document.createElement("canvas"), S = 52, dpr = window.devicePixelRatio || 1; cv.width = S * dpr; cv.height = S * dpr;
+    const x = cv.getContext("2d"), v = vars[0], b = bbox(v), k = Math.min(S / 3.8, (S * 0.84) / Math.max(0.3, b.maxX - b.minX)) * dpr;
+    x.setTransform(k, 0, 0, k, (S * dpr - (b.maxX - b.minX) * k) / 2 - b.minX * k, S * dpr * 0.64);
+    x.strokeStyle = x.fillStyle = cssVar("--pad-ink"); x.lineCap = "round"; for (const st of v) strokePath(x, st, 0.13);
+    const l = document.createElement("span"); l.textContent = c + (vars.length > 1 ? " ×" + vars.length : "");
+    t.append(cv, l); grid.appendChild(t);
+  }
+  $("imp-apply").disabled = !res.size; $("imp-mode").hidden = !res.size;
+  $("imp-modal").hidden = false;
+}
+let impMode = "fill";
+document.querySelectorAll("#imp-mode button").forEach(b => b.onclick = () => { impMode = b.dataset.m; document.querySelectorAll("#imp-mode button").forEach(o => o.setAttribute("aria-checked", String(o === b))); });
+$("imp-cancel").onclick = () => { $("imp-modal").hidden = true; importResult = null; };
+$("imp-apply").onclick = () => {
+  if (!importResult) return;
+  let n = 0;
+  for (const [c, vars] of importResult) {
+    const g = glyphs[c];
+    if (impMode === "replace" || !g) glyphs[c] = { v: vars.slice(0, NEED), t: Date.now() };
+    else { const room = NEED - g.v.length; if (room <= 0) continue; g.v = g.v.concat(vars.slice(0, room)); g.t = Date.now(); }
+    queueWrite(c); n++;
+  }
+  saveLocal(); buildGroups(); updateProgress(); selectChar(cur); writeDirty();
+  $("imp-modal").hidden = true; importResult = null;
+  toast(n + " Zeichen übernommen. Du kannst jedes davon weiter bearbeiten.");
+};
+for (const [id, n] of [["imp-tpl1", 1], ["imp-tpl3", 3]]) $(id).onclick = () => {
+  const blob = templatePdf(n);
+  if (!blob) { toast("Die Vorlage ist gerade nicht verfügbar. Prüf deine Internetverbindung."); return; }
+  deliver([{ name: n === 1 ? "mangoumwandler-schreibvorlage.pdf" : "mangoumwandler-schreibvorlage-3-seiten.pdf", blob }]).then(ok => { if (ok) toast("Vorlage gespeichert. Öffne sie in Goodnotes und schreib los."); });
+};
+$("imp-go").onclick = () => $("imp-file").click();
+$("imp-file").onchange = e => { const fs = Array.from(e.target.files || []); e.target.value = ""; runImport(fs); };
 
 /* ---------- delete my handwriting ---------- */
 $("wipe").onclick = () => {
