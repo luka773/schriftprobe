@@ -183,7 +183,19 @@ select { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; ba
 .side-head h2 { font: 700 16px/1 var(--f-display); margin: 0; }
 .iconbtn { width: 44px; height: 44px; border-radius: 12px; border: 0; background: var(--sunken); display: grid; place-items: center; }
 .iconbtn svg { width: 20px; height: 20px; }
-.txtbar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.txtbar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+#tb-live { grid-column: 1 / -1; order: 9; flex-direction: row; gap: 10px; min-height: 44px; color: var(--fg); font-size: 13px; }
+#tb-live b { font-weight: 800; } #tb-live small { font-weight: 500; color: var(--muted); }
+#tb-live[aria-pressed="true"] small { color: rgba(255,255,255,.8); }
+.livedot { width: 12px !important; height: 12px !important; border-radius: 50%; background: var(--signal); box-shadow: 0 0 0 3px rgba(210,63,44,.18); }
+#tb-live[aria-pressed="true"] .livedot { background: #fff; animation: pulse 1.2s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(255,255,255,.0); transform: scale(.85); } }
+.live { position: fixed; z-index: 65; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 12px; max-width: min(640px, calc(100% - 32px)); background: var(--fg); color: var(--bg); border-radius: 18px; padding: 10px 10px 10px 16px; box-shadow: var(--shadow-l); }
+.live .livedot { flex: none; background: var(--signal); animation: pulse 1.2s infinite; }
+.live #live-text { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.live .btn { min-height: 38px; background: var(--signal); border-color: var(--signal); color: #fff; }
+@media (prefers-reduced-motion: reduce) { .livedot { animation: none !important; } }
+#tb-photo { grid-column: span 2; flex-direction: row; gap: 8px; font-size: 12px; color: var(--fg); border-color: var(--mango); background: var(--accent-soft); }
 .tb { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; min-height: 48px; padding: 4px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10.5px; font-weight: 700; color: var(--muted); min-width: 0; }
 .tb > span, .tb > svg { font: 700 14px/1 var(--f-body); color: var(--fg); height: 18px; display: flex; align-items: center; }
 .tb > svg { width: 18px; }
@@ -312,7 +324,17 @@ body.locked .app { display: none; }
 .imp-tile { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 4px; gap: 2px; }
 .imp-tile canvas { width: 52px; height: 52px; }
 .imp-tile span { font: 500 10px/1 var(--f-mono); color: var(--muted); }
+.ocr-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 14px; }
+.ocr-body img { width: 100%; max-height: 46vh; object-fit: contain; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); }
+.ocr-right { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ocr-right textarea { min-height: 220px; flex: 1; }
+.ocr-prog { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 14px; background: var(--bg); font-size: 13.5px; font-weight: 600; }
+.ocr-prog .bar { height: 8px; border-radius: 4px; background: var(--sunken); overflow: hidden; }
+.ocr-prog i { display: block; height: 100%; width: 0; background: var(--mango); transition: width .2s; }
+@media (max-width: 640px) { .ocr-body { grid-template-columns: 1fr; } .ocr-body img { max-height: 24vh; } }
 .seg.two { grid-template-columns: 1fr 1fr; }
+.tin2 { border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; min-height: 44px; background: var(--bg); font-weight: 600; }
+.font-preview { border: 1px solid var(--line); border-radius: 14px; background: #fff; color: #1d1917; padding: 12px 14px; font-size: 30px; line-height: 1.25; min-height: 60px; outline: none; }
 .credits { font-size: 12px; color: var(--muted); }
 .credits summary { cursor: pointer; font-weight: 600; }
 
@@ -338,7 +360,7 @@ body.locked .app { display: none; }
   .tool { min-width: 36px; padding: 4px 3px; }
   .palette { gap: 1px; padding: 5px; max-width: calc(100% - 16px); }
   .psep { margin: 6px 2px; }
-  .txtbar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .txtbar { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .tool span { display: none; }
   .cur .big { width: 60px; height: 60px; font-size: 32px; }
   .nav { margin-left: 0; width: 100%; }
@@ -443,6 +465,14 @@ body.locked .app { display: none; }
           </ol>
           <input type="file" id="imp-file" accept="image/*,application/pdf,.pdf" multiple hidden>
         </div>
+        <div class="side-sec">
+          <h2 class="sec-h">Als Schriftart</h2>
+          <p class="hint">Mach aus deinen Zeichen eine echte Schriftdatei. Installiert kannst du damit in Pages, Keynote, Word und anderen Apps in deiner Handschrift tippen.</p>
+          <div class="field"><label class="sec-h" for="font-name">Name der Schrift</label><input id="font-name" class="tin2" type="text" value="Meine Handschrift" maxlength="40" autocomplete="off"></div>
+          <button class="btn primary" id="font-make" type="button">Schriftart erstellen</button>
+          <div class="font-preview" id="font-preview" hidden contenteditable="true" spellcheck="false" aria-label="Vorschau, hier kannst du tippen">Das ist meine Schrift. Tipp hier zum Ausprobieren.</div>
+          <p class="hint" id="font-info"></p>
+        </div>
         <details class="credits">
           <summary>Über die Beispielschrift</summary>
           <p>Solange du ein Zeichen noch nicht gezeichnet hast, kann die Vorschau es aus der Hershey Script ergänzen. The Hershey Fonts were originally created by Dr. A. V. Hershey while working at the U. S. National Bureau of Standards. The format of the Font data in this distribution was originally created by James Hurt, Cognition, Inc., 900 Technology Park Drive, Billerica, MA 01821. SVG-Fassung von Windell H. Oskay (Evil Mad Scientist), verteilt im Paket hersheytext (MIT).</p>
@@ -462,6 +492,8 @@ body.locked .app { display: none; }
             <button type="button" class="tb" id="tb-frac" title="Bruch einfügen (Mathe-Modus)"><span class="fr"><i>a</i><i>b</i></span>Bruch</button>
             <button type="button" class="tb" id="tb-sup" title="Hochzahl einfügen (Mathe-Modus)"><span>x<sup>2</sup></span>Hoch</button>
             <button type="button" class="tb" id="tb-root" title="Wurzel einfügen (Mathe-Modus)"><span>√x</span>Wurzel</button>
+            <button type="button" class="tb" id="tb-photo" title="Text abfotografieren und in deiner Schrift übernehmen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Foto</button>
+            <button type="button" class="tb" id="tb-live" aria-pressed="false" title="Sprechen und zuschauen, wie es geschrieben wird"><span class="livedot"></span><b>Live schreiben</b><small>sprechen und zuschauen</small></button>
             <button type="button" class="tb" id="tb-mic" aria-pressed="false" title="Text diktieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>Diktieren</button>
           </div>
           <textarea id="txt" spellcheck="false"></textarea>
@@ -585,6 +617,23 @@ body.locked .app { display: none; }
     <div class="row"><button class="btn quiet" id="imp-cancel" type="button">Abbrechen</button><button class="btn primary" id="imp-apply" type="button">Übernehmen</button></div>
   </div>
 </div>
+<input type="file" id="ocr-file" accept="image/*" hidden>
+<div class="modal" id="ocr-modal" hidden role="dialog" aria-modal="true" aria-labelledby="ocr-title">
+  <div class="modal-card">
+    <h2 id="ocr-title">Text aus Foto</h2>
+    <div class="ocr-body">
+      <img id="ocr-img" alt="Dein Foto">
+      <div class="ocr-right">
+        <div class="ocr-prog" id="ocr-prog"><div class="bar"><i id="ocr-bar"></i></div><span id="ocr-status">Text wird erkannt …</span></div>
+        <textarea id="ocr-text" hidden spellcheck="false" aria-label="Erkannter Text"></textarea>
+        <p class="hint" id="ocr-hint" hidden>Prüf den Text kurz und verbessere, was falsch erkannt wurde.</p>
+      </div>
+    </div>
+    <label class="toggle"><span>Zeilen genau wie im Foto<small class="tsub">Aus: Absätze werden an dein Blatt angepasst</small></span><input type="checkbox" id="ocr-lines"></label>
+    <div class="row"><button class="btn quiet" id="ocr-cancel" type="button">Abbrechen</button><button class="btn quiet" id="ocr-append" type="button" disabled>Anhängen</button><button class="btn primary" id="ocr-replace" type="button" disabled>Text ersetzen</button></div>
+  </div>
+</div>
+<div class="live" id="live" hidden role="status" aria-live="polite"><span class="livedot"></span><span id="live-text">Ich höre zu …</span><button class="btn" id="live-stop" type="button">Stopp</button></div>
 <div class="rail" id="rail" hidden aria-hidden="true"><div class="thumb" id="rail-thumb"></div></div>
 <div class="toast" id="toast" hidden></div>
 
@@ -1716,7 +1765,7 @@ function paintPage(P, L, i, withPaper, opt) {
   if (withPaper) paintPaper(P, set.paper, L.spec, i);
   for (const op of L.pages[i]) if (op.t === "hl") P.hl(op);
   for (const op of L.pages[i]) {
-    if (op.t === "hl" || (opt.skipGi && opt.skipGi.has(op.gi))) continue;
+    if (op.t === "hl" || (opt.skipGi && opt.skipGi.has(op.gi)) || (opt.skipFrom != null && op.gi >= opt.skipFrom)) continue;
     paintOp(P, op, L);
   }
   for (const t of templates) if (tplPage(t, L) === i && t.id !== opt.skipTpl) paintTemplate(P, t, L.ink);
@@ -1777,9 +1826,10 @@ function renderPages() {
     const pno = document.createElement("span"); pno.className = "pno"; pno.textContent = "Seite " + (i + 1);
     wrap.append(cv, lasso, catcher, objs, pno); sheets.appendChild(wrap);
     const se = { wrap, cv, lasso, catcher, objs, i, px }; sheetEls.push(se);
-    drawSheet(se); attachSheet(se);
+    drawSheet(se, animFrom != null ? { skipFrom: animFrom } : null); attachSheet(se);
   });
   renderObjs();
+  if (animFrom != null) { const f = animFrom; animFrom = null; startWriteAnim(f); }
   $("sheet-info").textContent = L.pages.length + (L.pages.length === 1 ? " Seite" : " Seiten") + " · " + (spec.custom ? "eigenes Blatt" : spec.w === 210 ? "A4" : "US Letter");
   $("sheet-paper").textContent = spec.name + " · " + (INKS.find(i => i.id === set.ink) || INKS[0]).name;
   renderMissing(L.missing, L.demoUsed);
@@ -2487,6 +2537,246 @@ for (const [id, n] of [["imp-tpl1", 1], ["imp-tpl3", 3]]) $(id).onclick = () => 
 };
 $("imp-go").onclick = () => $("imp-file").click();
 $("imp-file").onchange = e => { const fs = Array.from(e.target.files || []); e.target.value = ""; runImport(fs); };
+
+/* ---------- photo to text (OCR) ---------- */
+let ocrRaw = "", ocrBusy = false;
+function tidyOcr(t, keepLines) {
+  t = String(t || "").replace(/\r/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").replace(/[ \t]{2,}/g, " ").trim();
+  if (keepLines) return t;
+  return t.split(/\n\s*\n/).map(p => p.replace(/(\p{L})-\n(?=\p{Ll})/gu, "$1").replace(/\s*\n\s*/g, " ")).join("\n\n");
+}
+async function photoBlob(file) {
+  const url = URL.createObjectURL(file), img = new Image(); img.src = url;
+  await (img.decode ? img.decode() : new Promise((r, j) => { img.onload = r; img.onerror = j; }));
+  const k = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+  const c = document.createElement("canvas"); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+  const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+  URL.revokeObjectURL(url);
+  return new Promise(r => c.toBlob(b => r(b), "image/jpeg", 0.9));
+}
+function ocrProgress(frac, label) {
+  if (frac != null) $("ocr-bar").style.width = Math.round(frac * 100) + "%";
+  if (label) $("ocr-status").textContent = label;
+}
+async function ocrWithClaude(blob) {
+  const C = window.claude; if (!C || typeof C.use !== "function") return null;
+  const sample = await C.use("sample"); if (!sample) return null;
+  const lim = await sample.limits().catch(() => null); if (!lim || !lim.images) return null;
+  ocrProgress(0.4, "Claude liest den Text …");
+  const r = await sample("Lies den gesamten Text auf diesem Foto ab und gib ihn exakt so wieder, wie er dort steht: dieselben Wörter, dieselbe Rechtschreibung, dieselben Satzzeichen, dieselben Absätze und Zeilenumbrüche. Gib nur den Text aus, ohne Einleitung, ohne Anführungszeichen, ohne Erklärung. Ist kein Text zu sehen, antworte mit einem einzelnen Bindestrich.", { images: [blob], cache: false });
+  const t = (r && r.text || "").trim();
+  return t === "-" ? "" : t;
+}
+async function ocrWithTesseract(blob) {
+  if (!window.Tesseract) { ocrProgress(0.05, "Lade die Texterkennung (einmalig) …"); await loadScript("https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"); }
+  const labels = { "loading tesseract core": "Lade die Texterkennung …", "loading language traineddata": "Lade Deutsch (einmalig, 1,3 MB) …", "initializing api": "Starte …", "recognizing text": "Erkenne Text …" };
+  const worker = await window.Tesseract.createWorker("deu", 1, {
+    workerPath: "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js",
+    corePath: "https://cdn.jsdelivr.net/npm/tesseract.js-core@5.1.1",
+    langPath: "https://cdn.jsdelivr.net/npm/@tesseract.js-data/deu@1.0.0/4.0.0_best_int",
+    logger: m => { const base = m.status === "recognizing text" ? 0.3 + 0.7 * m.progress : 0.3 * (m.progress || 0); ocrProgress(base, labels[m.status]); },
+  });
+  try {
+    const { data } = await worker.recognize(blob);
+    // keep only lines the engine is confident about (drops noise from table edges or shadows)
+    const good = l => l.confidence >= 60 && /\p{L}{2,}|\d/u.test(l.text);
+    if (data.paragraphs && data.paragraphs.length) {
+      const paras = data.paragraphs.map(pg => (pg.lines || []).filter(good).map(l => l.text.replace(/\n$/, "").trim()).filter(Boolean).join("\n")).filter(Boolean);
+      if (paras.length) return paras.join("\n\n");
+    }
+    return data.text || "";
+  }
+  finally { worker.terminate(); }
+}
+async function runOcr(file) {
+  if (ocrBusy) return; ocrBusy = true;
+  $("ocr-text").hidden = true; $("ocr-hint").hidden = true; $("ocr-prog").hidden = false;
+  $("ocr-append").disabled = $("ocr-replace").disabled = true;
+  ocrProgress(0, "Bereite das Foto vor …");
+  $("ocr-img").src = URL.createObjectURL(file); $("ocr-modal").hidden = false;
+  try {
+    const blob = await photoBlob(file);
+    let t = null;
+    if (!STANDALONE) { try { t = await ocrWithClaude(blob); } catch (e) { t = null; } }
+    if (t == null) t = await ocrWithTesseract(blob);
+    ocrRaw = t;
+    if (!t.trim()) { ocrProgress(1, "Auf dem Foto habe ich keinen Text gefunden. Fotografiere ihn näher und gerader."); return; }
+    $("ocr-prog").hidden = true; $("ocr-text").hidden = false; $("ocr-hint").hidden = false;
+    $("ocr-text").value = tidyOcr(t, $("ocr-lines").checked);
+    $("ocr-append").disabled = $("ocr-replace").disabled = false;
+  } catch (e) {
+    ocrProgress(0, STANDALONE ? "Die Texterkennung konnte nicht geladen werden. Prüf deine Internetverbindung." : "Hier geht die Texterkennung nicht. Tipp: In der Fotos-App den Text gedrückt halten, „Kopieren“ wählen und hier einfügen.");
+  } finally { ocrBusy = false; }
+}
+$("tb-photo").onclick = () => $("ocr-file").click();
+$("ocr-file").onchange = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) runOcr(f); };
+$("ocr-lines").onchange = () => { if (ocrRaw) $("ocr-text").value = tidyOcr(ocrRaw, $("ocr-lines").checked); };
+const closeOcr = () => { $("ocr-modal").hidden = true; const s = $("ocr-img").src; if (s.startsWith("blob:")) URL.revokeObjectURL(s); };
+$("ocr-cancel").onclick = closeOcr;
+for (const [id, append] of [["ocr-append", true], ["ocr-replace", false]]) $(id).onclick = () => {
+  const t = $("ocr-text").value.trim(); if (!t) return;
+  txt.value = append && txt.value.trim() ? txt.value.replace(/\s+$/, "") + "\n\n" + t : t;
+  txt.dispatchEvent(new Event("input")); closeOcr();
+  toast("Der Text steht jetzt in deiner Handschrift auf dem Blatt.");
+};
+
+/* ---------- export the handwriting as a real font file ---------- */
+let fontReady = null;
+function ensureOpentype() {
+  if (window.opentype) return Promise.resolve(window.opentype);
+  if (!fontReady) fontReady = loadScript("https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js").then(() => window.opentype).catch(e => { fontReady = null; throw e; });
+  return fontReady;
+}
+function denseStroke(pts) {
+  // the same smoothing the app uses on paper, sampled into short straight pieces
+  if (pts.length < 3) return pts.map(p => [p[0], p[1], p[2]]);
+  const out = [[pts[0][0], pts[0][1], pts[0][2]]];
+  let sx = pts[0][0], sy = pts[0][1];
+  for (let i = 1; i < pts.length; i++) {
+    const p = pts[i], last = i === pts.length - 1;
+    const ex = last ? p[0] : (p[0] + pts[i + 1][0]) / 2, ey = last ? p[1] : (p[1] + pts[i + 1][1]) / 2;
+    const n = Math.max(1, Math.ceil(Math.hypot(ex - sx, ey - sy) / 0.05));
+    for (let k = 1; k <= n; k++) { const t = k / n, a = (1 - t) * (1 - t), b = 2 * (1 - t) * t, c = t * t; out.push([a * sx + b * p[0] + c * ex, a * sy + b * p[1] + c * ey, p[2]]); }
+    sx = ex; sy = ey;
+  }
+  return out;
+}
+function strokeContours(pts, half) {
+  // a pen stroke as overlapping filled shapes: one quad per piece, round discs at ends and corners
+  const polys = [], disc = (x, y, r) => { const q = []; for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2; q.push([x + r * Math.cos(a), y + r * Math.sin(a)]); } polys.push(q); };
+  const W = p => half * (0.8 + 0.4 * Math.min(1, Math.max(0, p[2])));
+  if (pts.length === 1) { disc(pts[0][0], pts[0][1], W(pts[0]) * 1.1); return polys; }
+  disc(pts[0][0], pts[0][1], W(pts[0])); disc(pts[pts.length - 1][0], pts[pts.length - 1][1], W(pts[pts.length - 1]));
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1e-6, nx = -dy / l, ny = dx / l, wa = W(a), wb = W(b);
+    polys.push([[a[0] + nx * wa, a[1] + ny * wa], [b[0] + nx * wb, b[1] + ny * wb], [b[0] - nx * wb, b[1] - ny * wb], [a[0] - nx * wa, a[1] - ny * wa]]);
+    if (i < pts.length - 1) { const c = pts[i + 1], t1 = Math.atan2(dy, dx), t2 = Math.atan2(c[1] - b[1], c[0] - b[0]); let d = Math.abs(t2 - t1); if (d > Math.PI) d = 2 * Math.PI - d; if (d > 0.25) disc(b[0], b[1], wb); }
+  }
+  return polys;
+}
+async function buildFont(name) {
+  const ot = await ensureOpentype();
+  const S = 350, PEN = 0.11, glyphsOut = [new ot.Glyph({ name: ".notdef", unicode: 0, advanceWidth: 500, path: new ot.Path() })];
+  glyphsOut.push(new ot.Glyph({ name: "space", unicode: 32, advanceWidth: Math.round((0.72 + set.spacing * 0.6) * S), path: new ot.Path() }));
+  let n = 0;
+  for (const c of allChars()) {
+    const g = glyphs[c]; if (!g || !g.v.length) continue;
+    const v = g.v[0], b = bbox(v), lsb = 0.12 * S, path = new ot.Path();
+    for (const st of v) for (const poly of strokeContours(denseStroke(st), PEN)) {
+      let area = 0; for (let k = 0; k < poly.length; k++) { const p = poly[k], q = poly[(k + 1) % poly.length]; area += p[0] * q[1] - q[0] * p[1]; }
+      const pts = area > 0 ? poly : poly.slice().reverse(); // one winding direction for all shapes
+      pts.forEach((p, k) => { const X = Math.round((p[0] - b.minX) * S + lsb), Y = Math.round(-p[1] * S); k ? path.lineTo(X, Y) : path.moveTo(X, Y); });
+      path.close();
+    }
+    const cp = c.codePointAt(0);
+    glyphsOut.push(new ot.Glyph({ name: "uni" + cp.toString(16).toUpperCase().padStart(4, "0"), unicode: cp, advanceWidth: Math.round((b.maxX - b.minX) * S + 2 * lsb + set.spacing * S), path }));
+    n++;
+  }
+  const fam = (name || "Meine Handschrift").replace(/[^\p{L}\p{N} \-]/gu, "").trim().slice(0, 40) || "Meine Handschrift";
+  const font = new ot.Font({ familyName: fam, styleName: "Regular", unitsPerEm: 1000, ascender: 860, descender: -470, glyphs: glyphsOut });
+  return { buf: font.toArrayBuffer(), count: n, fam };
+}
+$("font-make").onclick = async () => {
+  if (!Object.keys(glyphs).length) { toast("Zeichne zuerst ein paar Zeichen, dann wird daraus eine Schriftart."); return; }
+  const btn = $("font-make"); btn.disabled = true; btn.textContent = "Schriftart wird gebaut …";
+  try {
+    const { buf, count, fam } = await buildFont($("font-name").value);
+    const file = fam.replace(/\s+/g, "") + (STANDALONE ? ".otf" : ".ttf");
+    try {
+      const ff = new FontFace("MangoPreview" + Date.now(), buf.slice(0)); await ff.load(); document.fonts.add(ff);
+      const pv = $("font-preview"); pv.hidden = false; pv.style.fontFamily = '"' + ff.family + '"';
+    } catch (e) {}
+    $("font-info").textContent = count + " Zeichen in „" + fam + "“.";
+    await deliver([{ name: file, blob: new Blob([buf], { type: "font/otf" }) }]);
+  } catch (e) { toast("Die Schriftart ließ sich nicht bauen. Prüf deine Internetverbindung und versuch es nochmal."); }
+  finally { btn.disabled = false; btn.textContent = "Schriftart erstellen"; }
+};
+
+/* ---------- live: speak and watch it being written ---------- */
+let animFrom = null, animJob = null, live = null;
+function maxGi(L) { let m = -1; for (const pg of L.pages) for (const op of pg) if (op.gi > m) m = op.gi; return m; }
+function glyphSegs(op, ink, wmm) {
+  // every little piece of a glyph in drawing order, in the glyph's own coordinates
+  const segs = [], base = wmm / op.k;
+  for (const pts of op.v) {
+    const wOf = p => base * (0.8 + 0.4 * Math.min(1, Math.max(0, p[2])));
+    if (pts.length === 1) { segs.push({ dot: pts[0], w: wOf(pts[0]) }); continue; }
+    let sx = pts[0][0], sy = pts[0][1];
+    for (let i = 1; i < pts.length; i++) {
+      const p = pts[i], last = i === pts.length - 1;
+      const ex = last ? p[0] : (p[0] + pts[i + 1][0]) / 2, ey = last ? p[1] : (p[1] + pts[i + 1][1]) / 2;
+      segs.push({ sx, sy, cx: p[0], cy: p[1], ex, ey, w: wOf(p) }); sx = ex; sy = ey;
+    }
+  }
+  return segs;
+}
+function startWriteAnim(from) {
+  if (animJob) animJob.finish();
+  const queue = [];
+  sheetEls.forEach(se => { for (const op of lastL.pages[se.i]) if (op.gi >= from) queue.push({ se, op }); });
+  if (!queue.length) return;
+  let qi = 0, segs = null, si = 0, raf = 0, done = false;
+  const desk = $("canvas");
+  const drawSeg = (se, op, s) => {
+    const ctx = se.cv.getContext("2d"); ctx.save(); ctx.setTransform(se.px, 0, 0, se.px, 0, 0);
+    ctx.translate(op.x, op.y); ctx.rotate(op.rot); ctx.scale(op.k, op.k); ctx.translate(-op.minX, 0);
+    ctx.strokeStyle = ctx.fillStyle = lastL.ink; ctx.lineCap = "round"; ctx.lineWidth = s.w;
+    if (s.dot) { ctx.beginPath(); ctx.arc(s.dot[0], s.dot[1], s.w / 2, 0, Math.PI * 2); ctx.fill(); }
+    else { ctx.beginPath(); ctx.moveTo(s.sx, s.sy); ctx.quadraticCurveTo(s.cx, s.cy, s.ex, s.ey); ctx.stroke(); }
+    ctx.restore();
+  };
+  const follow = (se, op) => {
+    const r = se.wrap.getBoundingClientRect(), dr = desk.getBoundingClientRect(), y = r.top + op.y / lastL.spec.h * r.height;
+    if (y > dr.bottom - 140 || y < dr.top + 90) desk.scrollBy({ top: y - (dr.top + dr.height * 0.45), behavior: "smooth" });
+  };
+  const step = () => {
+    raf = 0; if (done) return;
+    const remaining = queue.length - qi, budget = Math.max(5, Math.ceil(remaining * 40 / 90));
+    for (let n = 0; n < budget && qi < queue.length; n++) {
+      const { se, op } = queue[qi];
+      if (op.t !== "g") { paintOp(canvasPainter(se.cv.getContext("2d"), se.px), op, lastL); qi++; segs = null; continue; }
+      if (!segs) { segs = glyphSegs(op, lastL.ink, lastL.wmm); si = 0; follow(se, op); }
+      if (si < segs.length) drawSeg(se, op, segs[si++]);
+      if (si >= segs.length) { qi++; segs = null; }
+    }
+    if (qi < queue.length) raf = requestAnimationFrame(step); else { done = true; animJob = null; }
+  };
+  animJob = { finish() { if (done) return; done = true; cancelAnimationFrame(raf); for (const se of sheetEls) drawSheet(se); animJob = null; } };
+  raf = requestAnimationFrame(step);
+}
+function setLiveUi(on, text) {
+  $("live").hidden = !on; $("tb-live").setAttribute("aria-pressed", String(on));
+  if (text != null) $("live-text").textContent = text;
+}
+function stopLive() { if (!live) return; const r = live; live = null; try { r.stop(); } catch (e) {} setLiveUi(false); }
+$("live-stop").onclick = stopLive;
+$("tb-live").onclick = () => {
+  if (live) { stopLive(); return; }
+  const SRc = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SRc) { toast("Live-Schreiben braucht die Spracherkennung von Safari. Öffne deine Website direkt in Safari."); return; }
+  let rec; try { rec = new SRc(); } catch (e) { toast("Die Spracherkennung ist hier nicht verfügbar."); return; }
+  rec.lang = "de-DE"; rec.continuous = true; rec.interimResults = true;
+  rec.onresult = ev => {
+    let interim = "";
+    for (let i = ev.resultIndex; i < ev.results.length; i++) {
+      const r = ev.results[i], t = r[0].transcript.trim();
+      if (r.isFinal && t) {
+        if (lastL) animFrom = maxGi(lastL) + 1;
+        const v = txt.value, sep = !v.trim() ? "" : /[\n ]$/.test(v) ? "" : " ";
+        txt.value = v + sep + t; txt.dispatchEvent(new Event("input"));
+      } else interim += t + " ";
+    }
+    $("live-text").textContent = interim.trim() || "Ich höre zu …";
+  };
+  rec.onerror = ev => {
+    if (ev.error === "no-speech" || ev.error === "aborted") return;
+    toast(ev.error === "not-allowed" || ev.error === "service-not-allowed" ? "Das Mikrofon ist nicht erlaubt. Erlaube es in den Safari-Einstellungen für diese Seite." : "Live-Schreiben wurde unterbrochen.");
+    stopLive();
+  };
+  rec.onend = () => { if (live === rec) { try { rec.start(); } catch (e) { stopLive(); } } };
+  try { rec.start(); live = rec; setLiveUi(true, "Ich höre zu …"); if (window.innerWidth <= 1080) openSide(false); }
+  catch (e) { toast("Live-Schreiben ließ sich nicht starten."); }
+};
 
 /* ---------- delete my handwriting ---------- */
 $("wipe").onclick = () => {
