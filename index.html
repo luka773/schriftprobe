@@ -294,6 +294,10 @@ textarea:focus { background: var(--surface); }
 .obj .tbar .chip:hover, .selbox .tbar .chip:hover { background: rgba(255,255,255,.12); }
 .selbox .tbar .chip.danger { color: #ff9d8c; }
 .tin { position: absolute; pointer-events: auto; z-index: 5; min-width: 180px; max-width: 70%; font: 600 16px/1.2 var(--f-body); padding: 8px 10px; border: 2px solid #ffa928; border-radius: 10px; background: #fffdf5; color: #17191e; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+.selbox .sh { position: absolute; background: #ffa928; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.25); touch-action: none; z-index: 2; }
+.selbox .sh-l, .selbox .sh-r { top: 50%; width: 16px; height: 44px; margin-top: -22px; border-radius: 8px; cursor: ew-resize; }
+.selbox .sh-l { left: -10px; } .selbox .sh-r { right: -10px; }
+.selbox .sh-c { right: -16px; bottom: -16px; width: 32px; height: 32px; border-radius: 50%; cursor: nwse-resize; }
 .selbox { position: absolute; pointer-events: auto; touch-action: none; cursor: move; outline: 2px dashed #e07800; background: rgba(255, 169, 40, 0.10); border-radius: 4px; }
 .rail { position: fixed; z-index: 7; right: max(8px, env(safe-area-inset-right, 0px)); top: calc(var(--barh) + env(safe-area-inset-top, 0px) + 14px); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 24px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-s); touch-action: none; cursor: pointer; }
 .rail .thumb { position: absolute; left: 3px; right: 3px; top: 0; min-height: 44px; border-radius: 9px; background: var(--mango); }
@@ -1539,9 +1543,9 @@ function layout() {
     return { g, gi, w: w + wmm, adv: w + wmm + Math.max(0.02, gap + jg) * u, sc, rot, dy, b };
   }
   function glyphOp(it, px, py, s) {
-    const m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0;
-    if (it.g.src === "font") return { t: "f", gi: it.gi, ch: it.g.ch, x: px + mx, y: py + my, size: fontSize * s };
-    return { t: "g", gi: it.gi, v: it.g.v, x: px + mx, y: py + my + it.dy * u * s, rot: it.rot, k: u * it.sc * s, minX: it.b.minX, b: it.b };
+    const m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0, ms = m && m[2] ? m[2] : 1;
+    if (it.g.src === "font") return { t: "f", gi: it.gi, ch: it.g.ch, x: px + mx, y: py + my, size: fontSize * s * ms };
+    return { t: "g", gi: it.gi, v: it.g.v, x: px + mx, y: py + my + it.dy * u * s * ms, rot: it.rot, k: u * it.sc * s * ms, minX: it.b.minX, b: it.b };
   }
   function place(it) {
     if (it.marker) { if (it.marker === "hl") { hl = !hl; hlRun = null; } else { ul = !ul; ulRun = null; } return; }
@@ -1549,8 +1553,8 @@ function layout() {
     if (it.grp) {
       for (const sb of it.subs) if (!hiddenGi[sb.it.gi]) ops.push(glyphOp(sb.it, xs + sb.dx, y + sb.dy, sb.s));
       if (!hiddenGi[it.gi]) {
-        const m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0;
-        for (const e of it.extras) ops.push({ t: "s", gi: it.gi, pts: e.map(p => [xs + p[0] + mx, y + p[1] + my, 0.5]) });
+        const m = moves[it.gi], mx = m ? m[0] : 0, my = m ? m[1] : 0, ms = m && m[2] ? m[2] : 1;
+        for (const e of it.extras) ops.push({ t: "s", gi: it.gi, ox: xs, oy: y, pts: e.map(p => [xs + p[0] * ms + mx, y + p[1] * ms + my, 0.5]) });
       }
     } else if (!hiddenGi[it.gi]) {
       ops.push(glyphOp(it, xs, y, 1));
@@ -1569,17 +1573,17 @@ function layout() {
     const s = 0.7, A = seq(a, s), B = seq(b, s), W = Math.max(A.w, B.w) + 0.5 * u, bar = -0.6 * u;
     A.subs.forEach(o => { o.dx += (W - A.w) / 2; o.dy = bar - 0.32 * u; });
     B.subs.forEach(o => { o.dx += (W - B.w) / 2; o.dy = bar + 0.32 * u + 2 * u * s; });
-    const gi = A.subs.length ? A.subs[0].it.gi : idx;
+    const gi = idx++;
     return { grp: true, gi, subs: A.subs.concat(B.subs), extras: [[[0.12 * u, bar], [W - 0.12 * u, bar + 0.02 * u]]], w: W, adv: W + gap * u };
   }
   function sup(run) {
     const R = seq(run, 0.6); R.subs.forEach(o => { o.dy = -1.3 * u; });
-    return { grp: true, gi: R.subs.length ? R.subs[0].it.gi : idx, subs: R.subs, extras: [], w: R.w, adv: R.w + gap * u * 0.6 };
+    return { grp: true, gi: idx++, subs: R.subs, extras: [], w: R.w, adv: R.w + gap * u * 0.6 };
   }
   function root(run) {
     const R = seq(run, 1), off = 0.85 * u; R.subs.forEach(o => { o.dx += off; });
     const W = off + R.w + 0.3 * u, top = -2.2 * u;
-    return { grp: true, gi: R.subs.length ? R.subs[0].it.gi : idx, subs: R.subs,
+    return { grp: true, gi: idx++, subs: R.subs,
       extras: [[[0, -0.5 * u], [0.22 * u, -0.64 * u], [0.45 * u, 0.22 * u], [0.78 * u, top], [W, top + 0.04 * u]]], w: W, adv: W + gap * u };
   }
   const MK = { "": "hl", "": "ul" }, ALNUM = /[0-9A-Za-zÄÖÜäöüß]/;
@@ -1628,7 +1632,7 @@ function layout() {
   const text = addMistakes(src);
   const VSEP = set.math ? /^(.*?\S)\s*(?:\s[-–]\s|;)\s*(\S.*)$/ : /^(.*?\S)\s*(?:\s[-–]\s|=|;)\s*(\S.*)$/;
   text.split("\n").forEach((p, pi) => {
-    if (pi > 0) newLine();
+    if (pi > 0) { newLine(); idx += 2; }
     const vm = set.vocab ? p.match(VSEP) : null;
     if (!vm) { placeText(p); return; }
     const mid = left + (right - left) * 0.5;
@@ -1642,13 +1646,14 @@ function layout() {
     ops.push({ t: "s", gi: -1, pts: [[mid, top, 0.5], [mid + 0.15, (top + bottom) / 2, 0.5], [mid, bottom, 0.5]] });
     colL = left; colR = right;
   });
-  return { spec, pages, ink, wmm, missing, demoUsed };
+  return { spec, pages, ink, wmm, missing, demoUsed, step, u };
 }
 /* ---------- sheet objects: templates and moved handwriting ---------- */
 const K_TPL = "mangoumwandler.templates.v1", K_MOVES = "mangoumwandler.moves.v1", K_INK = "mangoumwandler.ink.v1", K_MINE = "mangoumwandler.mytemplates.v1";
 const arr = v => Array.isArray(v) ? v : [];
 let templates = arr(store.get(K_TPL)), inkStrokes = arr(store.get(K_INK)), myTpls = arr(store.get(K_MINE));
 let moves = store.get(K_MOVES) || {};
+if (store.get("mangoumwandler.layoutv") !== 2) { moves = {}; store.set(K_MOVES, moves); store.set("mangoumwandler.hidden.v1", {}); store.set("mangoumwandler.layoutv", 2); }
 const K_HIDE = "mangoumwandler.hidden.v1";
 let hiddenGi = store.get(K_HIDE) || {};
 const saveHidden = () => store.set(K_HIDE, hiddenGi);
@@ -1799,7 +1804,7 @@ function dataUrlToBlob(url) {
   return new Blob([buf], { type: head.slice(5, head.indexOf(";")) });
 }
 
-let renderTimer = null, writeVisible = false, needsRender = true;
+let renderTimer = null, writeVisible = false, needsRender = true, animFrom = null, animJob = null, live = null;
 function writeDirty() { needsRender = true; if (!writeVisible) return; clearTimeout(renderTimer); renderTimer = setTimeout(renderPages, 180); }
 
 function drawSheet(se, opt) {
@@ -1885,6 +1890,10 @@ function renderObjs() {
     const se = sheetEls[selGlyphs.page];
     const el = document.createElement("div"); el.className = "selbox"; placeBox(el, selGlyphs.box);
     el.addEventListener("pointerdown", e => startDrag(e, se, "glyphs", null));
+    for (const [cls, kind, label] of [["sh sh-l", "wl", "Breite von links ändern"], ["sh sh-r", "wr", "Breite von rechts ändern"], ["sh sh-c", "scale", "Größer oder kleiner ziehen"]]) {
+      const h = document.createElement("div"); h.className = cls; h.setAttribute("aria-label", label); h.title = label;
+      h.addEventListener("pointerdown", e => startSelEdit(e, se, kind)); el.appendChild(h);
+    }
     const bar = document.createElement("div"); bar.className = "tbar";
     bar.appendChild(mkBtn("chip", "Als Vorlage speichern", "Auswahl als eigene Vorlage speichern", saveSelectionAsTemplate));
     bar.appendChild(mkBtn("chip danger", "Löschen", "Auswahl löschen", () => {
@@ -1899,6 +1908,116 @@ function renderObjs() {
     el.appendChild(bar);
     se.objs.appendChild(el);
   }
+}
+
+/* ---------- lasso selection: make the box narrower/wider (text re-wraps) or scale it ---------- */
+function opOrigin(op) { const m = moves[op.gi] || [0, 0]; return op.t === "s" ? [op.ox + m[0], op.oy + m[1]] : [op.x, op.y]; }
+function transformOp(op, d, f, a) {
+  // copy of an op, scaled by f around a (if f) and shifted by d
+  const o = Object.assign({}, op);
+  if (f && f !== 1) {
+    if (o.pts) o.pts = o.pts.map(p => [a[0] + (p[0] - a[0]) * f, a[1] + (p[1] - a[1]) * f, p[2]]);
+    else { o.x = a[0] + (o.x - a[0]) * f; o.y = a[1] + (o.y - a[1]) * f; if (o.k) o.k *= f; if (o.size) o.size *= f; }
+  }
+  if (d) shiftOp(o, d[0], d[1]);
+  return o;
+}
+function reflowDeltas(ops, x0, x1) {
+  // words = runs of consecutive ids; a jump of 3+ is a new paragraph
+  const sorted = ops.slice().sort((p, q) => p.gi - q.gi), words = [];
+  let cur = null, prev = null;
+  for (const op of sorted) {
+    if (!cur || op.gi - prev > 1) { cur = { ops: [], para: !!cur && op.gi - prev >= 3 }; words.push(cur); }
+    cur.ops.push(op); prev = op.gi;
+  }
+  const sc = ops.reduce((s, op) => s + ((moves[op.gi] && moves[op.gi][2]) || 1), 0) / Math.max(1, ops.length);
+  const lineH = lastL.step * sc, space = (0.72 + set.spacing * 1.6) * lastL.u * sc + lastL.wmm, pad = 1.2;
+  const deltas = new Map();
+  let x = x0 + pad, lineBase = null;
+  for (const w of words) {
+    let mn = Infinity, mx = -Infinity;
+    for (const op of w.ops) { const b = opBounds(op); mn = Math.min(mn, b[0]); mx = Math.max(mx, b[2]); }
+    const g = w.ops.find(o => o.t === "g" || o.t === "f") || w.ops[0], base = g.pts ? g.pts[0][1] : g.y;
+    if (lineBase == null) lineBase = base;
+    else if (w.para || (x > x0 + pad + 0.01 && x + (mx - mn) > x1 - pad)) { lineBase += lineH * (w.para ? 1 : 1); x = x0 + pad; }
+    const dx = x - mn, dy = lineBase - base;
+    for (const op of w.ops) deltas.set(op, [dx, dy]);
+    x += (mx - mn) + space;
+  }
+  return deltas;
+}
+function startSelEdit(e, se, kind) {
+  if (e.button > 0 || !selGlyphs) return;
+  e.preventDefault(); e.stopPropagation();
+  const target = e.currentTarget; try { target.setPointerCapture(e.pointerId); } catch (x) {}
+  const start = toMM(e, se), box0 = selGlyphs.box.slice(), gis = selGlyphs.gis, inkIds = selGlyphs.ink;
+  const off = document.createElement("canvas"); off.width = se.cv.width; off.height = se.cv.height;
+  const ops = lastL.pages[se.i].filter(op => gis.has(op.gi)), ink = inkStrokes.filter(s => inkIds.has(s.id));
+  const lastSel = ops.reduce((m, op) => Math.max(m, op.gi), -1);
+  const after = lastL.pages[se.i].filter(op => op.gi > lastSel && !gis.has(op.gi));
+  const skipAll = new Set([...gis, ...after.map(o => o.gi)]);
+  paintPage(canvasPainter(off.getContext("2d"), se.px), lastL, se.i, true, { skipGi: skipAll, skipInk: inkIds });
+  const el = se.objs.querySelector(".selbox"), a = [box0[0], box0[1]], bw = box0[2] - box0[0], bh = box0[3] - box0[1];
+  let raf = 0, result = null;
+  const compute = d => {
+    if (kind === "scale") {
+      const f = Math.max(0.25, Math.min(4, ((bw + d[0]) / bw + (bh + d[1]) / bh) / 2));
+      return { f, box: [box0[0], box0[1], box0[0] + bw * f, box0[1] + bh * f] };
+    }
+    const nx0 = kind === "wl" ? Math.min(box0[2] - 12, box0[0] + d[0]) : box0[0];
+    const nx1 = kind === "wr" ? Math.max(box0[0] + 12, box0[2] + d[0]) : box0[2];
+    const deltas = reflowDeltas(ops.filter(o => o.t !== "hl" && o.t !== "ul"), nx0, nx1);
+    let b = [nx0, Infinity, nx1, -Infinity];
+    for (const [op, dd] of deltas) { const ob = opBounds(transformOp(op, dd)); b[1] = Math.min(b[1], ob[1]); b[3] = Math.max(b[3], ob[3]); }
+    for (const s of ink) { const sb = strokeBox(s); b[1] = Math.min(b[1], sb[1]); b[3] = Math.max(b[3], sb[3]); }
+    if (!isFinite(b[1])) b = box0.slice();
+    return { deltas, box: [b[0], b[1] - 1.5, b[2], b[3] + 1.5] };
+  };
+  const frame = () => {
+    raf = 0;
+    const ctx = se.cv.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(off, 0, 0);
+    const P = canvasPainter(ctx, se.px);
+    for (const op of ops) paintOp(P, result.f ? transformOp(op, null, result.f, a) : transformOp(op, result.deltas.get(op) || [0, 0]), lastL);
+    for (const s of ink) P.stroke(result.f ? s.pts.map(p => [a[0] + (p[0] - a[0]) * result.f, a[1] + (p[1] - a[1]) * result.f, p[2]]) : s.pts, lastL.ink, s.w || set.weight);
+    const push = result.box[3] - box0[3];
+    for (const op of after) paintOp(P, transformOp(op, [0, push]), lastL);
+    placeBox(el, result.box);
+  };
+  const onMove = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    const m = toMM(ev, se); result = compute([m[0] - start[0], m[1] - start[1]]);
+    if (!raf) raf = requestAnimationFrame(frame);
+  };
+  const onUp = ev => {
+    if (ev.pointerId !== e.pointerId) return;
+    target.removeEventListener("pointermove", onMove); target.removeEventListener("pointerup", onUp); target.removeEventListener("pointercancel", onUp);
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    if (result) {
+      const round = n => Math.round(n * 100) / 100;
+      for (const op of ops) {
+        const m = moves[op.gi] || [0, 0, 1];
+        if (result.f) {
+          const o = opOrigin(op), n = [a[0] + (o[0] - a[0]) * result.f, a[1] + (o[1] - a[1]) * result.f];
+          moves[op.gi] = [round(m[0] + n[0] - o[0]), round(m[1] + n[1] - o[1]), round((m[2] || 1) * result.f * 1000) / 1000];
+        } else {
+          const dd = result.deltas.get(op); if (!dd) continue;
+          moves[op.gi] = [round(m[0] + dd[0]), round(m[1] + dd[1]), m[2] || 1];
+        }
+      }
+      const push = result.box[3] - box0[3];
+      if (Math.abs(push) > 0.05) for (const g of new Set(after.map(o => o.gi))) { const m = moves[g] || [0, 0, 1]; moves[g] = [m[0], round(m[1] + push), m[2] || 1]; }
+      if (result.f) { for (const s of ink) { s.pts = s.pts.map(p => [rmm(a[0] + (p[0] - a[0]) * result.f), rmm(a[1] + (p[1] - a[1]) * result.f), p[2]]); inkBB.delete(s); } saveInk(); }
+      saveMoves();
+      const keep = { page: se.i, gis, ink: inkIds };
+      renderPages();
+      // keep the selection around the edited text
+      let b = null; const grow = q => { b = b ? [Math.min(b[0], q[0]), Math.min(b[1], q[1]), Math.max(b[2], q[2]), Math.max(b[3], q[3])] : q.slice(); };
+      for (const op of lastL.pages[keep.page] || []) if (keep.gis.has(op.gi)) grow(opBounds(op));
+      for (const s of inkStrokes) if (keep.ink.has(s.id)) grow(strokeBox(s));
+      if (b) { selGlyphs = { page: keep.page, gis: keep.gis, ink: keep.ink, box: [b[0] - 1.5, b[1] - 1.5, b[2] + 1.5, b[3] + 1.5] }; renderObjs(); }
+    } else { drawSheet(se); renderObjs(); }
+  };
+  target.addEventListener("pointermove", onMove); target.addEventListener("pointerup", onUp); target.addEventListener("pointercancel", onUp);
 }
 
 function startDrag(e, se, kind, t) {
@@ -1946,7 +2065,7 @@ function startDrag(e, se, kind, t) {
     if (moved) {
       if (kind === "glyphs") {
         for (const op of movingOps) shiftOp(op, d[0], d[1]);
-        for (const g of new Set(movingOps.map(o => o.gi))) { const m = moves[g] || [0, 0]; moves[g] = [Math.round((m[0] + d[0]) * 100) / 100, Math.round((m[1] + d[1]) * 100) / 100]; }
+        for (const g of new Set(movingOps.map(o => o.gi))) { const m = moves[g] || [0, 0]; moves[g] = [Math.round((m[0] + d[0]) * 100) / 100, Math.round((m[1] + d[1]) * 100) / 100, m[2] || 1]; }
         for (const s of movingInk) { s.pts = s.pts.map(p => [rmm(p[0] + d[0]), rmm(p[1] + d[1]), p[2]]); inkBB.delete(s); }
         selGlyphs.box = [box0[0] + d[0], box0[1] + d[1], box0[2] + d[0], box0[3] + d[1]];
         saveMoves(); if (movingInk.length) saveInk();
@@ -2693,7 +2812,6 @@ $("font-make").onclick = async () => {
 };
 
 /* ---------- live: speak and watch it being written ---------- */
-let animFrom = null, animJob = null, live = null;
 function maxGi(L) { let m = -1; for (const pg of L.pages) for (const op of pg) if (op.gi > m) m = op.gi; return m; }
 function glyphSegs(op, ink, wmm) {
   // every little piece of a glyph in drawing order, in the glyph's own coordinates
